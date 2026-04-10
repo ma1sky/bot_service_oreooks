@@ -2,7 +2,11 @@ import { Telegraf, Markup, session } from 'telegraf'
 import dotenv from 'dotenv'
 dotenv.config()
 
-const BOT_TOKEN: string | undefined = process.env.BOT_TOKEN as string;
+const BOT_TOKEN = process.env.BOT_TOKEN;
+
+if (!BOT_TOKEN) {
+  throw new Error('BOT_TOKEN is missing in env');
+}
 
 const bot = new Telegraf(BOT_TOKEN)
 console.log('TOKEN:', process.env.BOT_TOKEN?.slice(0, 10))

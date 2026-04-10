@@ -1,20 +1,10 @@
-import { Telegraf, Markup, session } from 'telegraf';
-import dotenv from 'dotenv';
-dotenv.config();
-const BOT_TOKEN = process.env.BOT_TOKEN;
-if (!BOT_TOKEN) {
-    throw new Error('BOT_TOKEN is missing in env');
-}
+import { Telegraf, session, Scenes } from 'telegraf';
+import { loginScene } from './auth.scene.js';
+import { BOT_TOKEN } from './token.js';
+const stage = new Scenes.Stage([loginScene]);
 const bot = new Telegraf(BOT_TOKEN);
-console.log('TOKEN:', process.env.BOT_TOKEN?.slice(0, 10));
-bot.start(ctx => {
-    ctx.reply(`
-        Привет, ${ctx.from.first_name}!
-        Для авторизации нажми на кнопку:
-    `, Markup.inlineKeyboard([
-        Markup.button.callback('🚪 Авторизироваться', 'auth')
-    ]));
-});
+bot.use(session());
+bot.use(stage.middleware());
 bot.catch((err, ctx) => {
     console.error('Ошибка:', err);
     ctx.reply('Что-то пошло не так 😢');

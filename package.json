@@ -15,6 +15,7 @@
     "typescript": "^6.0.2"
   },
   "scripts": {
+    "build": "npx tsc",
     "dev": "node --loader ts-node/esm src/bot.ts",
     "start": "node dist/bot.js"
   }

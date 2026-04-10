@@ -11,6 +11,7 @@
     "typescript": "^6.0.2"
   },
   "scripts": {
-    "dev": "node --loader ts-node/esm src/bot.ts"
+    "dev": "node --loader ts-node/esm src/bot.ts",
+    "start": "node dist/bot.js"
   }
 }

@@ -5,6 +5,7 @@ dotenv.config()
 const BOT_TOKEN: string | undefined = process.env.BOT_TOKEN as string;
 
 const bot = new Telegraf(BOT_TOKEN)
+console.log('TOKEN:', process.env.BOT_TOKEN?.slice(0, 10))
 
 bot.start(ctx => {
     ctx.reply(`

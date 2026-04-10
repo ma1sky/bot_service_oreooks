@@ -8,13 +8,20 @@ const bot = new Telegraf<OreooksContext>(BOT_TOKEN as string);
 
 bot.use(session());
 bot.use(stage.middleware());
+bot.start((ctx) => ctx.scene.enter('login'));
 
 bot.catch((err, ctx) => {
   console.error('Ошибка:', err)
   ctx.reply('Что-то пошло не так 😢')
 })
 
-bot.launch()
+try {
+  await bot.launch()
+  console.log('Bot started')
+} catch (err) {
+  console.error('Bot launch failed:', err)
+  process.exitCode = 1
+}
 
 process.once('SIGINT', () => bot.stop('SIGINT'));
 process.once('SIGTERM', () => bot.stop('SIGTERM'));

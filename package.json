@@ -12,7 +12,7 @@
   },
   "scripts": {
     "dev": "node --loader ts-node/esm src/bot.ts",
-    "build": "tsc",
+    "build": "npx tsc",
     "start": "node dist/bot.js"
   }
 }

@@ -1,9 +1,9 @@
-import { Markup, Scenes, Telegraf } from 'telegraf'
+import { Markup, Scenes } from 'telegraf'
 import type { SessionContext } from '../context.js';
 
-export const menuScene = new Scenes.BaseScene<SessionContext>('menu');
+export const menuScene = new Scenes.BaseScene<SessionContext>('menuScene');
 
-menuScene.enter(ctx => {
+menuScene.enter(async ctx => {
     ctx.reply('Меню:', 
         Markup.inlineKeyboard([
             Markup.button.callback('➕ Создать задачу','createTask'),
@@ -14,11 +14,10 @@ menuScene.enter(ctx => {
 
 menuScene.action('createTask', async ctx => {
     await ctx.answerCbQuery();
-    await ctx.reply('');
+    ctx.scene.enter('createTaskScene');
 })
 
 menuScene.action('todaySchedule', async ctx => {
     await ctx.answerCbQuery();
-    await ctx.reply('');
+    await ctx.reply(' ');
 })
-

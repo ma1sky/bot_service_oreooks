@@ -1,4 +1,4 @@
-export function getApiToken(login, password) {
+export async function getApiToken(login, password) {
     if (password != 'string') {
         return '';
     }

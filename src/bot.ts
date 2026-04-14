@@ -17,7 +17,9 @@ bot.catch((err, ctx) => {
 })
 
 try {
-  bot.launch()
+  bot.launch({
+    dropPendingUpdates: true  
+  })
   console.log('Bot started')
 } catch (err) {
   console.error('Bot launch failed:', err)

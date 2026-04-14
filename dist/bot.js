@@ -11,7 +11,7 @@ bot.catch((err, ctx) => {
     ctx.reply('Что-то пошло не так 😢');
 });
 try {
-    await bot.launch();
+    bot.launch();
     console.log('Bot started');
 }
 catch (err) {

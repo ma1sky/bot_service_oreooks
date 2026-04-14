@@ -2,6 +2,12 @@ import { Scenes } from 'telegraf';
 import { getApiToken } from '../api/auth.api.js';
 export const loginScene = new Scenes.BaseScene('login');
 loginScene.enter((ctx) => {
+    ctx.scene.session.auth = {
+        isAuth: false,
+        login: '',
+        step: 'login',
+        token: ''
+    };
     ctx.reply(`
     Привет ${ctx.from?.first_name}!👋
 Добро пожаловать в Oreooks!
@@ -10,12 +16,6 @@ loginScene.enter((ctx) => {
 });
 loginScene.on('text', (ctx) => {
     if (!ctx.scene.session.auth.isAuth) {
-        ctx.scene.session.auth = {
-            isAuth: false,
-            login: ctx.message.text,
-            step: 'login',
-            token: ''
-        };
         return ctx.reply('Введите пароль:');
     }
     let login = ctx.scene.session.auth.login;

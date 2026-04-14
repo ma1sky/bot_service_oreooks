@@ -1,5 +1,5 @@
 import { Telegraf, session, Scenes } from 'telegraf';
-import { loginScene } from './auth.scene.js';
+import { loginScene } from './scenes/auth.scene.js';
 import { BOT_TOKEN } from './token.js';
 const stage = new Scenes.Stage([loginScene]);
 const bot = new Telegraf(BOT_TOKEN);
@@ -8,10 +8,12 @@ bot.use(stage.middleware());
 bot.start((ctx) => ctx.scene.enter('login'));
 bot.catch((err, ctx) => {
     console.error('Ошибка:', err);
-    ctx.reply('Что-то пошло не так 😢');
+    ctx.reply('Что-то пошло не так!');
 });
 try {
-    bot.launch();
+    bot.launch({
+        dropPendingUpdates: true
+    });
     console.log('Bot started');
 }
 catch (err) {

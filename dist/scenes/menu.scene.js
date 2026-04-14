@@ -7,11 +7,11 @@ menuScene.enter(async (ctx) => {
     ]));
 });
 menuScene.action('createTask', async (ctx) => {
-    await ctx.answerCbQuery();
+    ctx.answerCbQuery();
     ctx.scene.enter('createTaskScene');
 });
 menuScene.action('todaySchedule', async (ctx) => {
-    await ctx.answerCbQuery();
+    ctx.answerCbQuery();
     await ctx.reply(' ');
 });
 //# sourceMappingURL=menu.scene.js.map

@@ -1,8 +1,8 @@
 import { Telegraf, session, Scenes } from 'telegraf'
-import { loginScene } from './scenes/auth.scene.js';
-import { menuScene } from './scenes/menu.scene.js';
 import type { SessionContext } from './context.js';
 import { BOT_TOKEN } from './token.js';
+import { loginScene } from './scenes/auth.scene.js';
+import { menuScene } from './scenes/menu.scene.js';
 import { createTaskScene } from './scenes/createTask.scene.js';
 
 const stage = new Scenes.Stage<SessionContext>([loginScene, menuScene, createTaskScene]);

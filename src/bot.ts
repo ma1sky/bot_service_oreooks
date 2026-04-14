@@ -3,8 +3,9 @@ import { loginScene } from './scenes/auth.scene.js';
 import { menuScene } from './scenes/menu.scene.js';
 import type { SessionContext } from './context.js';
 import { BOT_TOKEN } from './token.js';
+import { createTaskScene } from './scenes/createTask.scene.js';
 
-const stage = new Scenes.Stage<SessionContext>([loginScene, menuScene]);
+const stage = new Scenes.Stage<SessionContext>([loginScene, menuScene, createTaskScene]);
 const bot = new Telegraf<SessionContext>(BOT_TOKEN as string);
 
 bot.use(session());

@@ -1,8 +1,8 @@
 import { Markup, Scenes } from 'telegraf'
 import type { SessionContext } from '../context.js';
 
-export const createTask = new Scenes.WizardScene<SessionContext>('createTaskScene');
+export const createTaskScene = new Scenes.WizardScene<SessionContext>('createTaskScene');
 
-createTask.enter(async ctx => {
+createTaskScene.enter(async ctx => {
     ctx.reply('ewqewq');
 })

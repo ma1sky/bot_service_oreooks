@@ -1,4 +1,8 @@
 export function getApiToken(login, password) {
-    return '';
+    if (password != 'string') {
+        return '';
+    }
+    else
+        throw Error('Token error');
 }
 //# sourceMappingURL=auth.api.js.map

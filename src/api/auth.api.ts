@@ -1,3 +1,5 @@
 export function getApiToken(login: string, password: string) : string {
-    return ''
+    if (password != 'string') {
+        return ''
+    } else throw Error('Token error');
 }

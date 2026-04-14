@@ -1,11 +1,12 @@
 import { Telegraf, session, Scenes } from 'telegraf';
 import { loginScene } from './scenes/auth.scene.js';
+import { menuScene } from './scenes/menu.scene.js';
 import { BOT_TOKEN } from './token.js';
-const stage = new Scenes.Stage([loginScene]);
+const stage = new Scenes.Stage([loginScene, menuScene]);
 const bot = new Telegraf(BOT_TOKEN);
 bot.use(session());
 bot.use(stage.middleware());
-bot.start((ctx) => ctx.scene.enter('login'));
+bot.start(ctx => ctx.scene.enter('login'));
 bot.catch((err, ctx) => {
     console.error('Ошибка:', err);
     ctx.reply('Что-то пошло не так!');

@@ -7,13 +7,14 @@ export const loginScene = new Scenes.BaseScene<SessionContext>('login');
 loginScene.enter((ctx) => {
   ctx.reply(`
     Привет ${ctx.from?.first_name}!👋
-Добро пожаловать в Oreooks. Тут ты можешь отслеживать свою успеваемость, смотреть расписание, искать преподавателей, ставить себе напоминания и задачи.
-🪪 Введи номер студенческого для дальнейшей работы.`);
+Добро пожаловать в Oreooks!
+Тут ты можешь отслеживать свою успеваемость, смотреть расписание, искать преподавателей, ставить себе напоминания и задачи.
+\n🪪 Введи номер студенческого для дальнейшей работы.`);
 });
 
 
 loginScene.on('text', (ctx) => {
-  if (!ctx.scene.session.auth) {
+  if (!ctx.scene.session.auth.isAuth) {
 
     ctx.scene.session.auth = {
       isAuth : false,
@@ -39,4 +40,5 @@ loginScene.on('text', (ctx) => {
   }
 
   ctx.scene.leave();
+  ctx.scene.enter('menu');
 });

@@ -1,15 +1,15 @@
 import { Telegraf, session, Scenes } from 'telegraf'
 import { loginScene } from './scenes/auth.scene.js';
-// import { menuScene } from './scenes/menu.scene.js';
+import { menuScene } from './scenes/menu.scene.js';
 import type { SessionContext } from './context.js';
 import { BOT_TOKEN } from './token.js';
 
-const stage = new Scenes.Stage<SessionContext>([loginScene]);
+const stage = new Scenes.Stage<SessionContext>([loginScene, menuScene]);
 const bot = new Telegraf<SessionContext>(BOT_TOKEN as string);
 
 bot.use(session());
 bot.use(stage.middleware());
-bot.start((ctx) => ctx.scene.enter('login'));
+bot.start(ctx => ctx.scene.enter('login'));
 
 bot.catch((err, ctx) => {
   console.error('Ошибка:', err)

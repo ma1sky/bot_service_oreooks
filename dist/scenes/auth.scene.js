@@ -29,7 +29,6 @@ loginScene.on('text', (ctx) => {
         ctx.scene.session.auth.isAuth = false;
         return ctx.reply(`Произошла ошибка, попробуйте ввести данные заного. Сначала введите логин.`);
     }
-    ctx.scene.leave();
     ctx.scene.enter('menu');
 });
 //# sourceMappingURL=auth.scene.js.map

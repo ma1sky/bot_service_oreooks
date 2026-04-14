@@ -39,6 +39,5 @@ loginScene.on('text', (ctx) => {
     return ctx.reply(`Произошла ошибка, попробуйте ввести данные заного. Сначала введите логин.`)
   }
 
-  ctx.scene.leave();
   ctx.scene.enter('menu');
 });

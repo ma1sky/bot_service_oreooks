@@ -22,6 +22,8 @@ loginScene.enter((ctx) => {
 
 loginScene.on('text', (ctx) => {
   if (!ctx.scene.session.auth.isAuth) {
+    ctx.scene.session.auth.isAuth = true;
+    ctx.scene.session.auth.login = ctx.message.text;
     return ctx.reply('Введите пароль:');
   }
 

@@ -1,12 +1,12 @@
 import { Telegraf, session, Scenes } from 'telegraf'
-import type { SessionContext } from './context.js';
+import type { BotContext } from './context.js';
 import { BOT_TOKEN } from './token.js';
 import { loginScene } from './scenes/auth.scene.js';
 import { menuScene } from './scenes/menu.scene.js';
 import { createTaskScene } from './scenes/createTask.scene.js';
 
-const stage = new Scenes.Stage<SessionContext>([loginScene, menuScene, createTaskScene]);
-const bot = new Telegraf<SessionContext>(BOT_TOKEN as string);
+const stage = new Scenes.Stage<BotContext>([loginScene, menuScene, createTaskScene]);
+const bot = new Telegraf<BotContext>(BOT_TOKEN as string);
 
 bot.use(session());
 bot.use(stage.middleware());

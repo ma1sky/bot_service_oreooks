@@ -9,25 +9,37 @@ export interface SessionData extends Scenes.WizardSessionData {
     },
 
     menu? : {
-        tasks: task[]
+        tasks: Task[]
     }
 }
 
 enum TaskStatus {
-    completed,
-    inProgress,
-    canceled
+    completed = 'completed',
+    inProgress = 'inProgress',
+    canceled = 'canceled'
 } 
 
-type task = {
+type Task = {
     title? : string,
-    descrition?: string,
+    description?: string,
     deadline? : Date
     status: TaskStatus
 }
 
-export interface SessionContext extends Context {
-  session: Scenes.WizardSession<SessionData>
-  scene: Scenes.SceneContextScene<SessionContext, SessionData>
-  wizard: Scenes.WizardContextWizard<SessionContext>
+export type TaskState = {
+  title?: string
+  description?: string
+  deadline?: Date
 }
+
+export type BotContext = Scenes.WizardContext<SessionData> & {
+    wizard: {
+        state: TaskState;
+    }
+};
+
+// export interface SessionContext extends Context {
+//   session: Scenes.WizardSession<SessionData>
+//   scene: Scenes.SceneContextScene<SessionContext, SessionData>
+//   wizard: Scenes.WizardContextWizard<SessionContext>
+// }

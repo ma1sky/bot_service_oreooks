@@ -1,8 +1,13 @@
 import { Scenes, Context } from 'telegraf';
 var TaskStatus;
 (function (TaskStatus) {
-    TaskStatus[TaskStatus["completed"] = 0] = "completed";
-    TaskStatus[TaskStatus["inProgress"] = 1] = "inProgress";
-    TaskStatus[TaskStatus["canceled"] = 2] = "canceled";
+    TaskStatus["completed"] = "completed";
+    TaskStatus["inProgress"] = "inProgress";
+    TaskStatus["canceled"] = "canceled";
 })(TaskStatus || (TaskStatus = {}));
+// export interface SessionContext extends Context {
+//   session: Scenes.WizardSession<SessionData>
+//   scene: Scenes.SceneContextScene<SessionContext, SessionData>
+//   wizard: Scenes.WizardContextWizard<SessionContext>
+// }
 //# sourceMappingURL=context.js.map

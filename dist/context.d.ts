@@ -1,4 +1,4 @@
-import { Scenes, Context } from 'telegraf';
+import { Scenes } from 'telegraf';
 export interface SessionData extends Scenes.WizardSessionData {
     auth: {
         step: string;
@@ -7,24 +7,29 @@ export interface SessionData extends Scenes.WizardSessionData {
         token: string;
     };
     menu?: {
-        tasks: task[];
+        tasks: Task[];
     };
 }
 declare enum TaskStatus {
-    completed = 0,
-    inProgress = 1,
-    canceled = 2
+    completed = "completed",
+    inProgress = "inProgress",
+    canceled = "canceled"
 }
-type task = {
+type Task = {
     title?: string;
-    descrition?: string;
+    description?: string;
     deadline?: Date;
     status: TaskStatus;
 };
-export interface SessionContext extends Context {
-    session: Scenes.WizardSession<SessionData>;
-    scene: Scenes.SceneContextScene<SessionContext, SessionData>;
-    wizard: Scenes.WizardContextWizard<SessionContext>;
-}
+export type TaskState = {
+    title?: string;
+    description?: string;
+    deadline?: Date;
+};
+export type BotContext = Scenes.WizardContext<SessionData> & {
+    wizard: {
+        state: TaskState;
+    };
+};
 export {};
 //# sourceMappingURL=context.d.ts.map

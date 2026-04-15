@@ -1,7 +1,7 @@
 import { Markup, Scenes } from 'telegraf'
-import type { SessionContext } from '../context.js';
+import type { BotContext } from '../context.js';
 
-export const menuScene = new Scenes.BaseScene<SessionContext>('menuScene');
+export const menuScene = new Scenes.BaseScene<BotContext>('menuScene');
 
 menuScene.enter(async ctx => {
     ctx.reply('Меню:', 

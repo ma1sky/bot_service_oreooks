@@ -1,8 +1,8 @@
 import { Scenes } from 'telegraf'
-import type { SessionContext } from '../context.js';
+import type { BotContext } from '../context.js';
 import { getApiToken } from '../api/auth.api.js';
 
-export const loginScene = new Scenes.BaseScene<SessionContext>('login');
+export const loginScene = new Scenes.BaseScene<BotContext>('login');
 
 loginScene.enter(async ctx => {
   ctx.scene.session.auth = {
@@ -13,12 +13,11 @@ loginScene.enter(async ctx => {
     }
 
   ctx.reply(`
-    👋 Привет ${ctx.from?.first_name}!
-🫡 Добро пожаловать в Oreooks!
+    👋 Привет ${ctx.from?.first_name}!\n
+Добро пожаловать в Oreooks! 🫡
 Тут ты можешь отслеживать свою успеваемость, смотреть расписание, искать преподавателей, ставить себе напоминания и задачи.
 \n🪪 Введи номер студенческого для дальнейшей работы.`);
 });
-
 
 loginScene.on('text', async (ctx) => {
   if (!ctx.scene.session.auth.isAuth) {

@@ -28,11 +28,11 @@ export const createTaskScene = new Scenes.WizardScene('createTaskScene', async (
     try {
         await sendTaskToApi(ctx.wizard.state.title, ctx.wizard.state.description, ctx.wizard.state.deadline);
         ctx.reply(`
-                ✅ Задача успешно создана!
+✅ Задача успешно создана!
 
-                ✏️ Название: ${ctx.wizard.state.title}
-                📃 Описание: ${ctx.wizard.state.description}
-                📆 Дедлайн: ${date.getDay()}.${date.getMonth()}.${date.getFullYear()}
+✏️ Название: ${ctx.wizard.state.title}
+📃 Описание: ${ctx.wizard.state.description}
+📆 Дедлайн: ${date.getDay()}.${date.getMonth()}.${date.getFullYear()}
             `);
     }
     catch {

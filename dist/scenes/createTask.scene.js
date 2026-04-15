@@ -23,16 +23,14 @@ export const createTaskScene = new Scenes.WizardScene('createTaskScene', async (
     if (!dateString || isNaN(Date.parse(dateString))) {
         return ctx.reply('❌ Дата неправильного формата');
     }
-    let date = new Date(dateString);
-    ctx.wizard.state.deadline = date;
+    ctx.wizard.state.deadline = new Date(dateString);
     try {
         await sendTaskToApi(ctx.wizard.state.title, ctx.wizard.state.description, ctx.wizard.state.deadline);
+        ctx.reply(`✅ Задача успешно создана!`);
         ctx.reply(`
-✅ Задача успешно создана!
-
-✏️ Название: ${ctx.wizard.state.title}
-📃 Описание: ${ctx.wizard.state.description}
-📆 Дедлайн: ${date.getDay()}.${date.getMonth()}.${date.getFullYear()}
+✏️ Название: ${ctx.wizard.state.title}\n
+📃 Описание: ${ctx.wizard.state.description}\n
+📆 Дедлайн: ${Intl.DateTimeFormat('ru-RU').format(ctx.wizard.state.deadline)}
             `);
     }
     catch {

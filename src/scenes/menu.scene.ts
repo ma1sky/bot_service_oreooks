@@ -4,10 +4,10 @@ import type { BotContext } from '../context.js';
 export const menuScene = new Scenes.BaseScene<BotContext>('menuScene');
 
 menuScene.enter(async ctx => {
-    ctx.reply('Меню:', 
+    ctx.reply('📋 Меню:', 
         Markup.inlineKeyboard([
             Markup.button.callback('➕ Создать задачу','createTask'),
-            Markup.button.callback('📚 Расписание на сегодня', 'todaySchedule')
+            Markup.button.callback('📚 Показать расписание', 'openSchedule')
         ])
     )
 })
@@ -17,7 +17,7 @@ menuScene.action('createTask', async ctx => {
     ctx.scene.enter('createTaskScene');
 })
 
-menuScene.action('todaySchedule', async ctx => {
+menuScene.action('openSchedule', async ctx => {
     ctx.answerCbQuery();
-    await ctx.reply(' ');
+    ctx.scene.enter('scheduleScene');
 })

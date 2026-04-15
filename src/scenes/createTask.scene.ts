@@ -14,7 +14,7 @@ export const createTaskScene = new Scenes.WizardScene<BotContext>(
     'createTaskScene',
     
     async ctx => {
-        await ctx.reply('📃 Введи название задачи: ');
+        await ctx.reply('✏️ Введи залоговок задачи: ');
         return ctx.wizard.next();
     },
 
@@ -26,7 +26,7 @@ export const createTaskScene = new Scenes.WizardScene<BotContext>(
 
     async ctx => {
         ctx.wizard.state.description = getMessageText(ctx);
-        ctx.reply('📆 Введите дату дедлайна в формате дд.мм.гггг: ')
+        ctx.reply('📆 Введи дату дедлайна в формате дд.мм.гггг: ')
         return ctx.wizard.next();
     },
 
@@ -36,15 +36,15 @@ export const createTaskScene = new Scenes.WizardScene<BotContext>(
         if (!dateString || isNaN(Date.parse(dateString))) {
             return ctx.reply('❌ Дата неправильного формата')
         }
-
-        ctx.wizard.state.deadline = new Date(dateString);
+        let date = new Date(dateString);
+        ctx.wizard.state.deadline = date;
         
         ctx.reply(`
 ✅ Задача успешно создана!
 
 ✏️ Название: ${ctx.wizard.state.title}
 📃 Описание: ${ctx.wizard.state.description}
-📆 Дедлайн: ${ctx.wizard.state.deadline?.getUTCDate()}
+📆 Дедлайн: ${date.getDay}.${date.getMonth}.${date.getFullYear}
         `)
         return ctx.scene.enter('menuScene');
     },

@@ -7,7 +7,7 @@ function getMessageText(ctx) {
     return ctx.message.text;
 }
 export const createTaskScene = new Scenes.WizardScene('createTaskScene', async (ctx) => {
-    await ctx.reply('📃 Введи название задачи: ');
+    await ctx.reply('✏️ Введи залоговок задачи: ');
     return ctx.wizard.next();
 }, async (ctx) => {
     ctx.wizard.state.title = getMessageText(ctx);
@@ -15,20 +15,21 @@ export const createTaskScene = new Scenes.WizardScene('createTaskScene', async (
     return ctx.wizard.next();
 }, async (ctx) => {
     ctx.wizard.state.description = getMessageText(ctx);
-    ctx.reply('📆 Введите дату дедлайна в формате дд.мм.гггг: ');
+    ctx.reply('📆 Введи дату дедлайна в формате дд.мм.гггг: ');
     return ctx.wizard.next();
 }, async (ctx) => {
     let dateString = getMessageText(ctx);
     if (!dateString || isNaN(Date.parse(dateString))) {
         return ctx.reply('❌ Дата неправильного формата');
     }
-    ctx.wizard.state.deadline = new Date(dateString);
+    let date = new Date(dateString);
+    ctx.wizard.state.deadline = date;
     ctx.reply(`
 ✅ Задача успешно создана!
 
 ✏️ Название: ${ctx.wizard.state.title}
 📃 Описание: ${ctx.wizard.state.description}
-📆 Дедлайн: ${ctx.wizard.state.deadline?.getUTCDate()}
+📆 Дедлайн: ${date.getDay}.${date.getMonth}.${date.getFullYear}
         `);
     return ctx.scene.enter('menuScene');
 });

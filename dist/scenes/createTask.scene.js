@@ -1,4 +1,5 @@
 import { Scenes } from 'telegraf';
+import { sendTaskToApi } from '../api/taskCRUD.api.js';
 function getMessageText(ctx) {
     if (!ctx.message || !('text' in ctx.message)) {
         ctx.reply('Отправь текст');
@@ -15,7 +16,7 @@ export const createTaskScene = new Scenes.WizardScene('createTaskScene', async (
     return ctx.wizard.next();
 }, async (ctx) => {
     ctx.wizard.state.description = getMessageText(ctx);
-    ctx.reply('📆 Введи дату дедлайна в формате дд.мм.гггг: ');
+    ctx.reply('📆 Введи дату дедлайна в формате дд.мм.гггг: \n Если дедлайна нет, то просто введи "-"');
     return ctx.wizard.next();
 }, async (ctx) => {
     let dateString = getMessageText(ctx);
@@ -24,13 +25,19 @@ export const createTaskScene = new Scenes.WizardScene('createTaskScene', async (
     }
     let date = new Date(dateString);
     ctx.wizard.state.deadline = date;
-    ctx.reply(`
-✅ Задача успешно создана!
+    try {
+        await sendTaskToApi(ctx.wizard.state.title, ctx.wizard.state.description, ctx.wizard.state.deadline);
+        ctx.reply(`
+                ✅ Задача успешно создана!
 
-✏️ Название: ${ctx.wizard.state.title}
-📃 Описание: ${ctx.wizard.state.description}
-📆 Дедлайн: ${date.getDay}.${date.getMonth}.${date.getFullYear}
-        `);
+                ✏️ Название: ${ctx.wizard.state.title}
+                📃 Описание: ${ctx.wizard.state.description}
+                📆 Дедлайн: ${date.getDay()}.${date.getMonth()}.${date.getFullYear()}
+            `);
+    }
+    catch {
+        ctx.reply('❌ Не удалось создать задачу');
+    }
     return ctx.scene.enter('menuScene');
 });
 //# sourceMappingURL=createTask.scene.js.map

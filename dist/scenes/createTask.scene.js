@@ -23,14 +23,12 @@ export const createTaskScene = new Scenes.WizardScene('createTaskScene', async (
         return ctx.reply('❌ Дата неправильного формата');
     }
     ctx.wizard.state.deadline = new Date(dateString);
-    return ctx.wizard.next();
-}, async (ctx) => {
     ctx.reply(`
 ✅ Задача успешно создана!
 
 ✏️ Название: ${ctx.wizard.state.title}
 📃 Описание: ${ctx.wizard.state.description}
-📆 Дедлайн: ${ctx.wizard.state.deadline}
+📆 Дедлайн: ${ctx.wizard.state.deadline?.getUTCDate()}
         `);
     return ctx.scene.enter('menuScene');
 });

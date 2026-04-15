@@ -30,7 +30,7 @@ export const createTaskScene = new Scenes.WizardScene<BotContext>(
         return ctx.wizard.next();
     },
 
-    async ctx=> {
+    async ctx => {
         let dateString: string = getMessageText(ctx)
 
         if (!dateString || isNaN(Date.parse(dateString))) {
@@ -38,18 +38,14 @@ export const createTaskScene = new Scenes.WizardScene<BotContext>(
         }
 
         ctx.wizard.state.deadline = new Date(dateString);
-        return ctx.wizard.next()
-    },
-
-    async ctx => {
+        
         ctx.reply(`
 ✅ Задача успешно создана!
 
 ✏️ Название: ${ctx.wizard.state.title}
 📃 Описание: ${ctx.wizard.state.description}
-📆 Дедлайн: ${ctx.wizard.state.deadline}
+📆 Дедлайн: ${ctx.wizard.state.deadline?.getUTCDate()}
         `)
         return ctx.scene.enter('menuScene');
-    }
-
+    },
 );

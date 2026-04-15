@@ -26,8 +26,8 @@ export const createTaskScene = new Scenes.WizardScene('createTaskScene', async (
     ctx.wizard.state.deadline = new Date(dateString);
     try {
         await sendTaskToApi(ctx.wizard.state.title, ctx.wizard.state.description, ctx.wizard.state.deadline);
-        ctx.reply(`✅ Задача успешно создана!`);
-        ctx.reply(`
+        await ctx.reply(`✅ Задача успешно создана!`);
+        await ctx.reply(`
 ✏️ Название: ${ctx.wizard.state.title}\n
 📃 Описание: ${ctx.wizard.state.description}\n
 📆 Дедлайн: ${Intl.DateTimeFormat('ru-RU').format(ctx.wizard.state.deadline)}

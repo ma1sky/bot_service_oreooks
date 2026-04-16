@@ -6,10 +6,15 @@ export interface SessionData extends Scenes.WizardSessionData {
         isAuth: boolean;
         token: string;
     };
-    menu?: {
+    menu: {
         tasks: Task[];
     };
+    schedule: {
+        weekType: string;
+        days: Day[];
+    };
 }
+type Day = {};
 declare enum TaskStatus {
     completed = "completed",
     inProgress = "inProgress",

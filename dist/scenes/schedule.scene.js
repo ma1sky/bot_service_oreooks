@@ -8,4 +8,11 @@ scheduleScene.enter(async (ctx) => {
         Markup.button.callback('📋 Меню', 'openMenu')
     ]));
 });
+scheduleScene.action('openMenu', ctx => {
+    ctx.scene.enter('menuScene');
+});
+scheduleScene.action('openYesterday', ctx => {
+});
+scheduleScene.action('openTomorrow', ctx => {
+});
 //# sourceMappingURL=schedule.scene.js.map

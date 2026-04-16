@@ -1,4 +1,4 @@
-import { Scenes, Context } from 'telegraf';
+import { Scenes } from 'telegraf';
 var TaskStatus;
 (function (TaskStatus) {
     TaskStatus["completed"] = "completed";

@@ -27,7 +27,7 @@ export const createTaskScene = new Scenes.WizardScene<BotContext>(
 
     async ctx => {
         ctx.wizard.state.description = getMessageText(ctx);
-        ctx.reply('📆 Введи дату дедлайна в формате дд.мм.гггг: \n Если дедлайна нет, то просто введи "-"')
+        ctx.reply('📆 Введи дату дедлайна в формате дд.мм.гггг:')
         return ctx.wizard.next();
     },
 

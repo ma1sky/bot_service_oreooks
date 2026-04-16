@@ -1,4 +1,4 @@
-import { Scenes, Context } from 'telegraf'
+import { Scenes } from 'telegraf'
 
 export interface SessionData extends Scenes.WizardSessionData {
     auth : {
@@ -8,9 +8,18 @@ export interface SessionData extends Scenes.WizardSessionData {
         token: string
     },
 
-    menu? : {
+    menu : {
         tasks: Task[]
+    },
+
+    schedule : {
+        weekType: string, 
+        days: Day[]
     }
+}
+
+type Day = {
+
 }
 
 enum TaskStatus {

@@ -8,7 +8,7 @@ menuScene.enter(async ctx => {
         Markup.inlineKeyboard([
             [Markup.button.callback('➕ Создать задачу','createTask')],
             [Markup.button.callback('📆 Показать расписание', 'openSchedule')],
-            [Markup.button.callback('📚 Показать задачи на сегодня','openTasks')],
+            [Markup.button.callback('📚 Показать задачи','openTasks')],
         ])
     )
 })

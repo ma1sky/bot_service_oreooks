@@ -1,5 +1,5 @@
 import { Scenes } from 'telegraf';
-import { sendTaskToApi } from '../api/taskCRUD.api.js';
+import { sendTaskToApi } from '../api/tasks.api.js';
 function getMessageText(ctx) {
     if (!ctx.message || !('text' in ctx.message)) {
         ctx.reply('Отправь текст');

@@ -2,9 +2,9 @@ import { Markup, Scenes } from 'telegraf';
 export const menuScene = new Scenes.BaseScene('menuScene');
 menuScene.enter(async (ctx) => {
     await ctx.reply('📋 Меню:', Markup.inlineKeyboard([
-        Markup.button.callback('➕ Создать задачу', 'createTask'),
-        Markup.button.callback('📆 Показать расписание', 'openSchedule'),
-        Markup.button.callback('📚 Показать задачи на сегодня', 'openTasks'),
+        [Markup.button.callback('➕ Создать задачу', 'createTask')],
+        [Markup.button.callback('📆 Показать расписание', 'openSchedule')],
+        [Markup.button.callback('📚 Показать задачи на сегодня', 'openTasks')],
     ]));
 });
 menuScene.action('createTask', async (ctx) => {

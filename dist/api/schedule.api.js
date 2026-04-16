@@ -15,7 +15,7 @@ export async function formatSchedule(params) {
 ;
 export const mockSchedule = {
     week: 1,
-    weekType: 0,
+    weekType: '2 знаменатель',
     dayOfWeek: "Понедельник",
     date: new Date("2026-04-16T00:00:00Z"),
     lessons: [

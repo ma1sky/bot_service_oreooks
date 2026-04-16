@@ -1,6 +1,6 @@
 export type Schedule = {
     week: number;
-    weekType: number;
+    weekType: string;
     dayOfWeek: string;
     date: Date;
     lessons: {

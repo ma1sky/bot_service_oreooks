@@ -1,7 +1,6 @@
 import { BaseScene } from "telegraf/scenes";
 import type { BotContext } from "../context.js";
 import { Markup, Scenes } from "telegraf";
-import { createTextChangeRange } from "typescript";
 
 export const taskScene = new Scenes.BaseScene<BotContext>('taskScene');
 

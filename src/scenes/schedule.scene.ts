@@ -18,8 +18,8 @@ scheduleScene.enter(async (ctx) => {
   });
 });
 
-scheduleScene.action('openMenu', ctx => {
-    ctx.scene.enter('menuScene');
+scheduleScene.action('openMenu', async ctx => {
+    await ctx.scene.enter('menuScene');
 })
 
 scheduleScene.action('openYesterday', ctx => {

@@ -19,14 +19,14 @@ export async function getTodaySchedule(): Promise<string> {
 
 export async function formatSchedule(params: Schedule): Promise<string> {
   return `<b>📆 Расписание на [${params.dayOfWeek}] ${Intl.DateTimeFormat('ru-RU').format(params.date)}</b>\n` +
-    `Неделя №${params.week}\n` +
-    `${params.weekType}\n` +
+    `— Неделя №${params.week}\n` +
+    `— ${params.weekType}\n` +
     params.lessons.map((lesson, i) => {
-        return `\n<b>${i}.</b> [ ${lesson.lesson_type} ] <b>${lesson.lesson_name}</b>\n`+
-            `🏫 <code>${lesson.classroom}</code>\n`+
-            `⏰ <i>${lesson.start.getHours()}:${lesson.start.getMinutes()} — ${lesson.end.getHours()}:${lesson.end.getMinutes()}</i>\n`+
+        return `\n<b>${i + 1}.</b> <code>[ ${lesson.lesson_type} ] <b>${lesson.lesson_name}</b> </code>\n`+
+            `🏫 ${lesson.classroom}\n`+
+            `⏰ ${lesson.start.getHours()}:${lesson.start.getMinutes()} — ${lesson.end.getHours()}:${lesson.end.getMinutes()}\n`+
             `👨‍🏫 ${lesson.teacher}\n`
-    }).join()
+    }).join('\n')
 };
 
 export const mockSchedule: Schedule = {

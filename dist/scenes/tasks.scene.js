@@ -1,6 +1,5 @@
 import { BaseScene } from "telegraf/scenes";
 import { Markup, Scenes } from "telegraf";
-import { createTextChangeRange } from "typescript";
 export const taskScene = new Scenes.BaseScene('taskScene');
 taskScene.enter(ctx => {
     ctx.reply('dwq'),

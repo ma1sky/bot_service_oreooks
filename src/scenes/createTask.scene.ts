@@ -47,11 +47,11 @@ export const createTaskScene = new Scenes.WizardScene<BotContext>(
             );
 
             await ctx.reply(`✅ Задача успешно создана!`)
-            await ctx.reply(`
-✏️ Название: ${ctx.wizard.state.title}\n
-📃 Описание: ${ctx.wizard.state.description}\n
-📆 Дедлайн: ${Intl.DateTimeFormat('ru-RU').format(ctx.wizard.state.deadline)}
-            `);
+            await ctx.reply(
+                `✏️ Название: ${ctx.wizard.state.title}\n` +
+                `📃 Описание: ${ctx.wizard.state.description}\n`+
+                `📆 Дедлайн: ${Intl.DateTimeFormat('ru-RU').format(ctx.wizard.state.deadline)}`
+            );
         } catch {
             ctx.reply('❌ Не удалось создать задачу')
         }

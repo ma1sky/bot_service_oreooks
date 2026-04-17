@@ -1,5 +1,5 @@
 import { Markup, Scenes } from 'telegraf'
-import type { BotContext } from '../context.js';
+import type { BotContext } from '../types.js';
 
 export const menuScene = new Scenes.BaseScene<BotContext>('menuScene');
 

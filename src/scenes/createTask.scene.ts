@@ -1,6 +1,7 @@
 import { Scenes } from 'telegraf'
 import { sendTaskToApi } from '../api/tasks.api.js';
-import type { BotContext } from '../context.js';
+import type { BotContext } from '../types.js';
+import { formatTask } from '../messages/tasks.messages.js';
 
 function getMessageText(ctx: BotContext): string {
     if (!ctx.message || !('text' in ctx.message)) {
@@ -37,21 +38,25 @@ export const createTaskScene = new Scenes.WizardScene<BotContext>(
         if (!dateString || isNaN(Date.parse(dateString))) {
             return ctx.reply('❌ Дата неправильного формата')
         }
+        
         ctx.wizard.state.deadline = new Date(dateString);
         
         try {
             await sendTaskToApi(
                 ctx.wizard.state.title as string,
                 ctx.wizard.state.description as string,
-                ctx.wizard.state.deadline
+                ctx.wizard.state.deadline,
+                ctx.from?.id as number
             );
 
             await ctx.reply(`✅ Задача успешно создана!`)
-            await ctx.reply(
-                `✏️ Название: ${ctx.wizard.state.title}\n` +
-                `📃 Описание: ${ctx.wizard.state.description}\n`+
-                `📆 Дедлайн: ${Intl.DateTimeFormat('ru-RU').format(ctx.wizard.state.deadline)}`
+            await ctx.reply(formatTask(
+                    ctx.wizard.state.title as string,
+                    ctx.wizard.state.description as string,
+                    ctx.wizard.state.deadline
+                )
             );
+
         } catch {
             ctx.reply('❌ Не удалось создать задачу')
         }

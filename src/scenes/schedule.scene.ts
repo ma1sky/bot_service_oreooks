@@ -1,21 +1,21 @@
 import { Markup, Scenes } from "telegraf";
-import type { BotContext } from "../types.js";
-import { getTodaySchedule } from "../api/schedule.api.js";
+import type { BotContext } from "../config/types.js";
+import { getSchedule } from "../api/schedule.api.js";
 
 
 export const scheduleScene = new Scenes.BaseScene<BotContext>('scheduleScene');
 
 scheduleScene.enter(async (ctx) => {
-  await ctx.reply(await getTodaySchedule(), {
-    parse_mode: 'HTML',
-    ...Markup.inlineKeyboard([
-      [
-        Markup.button.callback('◀️', 'openYesterday'),
-        Markup.button.callback('📋 Меню', 'openMenu'),
-        Markup.button.callback('▶️', 'openTomorrow'),
-      ],
-    ]),
-  });
+	await ctx.reply(await getSchedule(ctx.from?.id as number, new Date(Date.now())), {
+		parse_mode: 'HTML',
+		...Markup.inlineKeyboard([
+			[
+				Markup.button.callback('◀️', 'openYesterday'),
+				Markup.button.callback('📋 Меню', 'openMenu'),
+				Markup.button.callback('▶️', 'openTomorrow'),
+			],
+		]),
+	});
 });
 
 scheduleScene.action('openMenu', async ctx => {

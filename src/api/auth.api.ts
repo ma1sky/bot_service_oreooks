@@ -1,4 +1,4 @@
-import { API_SERVICE_LINK } from "../config.js";
+import { API_SERVICE_LINK } from "../config/env.config.js";
 
 export async function authUser(login: string, password: string): Promise<boolean> {
     const res = await fetch(`${API_SERVICE_LINK}/auth/token`, {

@@ -1,7 +1,7 @@
 import { Scenes } from "telegraf";
-import type { BotContext } from "../types.js";
+import type { BotContext } from "../config/types.js";
 import { authUser, isAuth } from "../api/auth.api.js";
-import { formatAuth } from "../messages/auth.message.js";
+import { formatGreeting } from "../messages/auth.message.js";
 
 export const loginScene = new Scenes.BaseScene<BotContext>("login");
 
@@ -12,7 +12,7 @@ loginScene.enter(async (ctx) => {
 		isAuth: await isAuth(ctx.from?.id as number),
   	};
 
-  	ctx.reply(formatAuth(ctx.from?.first_name as string));
+  	ctx.reply(formatGreeting(ctx.from?.first_name as string));
 });
 
 loginScene.on("text", async (ctx) => {

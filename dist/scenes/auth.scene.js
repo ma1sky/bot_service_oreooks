@@ -1,35 +1,29 @@
-import { Scenes } from 'telegraf';
-import { getApiToken } from '../api/auth.api.js';
-export const loginScene = new Scenes.BaseScene('login');
+import { Scenes } from "telegraf";
+import { authUser, isAuth } from "../api/auth.api.js";
+import { formatGreeting } from "../messages/auth.message.js";
+export const loginScene = new Scenes.BaseScene("login");
 loginScene.enter(async (ctx) => {
     ctx.scene.session.auth = {
-        isAuth: false,
-        login: '',
-        step: 'login',
-        token: ''
+        login: "",
+        step: "login",
+        isAuth: await isAuth(ctx.from?.id),
     };
-    ctx.reply(`👋 Привет ${ctx.from?.first_name}!\n\n` +
-        `Добро пожаловать в Oreooks! 🫡\n` +
-        `Тут ты можешь отслеживать свою успеваемость, смотреть расписание, искать преподавателей, ставить себе напоминания и задачи.\n\n` +
-        `🪪 Введи номер студенческого для дальнейшей работы:`);
+    ctx.reply(formatGreeting(ctx.from?.first_name));
 });
-loginScene.on('text', async (ctx) => {
-    if (!ctx.scene.session.auth.isAuth) {
-        ctx.scene.session.auth.isAuth = true;
+loginScene.on("text", async (ctx) => {
+    if (ctx.scene.session.auth.login == "") {
         ctx.scene.session.auth.login = ctx.message.text;
-        return ctx.reply('Введите пароль:');
+        return ctx.reply("Введите пароль:");
     }
     let login = ctx.scene.session.auth.login;
     let password = ctx.message.text;
     try {
-        ctx.scene.session.auth.token = await getApiToken(login, password);
-        ctx.scene.session.auth.isAuth = true;
+        ctx.scene.session.auth.isAuth = await authUser(login, password);
         await ctx.reply(`Авторизация прошла успешно!`);
     }
     catch (err) {
-        ctx.scene.session.auth.isAuth = false;
         return await ctx.reply(`Произошла ошибка, попробуйте ввести данные заного. Сначала введите логин.`);
     }
-    ctx.scene.enter('menuScene');
+    ctx.scene.enter("menuScene");
 });
 //# sourceMappingURL=auth.scene.js.map

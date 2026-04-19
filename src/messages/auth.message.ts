@@ -1,4 +1,4 @@
-export function formatAuth(name: string): string {
+export function formatGreeting(name: string): string {
     return (
         `👋 Привет ${name}!\n\n` +
         `Добро пожаловать в Oreooks! 🫡\n` +

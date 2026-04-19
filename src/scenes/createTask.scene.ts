@@ -1,6 +1,6 @@
 import { Scenes } from 'telegraf'
 import { sendTaskToApi } from '../api/tasks.api.js';
-import type { BotContext } from '../types.js';
+import type { BotContext } from '../config/types.js';
 import { formatTask } from '../messages/tasks.messages.js';
 
 function getMessageText(ctx: BotContext): string {

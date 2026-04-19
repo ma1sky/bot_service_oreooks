@@ -6,6 +6,13 @@ import { formatGreeting } from "../messages/auth.message.js";
 export const authScene = new Scenes.BaseScene<BotContext>("auth");
 
 authScene.enter(async (ctx) => {
+	ctx.scene.session.auth = {
+        login: "",
+        password: "",
+        step: "login",
+        isAuth: false
+    };
+	
 	ctx.reply(formatGreeting(ctx.from?.first_name as string));
 });
 

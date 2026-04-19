@@ -6,30 +6,12 @@ import { formatGreeting } from "../messages/auth.message.js";
 export const authScene = new Scenes.BaseScene<BotContext>("auth");
 
 authScene.enter(async (ctx) => {
-    const result = await authUser("", "", ctx.from!.id);
-
-    if (result.success) {
-        await ctx.reply("Вы уже авторизованы");
-        return ctx.scene.enter("menuScene");
-    }
-
-    if (result.reason === "not_found") {
-        ctx.scene.session.auth = {
-            login: "",
-            password: "",
-            step: "login"
-        };
-
-        return ctx.reply("Введите логин:");
-    }
-
-    return ctx.reply("Ошибка сервера");
+	ctx.reply(formatGreeting(ctx.from?.first_name as string));
 });
 
 authScene.on("text", async (ctx) => {
     const auth = ctx.scene.session.auth;
 
-    // 1. ввод логина
     if (!auth.login) {
         auth.login = ctx.message.text;
         auth.step = "password";
@@ -37,7 +19,6 @@ authScene.on("text", async (ctx) => {
         return ctx.reply("Введите пароль:");
     }
 
-    // 2. ввод пароля
     if (!auth.password) {
         auth.password = ctx.message.text;
 

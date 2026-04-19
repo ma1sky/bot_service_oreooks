@@ -30,6 +30,11 @@ authScene.on("text", async (ctx) => {
         auth.password = ctx.message.text;
 
         try {
+			console.log({
+				login: auth.login,
+				password: auth.password,
+				tg_id: ctx.from.id
+			});
             const result = await authUser(
                 auth.login,
                 auth.password,
@@ -39,7 +44,7 @@ authScene.on("text", async (ctx) => {
             auth.isAuth = result.success;
 
             if (!result.success) {
-                return ctx.reply("Ошибка авторизации" + result.reason);
+                return ctx.reply("Ошибка авторизации: " + result.reason);
             }
 
             await ctx.reply("Авторизация успешна!");

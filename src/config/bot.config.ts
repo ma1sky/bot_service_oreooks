@@ -14,7 +14,7 @@ export default function startBot(): Telegraf<BotContext> {
 	
 	bot.use(session());
 	bot.use(stage.middleware());
-	bot.start(ctx => ctx.scene.enter('login'));
+	bot.start(ctx => ctx.scene.enter('auth'));
 	
 	bot.catch((err, ctx) => {
 		console.error('Ошибка:', err)

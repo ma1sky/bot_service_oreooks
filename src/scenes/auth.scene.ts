@@ -1,15 +1,23 @@
 import { Scenes } from "telegraf";
 import type { BotContext } from "../config/types.js";
-import { authUser, isAuth } from "../services/auth.service.js";
+import { authUser } from "../services/auth.service.js";
 import { formatGreeting } from "../messages/auth.message.js";
+import { PassThrough } from "node:stream";
 
 export const loginScene = new Scenes.BaseScene<BotContext>("auth");
 
 loginScene.enter(async (ctx) => {
+
+
   	ctx.scene.session.auth = {
 		login: "",
 		step: "login",
-		isAuth: await isAuth(ctx.from?.id as number),
+		password: "",
+		isAuth: (await authUser(
+			ctx.scene.session.auth.login,
+			ctx.scene.session.auth.password,
+			ctx.from?.id as number 
+		)).success,
   	};
 
   	ctx.reply(formatGreeting(ctx.from?.first_name as string));
@@ -23,9 +31,14 @@ loginScene.on("text", async (ctx) => {
 
   	let login = ctx.scene.session.auth.login;
   	let password = ctx.message.text;
+	let id = ctx.from.id;
 
  	try {
-    	ctx.scene.session.auth.isAuth = await authUser(login, password);
+    	ctx.scene.session.auth.isAuth = (await authUser(
+			ctx.scene.session.auth.login,
+			ctx.scene.session.auth.password,
+			ctx.from?.id as number 
+		)).success;
     	await ctx.reply(`Авторизация прошла успешно!`);
   	} catch (err) {
     	return await ctx.reply(

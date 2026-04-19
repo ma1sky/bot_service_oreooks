@@ -4,10 +4,16 @@ export type TaskState = {
     description?: string;
     deadline?: Date;
 };
+export type AuthResult = {
+    success: boolean;
+    reason?: string;
+    token?: string;
+};
 export interface SessionData extends Scenes.WizardSessionData {
     auth: {
         step: string;
         login: string;
+        password: string;
         isAuth: boolean;
     };
     menu: {

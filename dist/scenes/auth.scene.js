@@ -1,7 +1,7 @@
 import { Scenes } from "telegraf";
-import { authUser, isAuth } from "../api/auth.api.js";
+import { authUser, isAuth } from "../services/auth.service.js";
 import { formatGreeting } from "../messages/auth.message.js";
-export const loginScene = new Scenes.BaseScene("login");
+export const loginScene = new Scenes.BaseScene("auth");
 loginScene.enter(async (ctx) => {
     ctx.scene.session.auth = {
         login: "",

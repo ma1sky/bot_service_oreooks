@@ -1,5 +1,5 @@
 import { Markup, Scenes } from "telegraf";
-import { getSchedule } from "../api/schedule.api.js";
+import { getSchedule } from "../services/schedule.service.js";
 export const scheduleScene = new Scenes.BaseScene('scheduleScene');
 scheduleScene.enter(async (ctx) => {
     await ctx.reply(await getSchedule(ctx.from?.id, new Date(Date.now())), {

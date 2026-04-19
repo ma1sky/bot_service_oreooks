@@ -12,7 +12,7 @@ authScene.enter(async (ctx) => {
         step: "login",
         isAuth: false
     };
-	
+
 	ctx.reply(formatGreeting(ctx.from?.first_name as string));
 });
 
@@ -39,7 +39,7 @@ authScene.on("text", async (ctx) => {
             auth.isAuth = result.success;
 
             if (!result.success) {
-                return ctx.reply("Ошибка авторизации");
+                return ctx.reply("Ошибка авторизации" + result.reason);
             }
 
             await ctx.reply("Авторизация успешна!");

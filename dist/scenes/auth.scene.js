@@ -24,7 +24,7 @@ authScene.on("text", async (ctx) => {
             const result = await authUser(auth.login, auth.password, ctx.from?.id);
             auth.isAuth = result.success;
             if (!result.success) {
-                return ctx.reply("Ошибка авторизации");
+                return ctx.reply("Ошибка авторизации" + result.reason);
             }
             await ctx.reply("Авторизация успешна!");
             return ctx.scene.enter("menuScene");

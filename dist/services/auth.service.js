@@ -9,12 +9,11 @@ export async function authUser(login, password, tg_id) {
             },
             body: JSON.stringify({ login, password, tg_id })
         });
-        const text = await res.text();
         console.log("STATUS:", res.status);
-        console.log("BODY:", text);
         let data = {};
         try {
             data = await res.json();
+            console.log("BODY:", data);
         }
         catch {
             return { success: false, reason: "error" };

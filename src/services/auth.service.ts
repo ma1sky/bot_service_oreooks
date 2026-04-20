@@ -45,6 +45,6 @@ export async function authUser(
         }
 
     } catch (error) {
-        return { success: false, reason: "error" };
+        return { success: false, reason: "error 2" };
     }
 }

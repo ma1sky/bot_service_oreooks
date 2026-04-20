@@ -31,7 +31,7 @@ export async function authUser(login, password, tg_id) {
         }
     }
     catch (error) {
-        return { success: false, reason: "error" };
+        return { success: false, reason: "error 2" };
     }
 }
 //# sourceMappingURL=auth.service.js.map

@@ -1,7 +1,7 @@
 import { API_SERVICE_LINK } from "../config/env.config.js";
 export async function authUser(login, password, tg_id) {
     try {
-        const res = await fetch(`http://${API_SERVICE_LINK}/auth/token`, {
+        const res = await fetch(`http://${API_SERVICE_LINK}/auth`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

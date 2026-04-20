@@ -6,7 +6,6 @@ authScene.enter(async (ctx) => {
     ctx.scene.session.auth = {
         login: "",
         password: "",
-        step: "login",
         isAuth: false
     };
     ctx.reply(formatGreeting(ctx.from?.first_name));
@@ -15,7 +14,6 @@ authScene.on("text", async (ctx) => {
     const auth = ctx.scene.session.auth;
     if (!auth.login) {
         auth.login = ctx.message.text;
-        auth.step = "password";
         return ctx.reply("Введите пароль:");
     }
     if (!auth.password) {

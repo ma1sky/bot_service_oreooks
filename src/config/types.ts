@@ -14,7 +14,6 @@ export type AuthResult = {
 
 export interface SessionData extends Scenes.WizardSessionData {
     auth : {
-        step: string,
         login: string,
         password: string,
         isAuth?: boolean

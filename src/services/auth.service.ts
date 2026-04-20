@@ -17,6 +17,11 @@ export async function authUser(
             body: JSON.stringify({ login, password, tg_id })
         });
 
+        const text = await res.text();
+
+        console.log("STATUS:", res.status);
+        console.log("BODY:", text);
+
         let data: any = {};
 
         try {

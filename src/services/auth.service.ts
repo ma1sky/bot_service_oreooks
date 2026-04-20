@@ -8,7 +8,7 @@ export async function authUser(
 ): Promise<AuthResult> {
 
     try {
-        const res = await fetch(`${API_SERVICE_LINK}/auth/token`, {
+        const res = await fetch(`http://${API_SERVICE_LINK}/auth/token`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

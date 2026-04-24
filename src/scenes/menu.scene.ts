@@ -4,7 +4,7 @@ import type { BotContext } from '../config/types.js';
 export const menuScene = new Scenes.BaseScene<BotContext>('menuScene');
 
 menuScene.enter(async ctx => {
-    await ctx.editMessageText('📋 Меню:', 
+    await ctx.reply('📋 Меню:', 
         Markup.inlineKeyboard([
             [Markup.button.callback('➕ Создать задачу','createTask')],
             [Markup.button.callback('📆 Показать расписание', 'openSchedule')],

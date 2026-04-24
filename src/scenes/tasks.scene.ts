@@ -110,38 +110,33 @@ tasksScene.action('openMenu', async (ctx) => {
 })
 
 tasksScene.action('deleteTask', async (ctx) => {
-  try {
-    await ctx.answerCbQuery()
+  await ctx.answerCbQuery()
 
-    if (!ctx.from?.id) return
+  const tgId = ctx.from?.id
+  if (!tgId) return
 
-    const state = getSession(ctx)
-    const task = state.tasks[state.currentIndex]
+  const state = getSession(ctx)
+  const task = state.tasks[state.currentIndex]
 
-    if (!task) return
+  if (!task) return
 
-    const res = await tasksService.deleteTask(ctx.from.id, task.id as number)
+  
+  const res = await tasksService.deleteTask(tgId, task.id as number)
 
-    if (!res.success) {
-      return ctx.reply('Ошибка удаления задачи')
-    }
-
-    state.tasks.splice(state.currentIndex, 1)
-
-    if (!state.tasks.length) {
-      await ctx.reply('Все задачи удалены')
-      return ctx.scene.enter('menuScene')
-    }
-
-    if (state.currentIndex >= state.tasks.length) {
-      state.currentIndex = state.tasks.length - 1
-    }
-
-    await renderCurrentTask(ctx)
-  } catch (error) {
-    console.error(error)
-    await ctx.reply('Ошибка удаления')
+  if (!res.success) {
+    return ctx.reply('Ошибка удаления задачи: ' + res.reason)
   }
+
+  state.tasks = state.tasks.filter(t => t.id !== task.id)
+
+  if (state.tasks.length === 0) {
+    await ctx.editMessageText('Все задачи удалены')
+    return ctx.scene.enter('menuScene')
+  }
+
+  state.currentIndex = Math.min(state.currentIndex, state.tasks.length - 1)
+
+  await renderCurrentTask(ctx)
 })
 
 tasksScene.action('markComplete', async (ctx) => {

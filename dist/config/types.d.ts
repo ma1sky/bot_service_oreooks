@@ -16,8 +16,8 @@ export interface SessionData extends Scenes.WizardSessionData {
         password: string;
         isAuth?: boolean;
     };
-    taskScene: {
-        currentTaskIndex: number;
+    tasksScene: {
+        currentIndex: number;
         currentsTaskID: number;
         tasks: Task[];
     };

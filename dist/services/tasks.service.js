@@ -47,7 +47,7 @@ class TaskService extends BaseService {
     }
     async deleteTask(tgId, taskId) {
         try {
-            const res = await fetch(`${this.base}/${tgId}/tasks/${taskId}`, {
+            const res = await fetch(`${this.base}/users/${tgId}/tasks/${taskId}`, {
                 method: "DELETE",
                 headers: this.headers,
             });

@@ -62,7 +62,7 @@ async function renderCurrentTask(ctx: BotContext) {
   const total = state.tasks.length
   const index = state.currentIndex + 1
 
-  await ctx.reply(
+  await ctx.editMessageText(
     `📚 Задача ${index}/${total}\n\n` +
       formatTask(task.title as string, task.description as string, new Date(task.deadline!)),
     Markup.inlineKeyboard([

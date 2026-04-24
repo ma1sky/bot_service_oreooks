@@ -2,6 +2,15 @@ import { Markup, Scenes } from 'telegraf';
 import { formatTask } from '../messages/tasks.messages.js';
 import tasksService from '../services/tasks.service.js';
 export const tasksScene = new Scenes.BaseScene('tasksScene');
+function getSession(ctx) {
+    if (!ctx.scene.session.tasksScene) {
+        ctx.scene.session.tasksScene = {
+            tasks: [],
+            currentIndex: 0
+        };
+    }
+    return ctx.scene.session.tasksScene;
+}
 tasksScene.enter(async (ctx) => {
     try {
         const tgId = ctx.from?.id;
@@ -19,8 +28,9 @@ tasksScene.enter(async (ctx) => {
             await ctx.reply('У вас пока нет задач');
             return ctx.scene.enter('menuScene');
         }
-        ctx.scene.session.tasksScene.tasks = tasks;
-        ctx.scene.session.tasksScene.currentIndex = 0;
+        const state = getSession(ctx);
+        state.tasks = tasks;
+        state.currentIndex = 0;
         await renderCurrentTask(ctx);
     }
     catch (error) {
@@ -30,7 +40,7 @@ tasksScene.enter(async (ctx) => {
     }
 });
 async function renderCurrentTask(ctx) {
-    const state = ctx.scene.session.tasksScene;
+    const state = getSession(ctx);
     const task = state.tasks[state.currentIndex];
     if (!task) {
         await ctx.reply('Задача не найдена');
@@ -54,7 +64,7 @@ async function renderCurrentTask(ctx) {
 }
 tasksScene.action('nextTask', async (ctx) => {
     await ctx.answerCbQuery();
-    const state = ctx.scene.session.tasksScene;
+    const state = getSession(ctx);
     if (state.currentIndex < state.tasks.length - 1) {
         state.currentIndex++;
     }
@@ -62,7 +72,7 @@ tasksScene.action('nextTask', async (ctx) => {
 });
 tasksScene.action('prevTask', async (ctx) => {
     await ctx.answerCbQuery();
-    const state = ctx.scene.session.tasksScene;
+    const state = getSession(ctx);
     if (state.currentIndex > 0) {
         state.currentIndex--;
     }
@@ -75,9 +85,13 @@ tasksScene.action('openMenu', async (ctx) => {
 tasksScene.action('deleteTask', async (ctx) => {
     try {
         await ctx.answerCbQuery();
-        const state = ctx.scene.session.tasksScene;
+        if (!ctx.from?.id)
+            return;
+        const state = getSession(ctx);
         const task = state.tasks[state.currentIndex];
-        const res = await tasksService.deleteTask(ctx.from.id, task?.id);
+        if (!task)
+            return;
+        const res = await tasksService.deleteTask(ctx.from.id, task.id);
         if (!res.success) {
             return ctx.reply('Ошибка удаления задачи');
         }

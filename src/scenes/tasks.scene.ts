@@ -5,6 +5,16 @@ import tasksService from '../services/tasks.service.js'
 
 export const tasksScene = new Scenes.BaseScene<BotContext>('tasksScene')
 
+function getSession(ctx: BotContext) {
+  if (!ctx.scene.session.tasksScene) {
+    ctx.scene.session.tasksScene = {
+      tasks: [],
+      currentIndex: 0
+    }
+  }
+  return ctx.scene.session.tasksScene
+}
+
 tasksScene.enter(async (ctx) => {
   try {
     const tgId = ctx.from?.id
@@ -22,14 +32,15 @@ tasksScene.enter(async (ctx) => {
     }
 
     const tasks: Task[] = Array.isArray(res.data?.tasks) ? res.data.tasks : []
-    
+
     if (!tasks.length) {
       await ctx.reply('У вас пока нет задач')
       return ctx.scene.enter('menuScene')
     }
 
-    ctx.scene.session.tasksScene.tasks = tasks
-    ctx.scene.session.tasksScene.currentIndex = 0
+    const state = getSession(ctx)
+    state.tasks = tasks
+    state.currentIndex = 0
 
     await renderCurrentTask(ctx)
   } catch (error) {
@@ -40,7 +51,7 @@ tasksScene.enter(async (ctx) => {
 })
 
 async function renderCurrentTask(ctx: BotContext) {
-  const state = ctx.scene.session.tasksScene
+  const state = getSession(ctx)
   const task = state.tasks[state.currentIndex]
 
   if (!task) {
@@ -53,7 +64,7 @@ async function renderCurrentTask(ctx: BotContext) {
 
   await ctx.reply(
     `📚 Задача ${index}/${total}\n\n` +
-      formatTask(task.title as string, task.description as string, new Date(task.deadline as Date)),
+      formatTask(task.title as string, task.description as string, new Date(task.deadline!)),
     Markup.inlineKeyboard([
       [
         Markup.button.callback('◀️', 'prevTask'),
@@ -72,7 +83,7 @@ async function renderCurrentTask(ctx: BotContext) {
 tasksScene.action('nextTask', async (ctx) => {
   await ctx.answerCbQuery()
 
-  const state = ctx.scene.session.tasksScene
+  const state = getSession(ctx)
 
   if (state.currentIndex < state.tasks.length - 1) {
     state.currentIndex++
@@ -84,7 +95,7 @@ tasksScene.action('nextTask', async (ctx) => {
 tasksScene.action('prevTask', async (ctx) => {
   await ctx.answerCbQuery()
 
-  const state = ctx.scene.session.tasksScene
+  const state = getSession(ctx)
 
   if (state.currentIndex > 0) {
     state.currentIndex--
@@ -102,10 +113,14 @@ tasksScene.action('deleteTask', async (ctx) => {
   try {
     await ctx.answerCbQuery()
 
-    const state = ctx.scene.session.tasksScene
+    if (!ctx.from?.id) return
+
+    const state = getSession(ctx)
     const task = state.tasks[state.currentIndex]
 
-    const res = await tasksService.deleteTask(ctx.from.id, task?.id as number)
+    if (!task) return
+
+    const res = await tasksService.deleteTask(ctx.from.id, task.id as number)
 
     if (!res.success) {
       return ctx.reply('Ошибка удаления задачи')

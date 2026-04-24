@@ -111,6 +111,7 @@ tasksScene.action('markComplete', async (ctx) => {
     await ctx.answerCbQuery('Пока не реализовано');
 });
 tasksScene.action('editTask', async (ctx) => {
-    await ctx.answerCbQuery('Пока не реализовано');
+    await ctx.answerCbQuery();
+    ctx.scene.enter('editTaskScene');
 });
 //# sourceMappingURL=tasks.scene.js.map

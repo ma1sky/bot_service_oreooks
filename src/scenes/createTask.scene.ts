@@ -50,7 +50,7 @@ export const createTaskScene = new Scenes.WizardScene<BotContext>(
             );
 
             if (!result.success) {
-                ctx.reply('❌ Не удалось создать задачу')
+                ctx.reply('❌ Не удалось создать задачу:' + result.reason )
             } else {
                 await ctx.reply(`✅ Задача успешно создана!`)
             }

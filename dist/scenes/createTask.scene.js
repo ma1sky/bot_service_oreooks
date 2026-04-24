@@ -28,7 +28,7 @@ export const createTaskScene = new Scenes.WizardScene('createTaskScene', async (
     try {
         let result = await tasksService.createTask(ctx.wizard.state.title, ctx.wizard.state.description, ctx.wizard.state.deadline, ctx.from?.id);
         if (!result.success) {
-            ctx.reply('❌ Не удалось создать задачу');
+            ctx.reply('❌ Не удалось создать задачу:' + result.reason);
         }
         else {
             await ctx.reply(`✅ Задача успешно создана!`);

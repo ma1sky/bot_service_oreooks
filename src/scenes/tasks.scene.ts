@@ -6,10 +6,12 @@ import tasksService from '../services/tasks.service.js'
 export const tasksScene = new Scenes.BaseScene<BotContext>('tasksScene')
 
 function getSession(ctx: BotContext) {
+  if (!ctx.scene.session.tasksScene) {
     ctx.scene.session.tasksScene = {
       tasks: [],
       currentIndex: 0,
     }
+  }
   return ctx.scene.session.tasksScene
 }
 

@@ -3,10 +3,12 @@ import { formatTask } from '../messages/tasks.messages.js';
 import tasksService from '../services/tasks.service.js';
 export const tasksScene = new Scenes.BaseScene('tasksScene');
 function getSession(ctx) {
-    ctx.scene.session.tasksScene = {
-        tasks: [],
-        currentIndex: 0,
-    };
+    if (!ctx.scene.session.tasksScene) {
+        ctx.scene.session.tasksScene = {
+            tasks: [],
+            currentIndex: 0,
+        };
+    }
     return ctx.scene.session.tasksScene;
 }
 tasksScene.enter(async (ctx) => {

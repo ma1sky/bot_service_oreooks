@@ -2,18 +2,9 @@ import { Markup, Scenes } from 'telegraf'
 import type { BotContext, Task } from '../config/types.js'
 import { formatTask } from '../messages/tasks.messages.js'
 import tasksService from '../services/tasks.service.js'
+import { getSession } from './utils/utils.js'
 
 export const tasksScene = new Scenes.BaseScene<BotContext>('tasksScene')
-
-function getSession(ctx: BotContext) {
-  if (!ctx.scene.session.tasksScene) {
-    ctx.scene.session.tasksScene = {
-      tasks: [],
-      currentIndex: 0,
-    }
-  }
-  return ctx.scene.session.tasksScene
-}
 
 tasksScene.enter(async (ctx) => {
   try {

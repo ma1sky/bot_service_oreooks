@@ -1,15 +1,7 @@
 import { Scenes } from 'telegraf'
 import type { BotContext } from '../config/types.js';
 import tasksService from '../services/tasks.service.js';
-
-function getMessageText(ctx: BotContext): string {
-    if (!ctx.message || !('text' in ctx.message)) {
-        ctx.reply('Отправь текст');
-        throw Error('Отправь текст');
-    }
-
-    return ctx.message.text;
-}
+import { getMessageText } from './utils/utils.js';
 
 export const createTaskScene = new Scenes.WizardScene<BotContext>(
     'createTaskScene',

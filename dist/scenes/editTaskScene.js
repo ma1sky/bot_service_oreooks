@@ -1,12 +1,6 @@
 import { Scenes } from 'telegraf';
 import tasksService from '../services/tasks.service.js';
-function getMessageText(ctx) {
-    if (!ctx.message || !('text' in ctx.message)) {
-        ctx.reply('Отправь текст');
-        throw Error('Отправь текст');
-    }
-    return ctx.message.text;
-}
+import { getMessageText, getSession } from './utils/utils.js';
 export const editTaskScene = new Scenes.WizardScene('editTaskScene', async (ctx) => {
     await ctx.reply('✏️ Введи залоговок задачи: ');
     return ctx.wizard.next();
@@ -24,8 +18,13 @@ export const editTaskScene = new Scenes.WizardScene('editTaskScene', async (ctx)
         return ctx.reply('❌ Дата неправильного формата');
     }
     ctx.wizard.state.deadline = new Date(dateString);
-    let currentIndex = ctx.scene.session.tasksScene.currentIndex;
-    let currentTask = ctx.scene.session.tasksScene.tasks[currentIndex];
+    const state = getSession(ctx);
+    const currentIndex = state.currentIndex;
+    const currentTask = state.tasks[currentIndex];
+    if (!currentTask) {
+        await ctx.reply('❌ Задача не найдена');
+        return ctx.scene.enter('tasksScene');
+    }
     try {
         let task = {
             title: ctx.wizard.state.title,

@@ -1,12 +1,6 @@
 import { Scenes } from 'telegraf';
 import tasksService from '../services/tasks.service.js';
-function getMessageText(ctx) {
-    if (!ctx.message || !('text' in ctx.message)) {
-        ctx.reply('Отправь текст');
-        throw Error('Отправь текст');
-    }
-    return ctx.message.text;
-}
+import { getMessageText } from './utils/utils.js';
 export const createTaskScene = new Scenes.WizardScene('createTaskScene', async (ctx) => {
     await ctx.reply('✏️ Введи залоговок задачи: ');
     return ctx.wizard.next();

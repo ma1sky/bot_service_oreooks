@@ -2,15 +2,7 @@ import { Scenes } from 'telegraf'
 import type { BotContext } from '../config/types.js';
 import tasksService from '../services/tasks.service.js';
 import type { Task } from '../config/types.js';
-
-function getMessageText(ctx: BotContext): string {
-    if (!ctx.message || !('text' in ctx.message)) {
-        ctx.reply('Отправь текст');
-        throw Error('Отправь текст');
-    }
-
-    return ctx.message.text;
-}
+import { getMessageText, getSession } from './utils/utils.js';
 
 export const editTaskScene = new Scenes.WizardScene<BotContext>(
     'editTaskScene',
@@ -41,8 +33,15 @@ export const editTaskScene = new Scenes.WizardScene<BotContext>(
         
         ctx.wizard.state.deadline = new Date(dateString);
 
-        let currentIndex = ctx.scene.session.tasksScene.currentIndex
-        let currentTask = ctx.scene.session.tasksScene.tasks[currentIndex]
+        const state = getSession(ctx)
+
+        const currentIndex = state.currentIndex
+        const currentTask = state.tasks[currentIndex]
+
+        if (!currentTask) {
+            await ctx.reply('❌ Задача не найдена')
+            return ctx.scene.enter('tasksScene')
+        }
         try {
             let task: Task = {
                 title: ctx.wizard.state.title as string,

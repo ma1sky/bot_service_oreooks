@@ -1,16 +1,8 @@
 import { Markup, Scenes } from 'telegraf';
 import { formatTask } from '../messages/tasks.messages.js';
 import tasksService from '../services/tasks.service.js';
+import { getSession } from './utils/utils.js';
 export const tasksScene = new Scenes.BaseScene('tasksScene');
-function getSession(ctx) {
-    if (!ctx.scene.session.tasksScene) {
-        ctx.scene.session.tasksScene = {
-            tasks: [],
-            currentIndex: 0,
-        };
-    }
-    return ctx.scene.session.tasksScene;
-}
 tasksScene.enter(async (ctx) => {
     try {
         const tgId = ctx.from?.id;

@@ -5,7 +5,7 @@ export const taskScene = new Scenes.BaseScene('tasksScene');
 taskScene.enter(async (ctx) => {
     let res = await tasksService.getTasks(ctx.from?.id);
     if (!res.success) {
-        ctx.reply('Ошибка! Не удалось получить задачи из базы данных!' + res.reason);
+        ctx.reply('Ошибка!' + res.reason);
         ctx.scene.enter('menuScene');
     }
     ctx.scene.session.taskScene.tasks = res.data;

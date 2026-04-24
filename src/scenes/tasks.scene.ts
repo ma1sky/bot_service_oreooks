@@ -10,7 +10,7 @@ taskScene.enter(async ctx => {
     let res = await tasksService.getTasks(ctx.from?.id as number);
 
     if (!res.success) {
-        ctx.reply('Ошибка! Не удалось получить задачи из базы данных!' + res.reason)
+        ctx.reply('Ошибка!' + res.reason)
         ctx.scene.enter('menuScene')
     }
 

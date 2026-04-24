@@ -48,7 +48,8 @@ async function renderCurrentTask(ctx) {
     }
     const total = state.tasks.length;
     const index = state.currentIndex + 1;
-    await ctx.editMessageText(`📚 Задача ${index}/${total}\n\n` +
+    const id = state.tasks[index]?.id;
+    await ctx.editMessageText(`📚 Задача ${index}/${total}, ID:${id}\n\n` +
         formatTask(task.title, task.description, new Date(task.deadline)), Markup.inlineKeyboard([
         [
             Markup.button.callback('◀️', 'prevTask'),

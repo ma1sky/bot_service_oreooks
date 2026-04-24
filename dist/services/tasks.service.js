@@ -13,7 +13,7 @@ class TaskService extends BaseService {
         }
         catch (error) {
             console.error(error);
-            return { success: false, reason: "error" };
+            return { success: false, reason: error };
         }
     }
     async updateTask(task, tgId, taskId) {

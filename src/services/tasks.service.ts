@@ -16,7 +16,7 @@ class TaskService extends BaseService {
             return this.checkResponse(res.status, data);
         } catch (error) {
             console.error(error);
-            return { success: false, reason: "error" };
+            return { success: false, reason: error };
         }
     }
 

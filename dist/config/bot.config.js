@@ -4,8 +4,9 @@ import { authScene } from '../scenes/auth.scene.js';
 import { menuScene } from '../scenes/menu.scene.js';
 import { createTaskScene } from '../scenes/createTask.scene.js';
 import { scheduleScene } from '../scenes/schedule.scene.js';
+import { tasksScene } from '../scenes/tasks.scene.js';
 export default function startBot() {
-    const stage = new Scenes.Stage([authScene, menuScene, createTaskScene, scheduleScene]);
+    const stage = new Scenes.Stage([authScene, menuScene, createTaskScene, scheduleScene, tasksScene]);
     const bot = new Telegraf(BOT_TOKEN);
     bot.use(session());
     bot.use(stage.middleware());

@@ -1,8 +1,8 @@
 import { Markup, Scenes } from 'telegraf';
 import { formatTask } from '../messages/tasks.messages.js';
 import tasksService from '../services/tasks.service.js';
-export const taskScene = new Scenes.BaseScene('tasksScene');
-taskScene.enter(async (ctx) => {
+export const tasksScene = new Scenes.BaseScene('tasksScene');
+tasksScene.enter(async (ctx) => {
     try {
         const tgId = ctx.from?.id;
         if (!tgId) {
@@ -52,7 +52,7 @@ async function renderCurrentTask(ctx) {
         ]
     ]));
 }
-taskScene.action('nextTask', async (ctx) => {
+tasksScene.action('nextTask', async (ctx) => {
     await ctx.answerCbQuery();
     const state = ctx.scene.session.tasksScene;
     if (state.currentIndex < state.tasks.length - 1) {
@@ -60,7 +60,7 @@ taskScene.action('nextTask', async (ctx) => {
     }
     await renderCurrentTask(ctx);
 });
-taskScene.action('prevTask', async (ctx) => {
+tasksScene.action('prevTask', async (ctx) => {
     await ctx.answerCbQuery();
     const state = ctx.scene.session.tasksScene;
     if (state.currentIndex > 0) {
@@ -68,11 +68,11 @@ taskScene.action('prevTask', async (ctx) => {
     }
     await renderCurrentTask(ctx);
 });
-taskScene.action('openMenu', async (ctx) => {
+tasksScene.action('openMenu', async (ctx) => {
     await ctx.answerCbQuery();
     return ctx.scene.enter('menuScene');
 });
-taskScene.action('deleteTask', async (ctx) => {
+tasksScene.action('deleteTask', async (ctx) => {
     try {
         await ctx.answerCbQuery();
         const state = ctx.scene.session.tasksScene;
@@ -96,10 +96,10 @@ taskScene.action('deleteTask', async (ctx) => {
         await ctx.reply('Ошибка удаления');
     }
 });
-taskScene.action('markComplete', async (ctx) => {
+tasksScene.action('markComplete', async (ctx) => {
     await ctx.answerCbQuery('Пока не реализовано');
 });
-taskScene.action('editTask', async (ctx) => {
+tasksScene.action('editTask', async (ctx) => {
     await ctx.answerCbQuery('Пока не реализовано');
 });
 //# sourceMappingURL=tasks.scene.js.map

@@ -3,9 +3,9 @@ import type { BotContext, Task } from '../config/types.js'
 import { formatTask } from '../messages/tasks.messages.js'
 import tasksService from '../services/tasks.service.js'
 
-export const taskScene = new Scenes.BaseScene<BotContext>('tasksScene')
+export const tasksScene = new Scenes.BaseScene<BotContext>('tasksScene')
 
-taskScene.enter(async (ctx) => {
+tasksScene.enter(async (ctx) => {
   try {
     const tgId = ctx.from?.id
 
@@ -69,7 +69,7 @@ async function renderCurrentTask(ctx: BotContext) {
   )
 }
 
-taskScene.action('nextTask', async (ctx) => {
+tasksScene.action('nextTask', async (ctx) => {
   await ctx.answerCbQuery()
 
   const state = ctx.scene.session.tasksScene
@@ -81,7 +81,7 @@ taskScene.action('nextTask', async (ctx) => {
   await renderCurrentTask(ctx)
 })
 
-taskScene.action('prevTask', async (ctx) => {
+tasksScene.action('prevTask', async (ctx) => {
   await ctx.answerCbQuery()
 
   const state = ctx.scene.session.tasksScene
@@ -93,12 +93,12 @@ taskScene.action('prevTask', async (ctx) => {
   await renderCurrentTask(ctx)
 })
 
-taskScene.action('openMenu', async (ctx) => {
+tasksScene.action('openMenu', async (ctx) => {
   await ctx.answerCbQuery()
   return ctx.scene.enter('menuScene')
 })
 
-taskScene.action('deleteTask', async (ctx) => {
+tasksScene.action('deleteTask', async (ctx) => {
   try {
     await ctx.answerCbQuery()
 
@@ -129,10 +129,10 @@ taskScene.action('deleteTask', async (ctx) => {
   }
 })
 
-taskScene.action('markComplete', async (ctx) => {
+tasksScene.action('markComplete', async (ctx) => {
   await ctx.answerCbQuery('Пока не реализовано')
 })
 
-taskScene.action('editTask', async (ctx) => {
+tasksScene.action('editTask', async (ctx) => {
   await ctx.answerCbQuery('Пока не реализовано')
 })

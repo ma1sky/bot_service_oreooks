@@ -61,7 +61,7 @@ async function renderCurrentTask(ctx: BotContext) {
 
   const total = state.tasks.length
   const index = state.currentIndex + 1
-  const id = state.tasks[index]?.id;
+  const id = task.id;
 
   await ctx.editMessageText(
     `📚 Задача ${index}/${total}, ID:${id}\n\n` +

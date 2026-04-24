@@ -1,6 +1,6 @@
 export default class BaseService {
     constructor(base) {
-        this.base = `https://${base}`;
+        this.base = `http://${base}`;
     }
     base;
     headers = {

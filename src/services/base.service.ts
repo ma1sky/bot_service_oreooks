@@ -1,6 +1,7 @@
 export default class BaseService {
     constructor(base: string) {
         this.base = `http://${base}`;
+
     }
     protected base: string;
 

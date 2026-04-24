@@ -1,7 +1,7 @@
 import { Markup, Scenes } from "telegraf";
 import { formatTask } from "../messages/tasks.messages.js";
 import tasksService from "../services/tasks.service.js";
-export const taskScene = new Scenes.BaseScene('taskScene');
+export const taskScene = new Scenes.BaseScene('tasksScene');
 taskScene.enter(async (ctx) => {
     let res = await tasksService.getTasks(ctx.from?.id);
     if (!res.success) {

@@ -4,7 +4,7 @@ import { formatTask } from "../messages/tasks.messages.js";
 import type { Task } from "../config/types.js";
 import tasksService from "../services/tasks.service.js";
 
-export const taskScene = new Scenes.BaseScene<BotContext>('taskScene');
+export const taskScene = new Scenes.BaseScene<BotContext>('tasksScene');
 
 taskScene.enter(async ctx => {
     let res = await tasksService.getTasks(ctx.from?.id as number);
@@ -17,7 +17,7 @@ taskScene.enter(async ctx => {
     ctx.scene.session.taskScene.tasks = res.data;
 
     let { id, title, description, deadline } = ctx.scene.session.taskScene.tasks[0] as Task;
-    
+
     ctx.reply(formatTask(title as string, description as string, deadline as Date)),
         Markup.inlineKeyboard([
             [

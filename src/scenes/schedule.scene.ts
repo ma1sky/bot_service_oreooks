@@ -9,7 +9,7 @@ scheduleScene.enter(async (ctx) => {
 
 	ctx.scene.session
 
-	await ctx.reply('' ,{
+	await ctx.editMessageText('' ,{
 		parse_mode: 'HTML',
 		...Markup.inlineKeyboard([
 			[

@@ -7,7 +7,7 @@ function getMessageText(ctx) {
     }
     return ctx.message.text;
 }
-export const createTaskScene = new Scenes.WizardScene('createTaskScene', async (ctx) => {
+export const editTaskScene = new Scenes.WizardScene('editTaskScene', async (ctx) => {
     await ctx.reply('✏️ Введи залоговок задачи: ');
     return ctx.wizard.next();
 }, async (ctx) => {
@@ -25,17 +25,23 @@ export const createTaskScene = new Scenes.WizardScene('createTaskScene', async (
     }
     ctx.wizard.state.deadline = new Date(dateString);
     try {
-        let result = await tasksService.createTask(ctx.wizard.state.title, ctx.wizard.state.description, ctx.wizard.state.deadline, ctx.from?.id);
+        let task = {
+            title: ctx.wizard.state.title,
+            description: ctx.wizard.state.description,
+            deadline: ctx.wizard.state.deadline,
+            id: ctx.scene.session.tasksScene.editIndex
+        };
+        let result = await tasksService.updateTask(task, ctx.from?.id);
         if (!result.success) {
-            ctx.reply('❌ Не удалось создать задачу:' + result.reason);
+            ctx.reply('❌ Не удалось отредактировать задачу:' + result.reason);
         }
         else {
-            await ctx.reply(`✅ Задача успешно создана!`);
+            await ctx.reply(`✅ Задача успешно отредактирована!`);
         }
     }
     catch {
-        await ctx.reply('❌ Не удалось создать задачу');
+        await ctx.reply('❌ Не удалось отредактировать задачу');
     }
     return ctx.scene.enter('menuScene');
 });
-//# sourceMappingURL=createTask.scene.js.map
+//# sourceMappingURL=editTaskScene.js.map

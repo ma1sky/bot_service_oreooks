@@ -6,7 +6,8 @@ function getSession(ctx) {
     if (!ctx.scene.session.tasksScene) {
         ctx.scene.session.tasksScene = {
             tasks: [],
-            currentIndex: 0
+            currentIndex: 0,
+            editIndex: -1
         };
     }
     return ctx.scene.session.tasksScene;
@@ -96,7 +97,9 @@ tasksScene.action('deleteTask', async (ctx) => {
     if (!res.success) {
         return ctx.reply('Ошибка удаления задачи: ' + res.reason);
     }
-    state.tasks = state.tasks.filter(t => t.id !== task.id);
+    else {
+        state.tasks = state.tasks.filter(t => t.id !== task.id);
+    }
     if (state.tasks.length === 0) {
         await ctx.editMessageText('Все задачи удалены');
         return ctx.scene.enter('menuScene');

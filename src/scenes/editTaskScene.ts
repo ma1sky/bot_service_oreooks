@@ -1,6 +1,7 @@
 import { Scenes } from 'telegraf'
 import type { BotContext } from '../config/types.js';
 import tasksService from '../services/tasks.service.js';
+import type { Task } from '../config/types.js';
 
 function getMessageText(ctx: BotContext): string {
     if (!ctx.message || !('text' in ctx.message)) {
@@ -11,8 +12,8 @@ function getMessageText(ctx: BotContext): string {
     return ctx.message.text;
 }
 
-export const createTaskScene = new Scenes.WizardScene<BotContext>(
-    'createTaskScene',
+export const editTaskScene = new Scenes.WizardScene<BotContext>(
+    'editTaskScene',
     
     async ctx => {
         await ctx.reply('✏️ Введи залоговок задачи: ');
@@ -41,21 +42,22 @@ export const createTaskScene = new Scenes.WizardScene<BotContext>(
         ctx.wizard.state.deadline = new Date(dateString);
         
         try {
-            let result = await tasksService.createTask(
-                ctx.wizard.state.title as string,
-                ctx.wizard.state.description as string,
-                ctx.wizard.state.deadline,
-                ctx.from?.id as number
-            );
+            let task: Task = {
+                title: ctx.wizard.state.title as string,
+                description: ctx.wizard.state.description as string,
+                deadline: ctx.wizard.state.deadline,
+                id: ctx.scene.session.tasksScene.editIndex
+            }
+            let result = await tasksService.updateTask(task, ctx.from?.id as number);
 
             if (!result.success) {
-                ctx.reply('❌ Не удалось создать задачу:' + result.reason )
+                ctx.reply('❌ Не удалось отредактировать задачу:' + result.reason )
             } else {
-                await ctx.reply(`✅ Задача успешно создана!`)
+                await ctx.reply(`✅ Задача успешно отредактирована!`)
             }
 
         } catch {
-            await ctx.reply('❌ Не удалось создать задачу')
+            await ctx.reply('❌ Не удалось отредактировать задачу')
         }
         
         return ctx.scene.enter('menuScene');

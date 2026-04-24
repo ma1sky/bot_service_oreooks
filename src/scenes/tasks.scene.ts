@@ -9,7 +9,8 @@ function getSession(ctx: BotContext) {
   if (!ctx.scene.session.tasksScene) {
     ctx.scene.session.tasksScene = {
       tasks: [],
-      currentIndex: 0
+      currentIndex: 0,
+      editIndex: -1
     }
   }
   return ctx.scene.session.tasksScene
@@ -121,14 +122,14 @@ tasksScene.action('deleteTask', async (ctx) => {
 
   if (!task) return
 
-  
-  const res = await tasksService.deleteTask(tgId, task.id as number)
+  const res = await tasksService.deleteTask(tgId, task.id as number);
 
   if (!res.success) {
     return ctx.reply('Ошибка удаления задачи: ' + res.reason)
+  } else {
+    state.tasks = state.tasks.filter(t => t.id !== task.id)
   }
 
-  state.tasks = state.tasks.filter(t => t.id !== task.id)
 
   if (state.tasks.length === 0) {
     await ctx.editMessageText('Все задачи удалены')

@@ -3,7 +3,7 @@ import ScheduleService from "../services/schedule.service.js";
 export const scheduleScene = new Scenes.BaseScene('scheduleScene');
 scheduleScene.enter(async (ctx) => {
     ctx.scene.session;
-    await ctx.reply('', {
+    await ctx.editMessageText('', {
         parse_mode: 'HTML',
         ...Markup.inlineKeyboard([
             [

@@ -22,7 +22,8 @@ export interface SessionData extends Scenes.WizardSessionData {
     
     tasksScene: {
         currentIndex: number,
-        tasks: Task[]
+        tasks: Task[],
+        editIndex: number
     },
 
     scheduleScene: {

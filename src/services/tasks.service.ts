@@ -20,9 +20,9 @@ class TaskService extends BaseService {
         }
     }
 
-    async updateTask(task: Task, tgId: number, taskId: number) {
+    async updateTask(task: Task, tgId: number) {
         try {
-            const res = await fetch(`${this.base}/${tgId}/tasks/${taskId}`, {
+            const res = await fetch(`${this.base}/${tgId}/tasks/${task.id}`, {
                 method: "PUT",
                 headers: this.headers,
                 body: JSON.stringify(task),

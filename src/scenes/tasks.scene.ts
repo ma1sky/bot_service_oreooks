@@ -10,7 +10,6 @@ function getSession(ctx: BotContext) {
     ctx.scene.session.tasksScene = {
       tasks: [],
       currentIndex: 0,
-      editIndex: -1
     }
   }
   return ctx.scene.session.tasksScene

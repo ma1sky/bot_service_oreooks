@@ -29,7 +29,7 @@ export const editTaskScene = new Scenes.WizardScene('editTaskScene', async (ctx)
             title: ctx.wizard.state.title,
             description: ctx.wizard.state.description,
             deadline: ctx.wizard.state.deadline,
-            id: ctx.scene.session.tasksScene.editIndex
+            id: ctx.scene.session.tasksScene.currentIndex
         };
         let result = await tasksService.updateTask(task, ctx.from?.id);
         if (!result.success) {

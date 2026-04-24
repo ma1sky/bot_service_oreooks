@@ -46,7 +46,7 @@ export const editTaskScene = new Scenes.WizardScene<BotContext>(
                 title: ctx.wizard.state.title as string,
                 description: ctx.wizard.state.description as string,
                 deadline: ctx.wizard.state.deadline,
-                id: ctx.scene.session.tasksScene.editIndex
+                id: ctx.scene.session.tasksScene.currentIndex
             }
             let result = await tasksService.updateTask(task, ctx.from?.id as number);
 

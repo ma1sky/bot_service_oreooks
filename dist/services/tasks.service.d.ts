@@ -11,8 +11,7 @@ declare class TaskService extends BaseService {
         reason?: never;
     } | {
         success: boolean;
-        reason: string;
-        data?: never;
+        reason: unknown;
     }>;
     updateTask(task: Task, tgId: number, taskId: number): Promise<{
         success: boolean;

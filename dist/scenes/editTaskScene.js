@@ -24,12 +24,14 @@ export const editTaskScene = new Scenes.WizardScene('editTaskScene', async (ctx)
         return ctx.reply('❌ Дата неправильного формата');
     }
     ctx.wizard.state.deadline = new Date(dateString);
+    let currentIndex = ctx.scene.session.tasksScene.currentIndex;
+    let currentTask = ctx.scene.session.tasksScene.tasks[currentIndex];
     try {
         let task = {
             title: ctx.wizard.state.title,
             description: ctx.wizard.state.description,
             deadline: ctx.wizard.state.deadline,
-            id: ctx.scene.session.tasksScene.currentIndex
+            id: currentTask?.id
         };
         let result = await tasksService.updateTask(task, ctx.from?.id);
         if (!result.success) {

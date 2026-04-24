@@ -16,15 +16,15 @@ export interface SessionData extends Scenes.WizardSessionData {
         password: string;
         isAuth?: boolean;
     };
-    tasksScene: {
-        currentIndex: number;
-        tasks: Task[];
-    };
     scheduleScene: {
         currentScheduleIndex: number;
         currentScheduleID: number;
         currentDate: Date;
         schedules: Schedule[];
+    };
+    tasksScene: {
+        currentIndex: number;
+        tasks: Task[];
     };
 }
 export type BotContext = Scenes.WizardContext<SessionData> & {

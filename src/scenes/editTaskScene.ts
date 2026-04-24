@@ -1,66 +1,87 @@
 import { Scenes } from 'telegraf'
-import type { BotContext } from '../config/types.js';
-import tasksService from '../services/tasks.service.js';
-import type { Task } from '../config/types.js';
-import { getMessageText, getSession } from './utils/utils.js';
+import type { BotContext, Task } from '../config/types.js'
+import tasksService from '../services/tasks.service.js'
+import { getMessageText, getSession } from './utils/utils.js'
+
+type EditTaskState = {
+  taskId?: number
+  title?: string
+  description?: string
+  deadline?: Date
+}
 
 export const editTaskScene = new Scenes.WizardScene<BotContext>(
-    'editTaskScene',
-    
-    async ctx => {
-        await ctx.reply('✏️ Введи залоговок задачи: ');
-        return ctx.wizard.next();
-    },
+  'editTaskScene',
 
-    async ctx => {
-        ctx.wizard.state.title = getMessageText(ctx);
-        ctx.reply('📃 Введи описание задачи: ');
-        return ctx.wizard.next();
-    },
+  async (ctx) => {
+    await ctx.reply('✏️ Введи заголовок задачи:')
+    return ctx.wizard.next()
+  },
 
-    async ctx => {
-        ctx.wizard.state.description = getMessageText(ctx);
-        ctx.reply('📆 Введи дату дедлайна в формате дд.мм.гггг:')
-        return ctx.wizard.next();
-    },
+  async (ctx) => {
+    const state = ctx.wizard.state as EditTaskState
+    state.title = getMessageText(ctx)
 
-    async ctx => {
-        let dateString: string = getMessageText(ctx)
+    await ctx.reply('📃 Введи описание задачи:')
+    return ctx.wizard.next()
+  },
 
-        if (!dateString || isNaN(Date.parse(dateString))) {
-            return ctx.reply('❌ Дата неправильного формата')
-        }
-        
-        ctx.wizard.state.deadline = new Date(dateString);
+  async (ctx) => {
+    const state = ctx.wizard.state as EditTaskState
+    state.description = getMessageText(ctx)
 
-        const state = getSession(ctx)
+    await ctx.reply('📆 Введи дату дедлайна (дд.мм.гггг):')
+    return ctx.wizard.next()
+  },
 
-        const currentIndex = state.currentIndex
-        const currentTask = state.tasks[currentIndex]
+  async (ctx) => {
+    const state = ctx.wizard.state as EditTaskState
 
-        if (!currentTask) {
-            await ctx.reply('❌ Задача не найдена')
-            return ctx.scene.enter('tasksScene')
-        }
-        try {
-            let task: Task = {
-                title: ctx.wizard.state.title as string,
-                description: ctx.wizard.state.description as string,
-                deadline: ctx.wizard.state.deadline,
-                id: currentTask?.id as number
-            }
-            let result = await tasksService.updateTask(task, ctx.from?.id as number);
+    const dateString = getMessageText(ctx)
 
-            if (!result.success) {
-                ctx.reply('❌ Не удалось отредактировать задачу:' + result.reason )
-            } else {
-                await ctx.reply(`✅ Задача успешно отредактирована!`)
-            }
+    const match = dateString.match(/^(\d{2})\.(\d{2})\.(\d{4})$/)
 
-        } catch {
-            await ctx.reply('❌ Не удалось отредактировать задачу')
-        }
-        
-        return ctx.scene.enter('menuScene');
-    },
-);
+    if (!match) {
+      await ctx.reply('❌ Неверный формат даты. Используй дд.мм.гггг')
+      return
+    }
+
+    const [, dd, mm, yyyy] = match
+    const deadline = new Date(Number(yyyy), Number(mm) - 1, Number(dd))
+
+    if (isNaN(deadline.getTime())) {
+      await ctx.reply('❌ Некорректная дата')
+      return
+    }
+
+    state.deadline = deadline
+
+    if (!state.taskId) {
+      await ctx.reply('❌ Задача не найдена')
+      return ctx.scene.enter('tasksScene')
+    }
+
+    try {
+      const task: Task = {
+        id: state.taskId,
+        title: state.title!,
+        description: state.description!,
+        deadline: state.deadline!
+      }
+
+      const result = await tasksService.updateTask(task, ctx.from!.id)
+
+      if (!result.success) {
+        await ctx.reply('❌ Не удалось отредактировать задачу: ' + result.reason)
+        return ctx.scene.enter('menuScene')
+      }
+
+      await ctx.reply('✅ Задача успешно отредактирована!')
+    } catch (err) {
+      console.error(err)
+      await ctx.reply('❌ Не удалось отредактировать задачу')
+    }
+
+    return ctx.scene.enter('menuScene')
+  }
+)

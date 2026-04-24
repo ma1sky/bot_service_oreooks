@@ -1,55 +1,81 @@
 import { Scenes } from 'telegraf'
-import type { BotContext } from '../config/types.js';
-import tasksService from '../services/tasks.service.js';
-import { getMessageText } from './utils/utils.js';
+import type { BotContext } from '../config/types.js'
+import tasksService from '../services/tasks.service.js'
+import { getMessageText } from './utils/utils.js'
+
+type CreateTaskState = {
+  title?: string
+  description?: string
+  deadline?: Date
+}
 
 export const createTaskScene = new Scenes.WizardScene<BotContext>(
-    'createTaskScene',
-    
-    async ctx => {
-        await ctx.reply('✏️ Введи залоговок задачи: ');
-        return ctx.wizard.next();
-    },
+  'createTaskScene',
 
-    async ctx => {
-        ctx.wizard.state.title = getMessageText(ctx);
-        ctx.reply('📃 Введи описание задачи: ');
-        return ctx.wizard.next();
-    },
+  async (ctx) => {
+    await ctx.reply('✏️ Введи заголовок задачи:')
+    return ctx.wizard.next()
+  },
 
-    async ctx => {
-        ctx.wizard.state.description = getMessageText(ctx);
-        ctx.reply('📆 Введи дату дедлайна в формате дд.мм.гггг:')
-        return ctx.wizard.next();
-    },
+  async (ctx) => {
+    const state = ctx.wizard.state as CreateTaskState
 
-    async ctx => {
-        let dateString: string = getMessageText(ctx)
+    state.title = getMessageText(ctx)
 
-        if (!dateString || isNaN(Date.parse(dateString))) {
-            return ctx.reply('❌ Дата неправильного формата')
-        }
-        
-        ctx.wizard.state.deadline = new Date(dateString);
-        
-        try {
-            let result = await tasksService.createTask(
-                ctx.wizard.state.title as string,
-                ctx.wizard.state.description as string,
-                ctx.wizard.state.deadline,
-                ctx.from?.id as number
-            );
+    await ctx.reply('📃 Введи описание задачи:')
+    return ctx.wizard.next()
+  },
 
-            if (!result.success) {
-                ctx.reply('❌ Не удалось создать задачу:' + result.reason )
-            } else {
-                await ctx.reply(`✅ Задача успешно создана!`)
-            }
+  async (ctx) => {
+    const state = ctx.wizard.state as CreateTaskState
 
-        } catch {
-            await ctx.reply('❌ Не удалось создать задачу')
-        }
-        
-        return ctx.scene.enter('menuScene');
-    },
-);
+    state.description = getMessageText(ctx)
+
+    await ctx.reply('📆 Введи дату дедлайна (дд.мм.гггг):')
+    return ctx.wizard.next()
+  },
+
+  async (ctx) => {
+    const state = ctx.wizard.state as CreateTaskState
+
+    const dateString = getMessageText(ctx)
+
+    const match = dateString.match(/^(\d{2})\.(\d{2})\.(\d{4})$/)
+
+    if (!match) {
+      await ctx.reply('❌ Неверный формат даты. Используй дд.мм.гггг')
+      return
+    }
+
+    const [, dd, mm, yyyy] = match
+    const deadline = new Date(Number(yyyy), Number(mm) - 1, Number(dd))
+
+    if (isNaN(deadline.getTime())) {
+      await ctx.reply('❌ Некорректная дата')
+      return
+    }
+
+    state.deadline = deadline
+
+    try {
+      const result = await tasksService.createTask(
+        state.title!,
+        state.description!,
+        state.deadline,
+        ctx.from!.id
+      )
+
+      if (!result.success) {
+        await ctx.reply('❌ Не удалось создать задачу: ' + result.reason)
+        return ctx.scene.enter('menuScene')
+      }
+
+      await ctx.reply('✅ Задача успешно создана!')
+    } catch (err) {
+      console.error(err)
+      await ctx.reply('❌ Ошибка при создании задачи')
+    }
+
+    return ctx.scene.enter('menuScene')
+  }
+)

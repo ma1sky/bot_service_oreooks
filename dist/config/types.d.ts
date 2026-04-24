@@ -27,11 +27,7 @@ export interface SessionData extends Scenes.WizardSessionData {
         tasks: Task[];
     };
 }
-export type BotContext = Scenes.WizardContext<SessionData> & {
-    wizard: {
-        state: Task;
-    };
-};
+export type BotContext = Scenes.WizardContext<SessionData>;
 export type Schedule = {
     week: number;
     weekType: string;

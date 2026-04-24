@@ -24,7 +24,7 @@ tasksScene.enter(async (ctx) => {
 
     const tasks: Task[] = Array.isArray(res.data?.tasks) ? res.data.tasks : []
 
-    if (!tasks.length) {
+    if (tasks.length === 0) {
       await ctx.reply('У вас пока нет задач')
       return ctx.scene.enter('menuScene')
     }
@@ -45,18 +45,21 @@ async function renderCurrentTask(ctx: BotContext) {
   const state = getSession(ctx)
   const task = state.tasks[state.currentIndex]
 
-  if (!task) {
+  if (!task || !task.id) {
     await ctx.reply('Задача не найдена')
     return ctx.scene.enter('menuScene')
   }
 
   const total = state.tasks.length
   const index = state.currentIndex + 1
-  const id = task.id;
 
   await ctx.reply(
-    `📚 Задача ${index}/${total}, ID:${id}\n\n` +
-      formatTask(task.title as string, task.description as string, new Date(task.deadline!)),
+    `📚 Задача ${index}/${total}, ID:${task.id}\n\n` +
+      formatTask(
+        task.title ?? '',
+        task.description ?? '',
+        task.deadline ? new Date(task.deadline) : new Date()
+      ),
     Markup.inlineKeyboard([
       [
         Markup.button.callback('◀️', 'prevTask'),
@@ -110,17 +113,20 @@ tasksScene.action('deleteTask', async (ctx) => {
   const state = getSession(ctx)
   const task = state.tasks[state.currentIndex]
 
-  if (!task) return
+  if (!task?.id) return
 
-  const res = await tasksService.deleteTask(tgId, task.id as number);
+  const res = await tasksService.deleteTask(tgId, task.id)
 
   if (!res.success) {
-    return ctx.reply('Ошибка удаления задачи: ' + res.reason)
-  } else {
-    state.tasks = state.tasks.filter(t => t.id !== task.id)
+    await ctx.reply('Ошибка удаления задачи: ' + res.reason)
+    return
   }
 
 
+if (!task?.id) return
+
+state.tasks = state.tasks.filter((t: Task) => t.id !== task.id)
+  
   if (state.tasks.length === 0) {
     await ctx.reply('Все задачи удалены')
     return ctx.scene.enter('menuScene')
@@ -137,5 +143,5 @@ tasksScene.action('markComplete', async (ctx) => {
 
 tasksScene.action('editTask', async (ctx) => {
   await ctx.answerCbQuery()
-  ctx.scene.enter('editTaskScene')
+  return ctx.scene.enter('editTaskScene')
 })

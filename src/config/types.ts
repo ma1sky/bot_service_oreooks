@@ -14,31 +14,26 @@ export type AuthResult = {
 }
 
 export interface SessionData extends Scenes.WizardSessionData {
-    authScene: {
-        login: string,
-        password: string,
-        isAuth?: boolean
-    },
+  authScene: {
+    login: string
+    password: string
+    isAuth?: boolean
+  }
 
-    scheduleScene: {
-        currentScheduleIndex: number,
-        currentScheduleID: number,
-        currentDate: Date,
-        schedules: Schedule[]
-    }
+  scheduleScene: {
+    currentScheduleIndex: number
+    currentScheduleID: number
+    currentDate: Date
+    schedules: Schedule[]
+  }
 
-    tasksScene : {
-        currentIndex: number,
-        tasks: Task[],
-    }
-        
+  tasksScene: {
+    currentIndex: number
+    tasks: Task[]
+  }
 }
 
-export type BotContext = Scenes.WizardContext<SessionData> & {
-    wizard: {
-        state: Task;
-    }
-};
+export type BotContext = Scenes.WizardContext<SessionData>
 
 export type Schedule = {
     week: number,

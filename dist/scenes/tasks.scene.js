@@ -16,7 +16,7 @@ tasksScene.enter(async (ctx) => {
             return ctx.scene.enter('menuScene');
         }
         const tasks = Array.isArray(res.data?.tasks) ? res.data.tasks : [];
-        if (!tasks.length) {
+        if (tasks.length === 0) {
             await ctx.reply('У вас пока нет задач');
             return ctx.scene.enter('menuScene');
         }
@@ -34,15 +34,14 @@ tasksScene.enter(async (ctx) => {
 async function renderCurrentTask(ctx) {
     const state = getSession(ctx);
     const task = state.tasks[state.currentIndex];
-    if (!task) {
+    if (!task || !task.id) {
         await ctx.reply('Задача не найдена');
         return ctx.scene.enter('menuScene');
     }
     const total = state.tasks.length;
     const index = state.currentIndex + 1;
-    const id = task.id;
-    await ctx.reply(`📚 Задача ${index}/${total}, ID:${id}\n\n` +
-        formatTask(task.title, task.description, new Date(task.deadline)), Markup.inlineKeyboard([
+    await ctx.reply(`📚 Задача ${index}/${total}, ID:${task.id}\n\n` +
+        formatTask(task.title ?? '', task.description ?? '', task.deadline ? new Date(task.deadline) : new Date()), Markup.inlineKeyboard([
         [
             Markup.button.callback('◀️', 'prevTask'),
             Markup.button.callback('📋 Меню', 'openMenu'),
@@ -82,15 +81,16 @@ tasksScene.action('deleteTask', async (ctx) => {
         return;
     const state = getSession(ctx);
     const task = state.tasks[state.currentIndex];
-    if (!task)
+    if (!task?.id)
         return;
     const res = await tasksService.deleteTask(tgId, task.id);
     if (!res.success) {
-        return ctx.reply('Ошибка удаления задачи: ' + res.reason);
+        await ctx.reply('Ошибка удаления задачи: ' + res.reason);
+        return;
     }
-    else {
-        state.tasks = state.tasks.filter(t => t.id !== task.id);
-    }
+    if (!task?.id)
+        return;
+    state.tasks = state.tasks.filter((t) => t.id !== task.id);
     if (state.tasks.length === 0) {
         await ctx.reply('Все задачи удалены');
         return ctx.scene.enter('menuScene');
@@ -103,6 +103,6 @@ tasksScene.action('markComplete', async (ctx) => {
 });
 tasksScene.action('editTask', async (ctx) => {
     await ctx.answerCbQuery();
-    ctx.scene.enter('editTaskScene');
+    return ctx.scene.enter('editTaskScene');
 });
 //# sourceMappingURL=tasks.scene.js.map

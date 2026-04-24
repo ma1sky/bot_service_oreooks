@@ -14,7 +14,7 @@ tasksScene.enter(async (ctx) => {
             await ctx.reply('Ошибка загрузки задач: ' + String(res.reason));
             return ctx.scene.enter('menuScene');
         }
-        const tasks = Array.isArray(res.data) ? res.data : [];
+        const tasks = Array.isArray(res.data?.tasks) ? res.data.tasks : [];
         if (!tasks.length) {
             await ctx.reply('У вас пока нет задач');
             return ctx.scene.enter('menuScene');

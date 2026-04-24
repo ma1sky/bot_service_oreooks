@@ -33,7 +33,7 @@ class TaskService extends BaseService {
     }
     async getTasks(tgId) {
         try {
-            const res = await fetch(`${this.base}/${tgId}/tasks`, {
+            const res = await fetch(`${this.base}/users/${tgId}/tasks`, {
                 method: "GET",
                 headers: this.headers,
             });

@@ -21,8 +21,8 @@ tasksScene.enter(async (ctx) => {
       return ctx.scene.enter('menuScene')
     }
 
-    const tasks: Task[] = Array.isArray(res.data) ? res.data : []
-
+    const tasks: Task[] = Array.isArray(res.data?.tasks) ? res.data.tasks : []
+    
     if (!tasks.length) {
       await ctx.reply('У вас пока нет задач')
       return ctx.scene.enter('menuScene')

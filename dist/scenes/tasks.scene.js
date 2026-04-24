@@ -41,7 +41,7 @@ async function renderCurrentTask(ctx) {
     const total = state.tasks.length;
     const index = state.currentIndex + 1;
     const id = task.id;
-    await ctx.editMessageText(`📚 Задача ${index}/${total}, ID:${id}\n\n` +
+    await ctx.reply(`📚 Задача ${index}/${total}, ID:${id}\n\n` +
         formatTask(task.title, task.description, new Date(task.deadline)), Markup.inlineKeyboard([
         [
             Markup.button.callback('◀️', 'prevTask'),
@@ -92,7 +92,7 @@ tasksScene.action('deleteTask', async (ctx) => {
         state.tasks = state.tasks.filter(t => t.id !== task.id);
     }
     if (state.tasks.length === 0) {
-        await ctx.editMessageText('Все задачи удалены');
+        await ctx.reply('Все задачи удалены');
         return ctx.scene.enter('menuScene');
     }
     state.currentIndex = Math.min(state.currentIndex, state.tasks.length - 1);

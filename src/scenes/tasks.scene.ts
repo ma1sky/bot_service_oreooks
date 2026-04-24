@@ -54,7 +54,7 @@ async function renderCurrentTask(ctx: BotContext) {
   const index = state.currentIndex + 1
   const id = task.id;
 
-  await ctx.editMessageText(
+  await ctx.reply(
     `📚 Задача ${index}/${total}, ID:${id}\n\n` +
       formatTask(task.title as string, task.description as string, new Date(task.deadline!)),
     Markup.inlineKeyboard([
@@ -122,7 +122,7 @@ tasksScene.action('deleteTask', async (ctx) => {
 
 
   if (state.tasks.length === 0) {
-    await ctx.editMessageText('Все задачи удалены')
+    await ctx.reply('Все задачи удалены')
     return ctx.scene.enter('menuScene')
   }
 

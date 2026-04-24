@@ -1,50 +1,27 @@
 import { API_SERVICE_LINK } from "../config/env.config.js";
-import type { AuthResult } from "../config/types.js";
+import BaseService from "./base.service.js";
 
-export async function authUser(
-    login: string,
-    password: string,
-    tg_id: number
-): Promise<AuthResult> {
-
-    try {
-        const res = await fetch(`http://${API_SERVICE_LINK}/auth`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                Accept: "application/json"
-            },
-            body: JSON.stringify({ login, password, tg_id })
-        });
-
-
-        console.log("STATUS:", res.status);
-        
-        let data: any = {};
-        
+class AuthService extends BaseService {
+    async authUser(login: string, password: string, tg_id: number) {
         try {
-            data = await res.json();
-            console.log("BODY:", data);
-        } catch {
-            return { success: false, reason: "error" };
+            const res = await fetch(`${this.base}/auth`, {
+                method: "POST",
+                headers: this.headers,
+                body: JSON.stringify({ login, password, tg_id })
+            });
+
+            const data = await this.parseResponse(res);
+
+            return this.checkResponse(res.status, data);
+
+        } catch(error) {
+            if (error instanceof Error) {
+                return { success: false, reason: error.message };
+            } else {
+                return { success: false, reason: "Unknown error"}
+            }
         }
-
-        switch (res.status) {
-            case 200:
-                return { success: true, token: data.token };
-
-            case 404:
-                return { success: false, reason: "not_found" };
-
-            case 401:
-                return { success: false, reason: "invalid" };
-
-            default:
-                return { success: false, reason: "error" };
-        }
-
-    } catch (error) {
-        console.log(error);
-        return { success: false, reason: "error 2" };
     }
 }
+
+export default new AuthService(API_SERVICE_LINK);

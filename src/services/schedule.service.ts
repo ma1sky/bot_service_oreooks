@@ -1,51 +1,27 @@
-import type { Schedule } from "../config/types.js";
-import { formatSchedule } from "../messages/schedule.messages.js";
 import { API_SERVICE_LINK } from "../config/env.config.js";
+import BaseService from "./base.service.js";
 
-export async function getSchedule(id: number, date: Date): Promise<string> {
-	const res = await fetch(`${API_SERVICE_LINK}/user/${id}/schedule/${date.toString()}`, {
-		method: 'GET'
-	})
+class ScheduleService extends BaseService {
+	async getSchedule(id: number, date: Date) {
+		let formattedDate = date.toISOString().split('T')[0]
+		try {
+			const res = await fetch(`${this.base}/users/${id}/schedule/${formattedDate}`, {
+				method: 'GET',
+				headers: this.headers
+			})
 
-	if (!res.ok) throw new Error('Error with receiving schedule'); 
+			const data = await this.parseResponse(res);
 
-	const data: Schedule = await res.json();
+			return this.checkResponse(res.status, data);
 
-	return formatSchedule(data);
+		} catch(error) {
+            if (error instanceof Error) {
+                return { success: false, reason: error.message };
+            } else {
+                return { success: false, reason: "Unknown error"}
+            }
+        }
+	}
 }
 
-export const mockSchedule: Schedule = {
-	week: 1,
-	weekType: '2 знаменатель',
-	dayOfWeek: "ПН",
-	date: new Date("2026-04-16T00:00:00Z"),
-	lessons: [
-		{
-			lesson_name: "Системы управления базами данных",
-			lesson_type: "Лек",
-			lesson_number: 1,
-			start: new Date("2026-04-16T09:00:00"),
-			end: new Date("2026-04-16T10:20:00"),
-			teacher: "Киселев Денис Викторович",
-			classroom: "1205 м",
-		},
-		{
-			lesson_name: "Микропроцессорные средства и системы",
-			lesson_type: "Лек",
-			lesson_number: 2,
-			start: new Date("2026-04-16T10:30:00"),
-			end: new Date("2026-04-16T11:50:00"),
-			teacher: "Орлов Александр Николаевич",
-			classroom: "1205 м",
-		},
-		{
-			lesson_name: "Индивидуальные виды спорта / Командные виды спорта",
-			lesson_type: "Практика",
-			lesson_number: 4,
-			start: new Date("2026-04-16T14:00:00"),
-			end: new Date("2026-04-16T15:20:00"),
-			teacher: "Преподаватель ФВ",
-			classroom: "5101",
-		},
-	],
-};
+export default new ScheduleService(API_SERVICE_LINK);

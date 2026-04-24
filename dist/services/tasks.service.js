@@ -1,15 +1,64 @@
 import { API_SERVICE_LINK } from "../config/env.config.js";
-export async function sendTaskToApi(title, description, deadline, id) {
-    const res = await fetch(`${API_SERVICE_LINK}/user/${id}/tasks`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json"
-        },
-        body: JSON.stringify({ id, title, description, deadline })
-    });
-    if (!res.ok)
-        throw new Error('Error adding task');
-    return await res.status;
+import BaseService from "./base.service.js";
+class TaskService extends BaseService {
+    async createTask(title, description, deadline, tgId) {
+        try {
+            const res = await fetch(`${this.base}/users/${tgId}/tasks`, {
+                method: "POST",
+                headers: this.headers,
+                body: JSON.stringify({ tgId, title, description, deadline: deadline.toISOString() }),
+            });
+            const data = await this.parseResponse(res);
+            return this.checkResponse(res.status, data);
+        }
+        catch (error) {
+            console.error(error);
+            return { success: false, reason: "error" };
+        }
+    }
+    async updateTask(task, tgId, taskId) {
+        try {
+            const res = await fetch(`${this.base}/${tgId}/tasks/${taskId}`, {
+                method: "PUT",
+                headers: this.headers,
+                body: JSON.stringify(task),
+            });
+            const data = await this.parseResponse(res);
+            return this.checkResponse(res.status, data);
+        }
+        catch (error) {
+            console.error(error);
+            return { success: false, reason: "error" };
+        }
+    }
+    async getTasks(tgId) {
+        try {
+            const res = await fetch(`${this.base}/${tgId}/tasks`, {
+                method: "GET",
+                headers: this.headers,
+            });
+            const data = await this.parseResponse(res);
+            return this.checkResponse(res.status, data);
+        }
+        catch (error) {
+            console.error(error);
+            return { success: false, reason: "error" };
+        }
+    }
+    async deleteTask(tgId, taskId) {
+        try {
+            const res = await fetch(`${this.base}/${tgId}/tasks/${taskId}`, {
+                method: "DELETE",
+                headers: this.headers,
+            });
+            const data = await this.parseResponse(res);
+            return this.checkResponse(res.status, data);
+        }
+        catch (error) {
+            console.error(error);
+            return { success: false, reason: "error" };
+        }
+    }
 }
+export default new TaskService(API_SERVICE_LINK);
 //# sourceMappingURL=tasks.service.js.map

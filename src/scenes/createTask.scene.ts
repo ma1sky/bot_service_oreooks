@@ -1,7 +1,7 @@
 import { Scenes } from 'telegraf'
-import { sendTaskToApi } from '../services/tasks.service.js';
 import type { BotContext } from '../config/types.js';
 import { formatTask } from '../messages/tasks.messages.js';
+import tasksService from '../services/tasks.service.js';
 
 function getMessageText(ctx: BotContext): string {
     if (!ctx.message || !('text' in ctx.message)) {
@@ -42,23 +42,21 @@ export const createTaskScene = new Scenes.WizardScene<BotContext>(
         ctx.wizard.state.deadline = new Date(dateString);
         
         try {
-            await sendTaskToApi(
+            let result = await tasksService.createTask(
                 ctx.wizard.state.title as string,
                 ctx.wizard.state.description as string,
                 ctx.wizard.state.deadline,
                 ctx.from?.id as number
             );
 
-            await ctx.reply(`✅ Задача успешно создана!`)
-            await ctx.reply(formatTask(
-                    ctx.wizard.state.title as string,
-                    ctx.wizard.state.description as string,
-                    ctx.wizard.state.deadline
-                )
-            );
+            if (!result.success) {
+                ctx.reply('❌ Не удалось создать задачу')
+            } else {
+                await ctx.reply(`✅ Задача успешно создана!`)
+            }
 
         } catch {
-            ctx.reply('❌ Не удалось создать задачу')
+            await ctx.reply('❌ Не удалось создать задачу')
         }
         
         return ctx.scene.enter('menuScene');

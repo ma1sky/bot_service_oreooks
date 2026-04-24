@@ -1,8 +1,9 @@
 import { Markup, Scenes } from "telegraf";
-import { getSchedule } from "../services/schedule.service.js";
+import ScheduleService from "../services/schedule.service.js";
 export const scheduleScene = new Scenes.BaseScene('scheduleScene');
 scheduleScene.enter(async (ctx) => {
-    await ctx.reply(await getSchedule(ctx.from?.id, new Date(Date.now())), {
+    ctx.scene.session;
+    await ctx.reply('', {
         parse_mode: 'HTML',
         ...Markup.inlineKeyboard([
             [

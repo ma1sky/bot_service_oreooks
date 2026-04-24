@@ -5,6 +5,7 @@ menuScene.enter(async (ctx) => {
         [Markup.button.callback('➕ Создать задачу', 'createTask')],
         [Markup.button.callback('📆 Показать расписание', 'openSchedule')],
         [Markup.button.callback('📚 Показать задачи', 'openTasks')],
+        [Markup.button.callback('📍 Контрольные мероприятия', 'openEvents')]
     ]));
 });
 menuScene.action('createTask', async (ctx) => {
@@ -18,5 +19,9 @@ menuScene.action('openSchedule', async (ctx) => {
 menuScene.action('openTasks', async (ctx) => {
     ctx.answerCbQuery();
     ctx.scene.enter('tasksScene');
+});
+menuScene.action('openEvents', async (ctx) => {
+    ctx.answerCbQuery();
+    ctx.scene.enter('eventsScene');
 });
 //# sourceMappingURL=menu.scene.js.map

@@ -1,12 +1,15 @@
 import { Markup, Scenes } from "telegraf";
 import type { BotContext } from "../config/types.js";
-import { getSchedule } from "../services/schedule.service.js";
+import ScheduleService from "../services/schedule.service.js";
 
 
 export const scheduleScene = new Scenes.BaseScene<BotContext>('scheduleScene');
 
 scheduleScene.enter(async (ctx) => {
-	await ctx.reply(await getSchedule(ctx.from?.id as number, new Date(Date.now())), {
+
+	ctx.scene.session
+
+	await ctx.reply('' ,{
 		parse_mode: 'HTML',
 		...Markup.inlineKeyboard([
 			[
@@ -23,7 +26,7 @@ scheduleScene.action('openMenu', async ctx => {
 })
 
 scheduleScene.action('openYesterday', ctx => {
-
+	
 })
 
 scheduleScene.action('openTomorrow', ctx => {

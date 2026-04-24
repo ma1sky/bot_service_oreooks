@@ -1,6 +1,6 @@
 import { Scenes } from 'telegraf';
-import { sendTaskToApi } from '../services/tasks.service.js';
 import { formatTask } from '../messages/tasks.messages.js';
+import tasksService from '../services/tasks.service.js';
 function getMessageText(ctx) {
     if (!ctx.message || !('text' in ctx.message)) {
         ctx.reply('Отправь текст');
@@ -26,12 +26,16 @@ export const createTaskScene = new Scenes.WizardScene('createTaskScene', async (
     }
     ctx.wizard.state.deadline = new Date(dateString);
     try {
-        await sendTaskToApi(ctx.wizard.state.title, ctx.wizard.state.description, ctx.wizard.state.deadline, ctx.from?.id);
-        await ctx.reply(`✅ Задача успешно создана!`);
-        await ctx.reply(formatTask(ctx.wizard.state.title, ctx.wizard.state.description, ctx.wizard.state.deadline));
+        let result = await tasksService.createTask(ctx.wizard.state.title, ctx.wizard.state.description, ctx.wizard.state.deadline, ctx.from?.id);
+        if (!result.success) {
+            ctx.reply('❌ Не удалось создать задачу');
+        }
+        else {
+            await ctx.reply(`✅ Задача успешно создана!`);
+        }
     }
     catch {
-        ctx.reply('❌ Не удалось создать задачу');
+        await ctx.reply('❌ Не удалось создать задачу');
     }
     return ctx.scene.enter('menuScene');
 });

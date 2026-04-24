@@ -1,16 +1,18 @@
-import { BaseScene } from "telegraf/scenes";
 import type { BotContext } from "../config/types.js";
 import { Markup, Scenes } from "telegraf";
+import { formatTask } from "../messages/tasks.messages.js";
+import type { Task } from "../config/types.js";
 
 export const taskScene = new Scenes.BaseScene<BotContext>('taskScene');
 
 taskScene.enter(ctx => {
-    ctx.reply('dwq'),
+    let { id, title, description, deadline } = ctx.scene.session.taskScene.tasks[0] as Task;
+    ctx.reply(formatTask(title as string, description as string, deadline as Date)),
     Markup.inlineKeyboard([
         [
-            Markup.button.callback('◀️', 'openYesterday'),
+            Markup.button.callback('◀️', 'openNext'),
             Markup.button.callback('📋 Меню', 'openMenu'),
-            Markup.button.callback('▶️', 'openTomorrow'),
+            Markup.button.callback('▶️', 'openPrevious'),
         ],
         [
             Markup.button.callback('✅ Завершить','markComplete'),
@@ -18,4 +20,16 @@ taskScene.enter(ctx => {
             Markup.button.callback('🗑️ Удалить','deleteTask')
         ]
     ])
+})
+
+taskScene.action('deleteTask', ctx => {
+
+})
+
+taskScene.action('markComplete', ctx => {
+
+})
+
+taskScene.action('editTask', ctx => {
+
 })

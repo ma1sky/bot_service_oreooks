@@ -1,9 +1,9 @@
 import { Scenes } from "telegraf";
-import { authUser } from "../services/auth.service.js";
 import { formatGreeting } from "../messages/auth.message.js";
+import authService from "../services/auth.service.js";
 export const authScene = new Scenes.BaseScene("auth");
 authScene.enter(async (ctx) => {
-    ctx.scene.session.auth = {
+    ctx.scene.session.authScene = {
         login: "",
         password: "",
         isAuth: false
@@ -11,7 +11,7 @@ authScene.enter(async (ctx) => {
     ctx.reply(formatGreeting(ctx.from?.first_name));
 });
 authScene.on("text", async (ctx) => {
-    const auth = ctx.scene.session.auth;
+    const auth = ctx.scene.session.authScene;
     if (!auth.login) {
         auth.login = ctx.message.text;
         return ctx.reply("Введите пароль:");
@@ -24,7 +24,7 @@ authScene.on("text", async (ctx) => {
                 password: auth.password,
                 tg_id: ctx.from.id
             });
-            const result = await authUser(auth.login, auth.password, ctx.from?.id);
+            const result = await authService.authUser(auth.login, auth.password, ctx.from?.id);
             auth.isAuth = result.success;
             if (!result.success) {
                 return ctx.reply("Ошибка авторизации: " + result.reason);

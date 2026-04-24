@@ -1,37 +1,25 @@
 import { API_SERVICE_LINK } from "../config/env.config.js";
-export async function authUser(login, password, tg_id) {
-    try {
-        const res = await fetch(`http://${API_SERVICE_LINK}/auth`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                Accept: "application/json"
-            },
-            body: JSON.stringify({ login, password, tg_id })
-        });
-        console.log("STATUS:", res.status);
-        let data = {};
+import BaseService from "./base.service.js";
+class AuthService extends BaseService {
+    async authUser(login, password, tg_id) {
         try {
-            data = await res.json();
-            console.log("BODY:", data);
+            const res = await fetch(`${this.base}/auth`, {
+                method: "POST",
+                headers: this.headers,
+                body: JSON.stringify({ login, password, tg_id })
+            });
+            const data = await this.parseResponse(res);
+            return this.checkResponse(res.status, data);
         }
-        catch {
-            return { success: false, reason: "error" };
+        catch (error) {
+            if (error instanceof Error) {
+                return { success: false, reason: error.message };
+            }
+            else {
+                return { success: false, reason: "Unknown error" };
+            }
         }
-        switch (res.status) {
-            case 200:
-                return { success: true, token: data.token };
-            case 404:
-                return { success: false, reason: "not_found" };
-            case 401:
-                return { success: false, reason: "invalid" };
-            default:
-                return { success: false, reason: "error" };
-        }
-    }
-    catch (error) {
-        console.log(error);
-        return { success: false, reason: "error 2" };
     }
 }
+export default new AuthService(API_SERVICE_LINK);
 //# sourceMappingURL=auth.service.js.map

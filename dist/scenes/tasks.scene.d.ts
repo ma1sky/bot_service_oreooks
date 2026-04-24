@@ -1,4 +1,4 @@
-import { BaseScene } from "telegraf/scenes";
 import type { BotContext } from "../config/types.js";
-export declare const taskScene: BaseScene<BotContext>;
+import { Scenes } from "telegraf";
+export declare const taskScene: Scenes.BaseScene<BotContext>;
 //# sourceMappingURL=tasks.scene.d.ts.map

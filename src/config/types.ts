@@ -1,9 +1,10 @@
 import { Scenes } from "telegraf"
 
-export type TaskState = {
-    title?: string
-    description?: string
-    deadline?: Date
+export type Task = {
+    id?: number,
+    title?: string,
+    description?: string,
+    deadline?: Date,
 }
 
 export type AuthResult = {
@@ -13,24 +14,30 @@ export type AuthResult = {
 }
 
 export interface SessionData extends Scenes.WizardSessionData {
-    auth : {
+    authScene: {
         login: string,
         password: string,
         isAuth?: boolean
     },
-
-    menu : {
-        tasks: {
-            title? : string,
-            description?: string,
-            deadline? : Date
-        }[]
+    
+    taskScene: {
+        currentTaskIndex: number,
+        currentsTaskID: number,
+        tasks: Task[]
     },
+
+    scheduleScene: {
+        currentScheduleIndex: number,
+        currentScheduleID: number,
+        currentDate: Date,
+        schedules: Schedule[]
+    }
+        
 }
 
 export type BotContext = Scenes.WizardContext<SessionData> & {
     wizard: {
-        state: TaskState;
+        state: Task;
     }
 };
 

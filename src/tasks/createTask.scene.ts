@@ -1,6 +1,6 @@
 import { Scenes } from 'telegraf'
 import type { BotContext } from '../config/types.js'
-import tasksService from '../services/tasks.service.js'
+import tasksService from '../base/tasks.service.js'
 import { getMessageText } from '../scenes/utils/utils.js'
 
 type CreateTaskState = {

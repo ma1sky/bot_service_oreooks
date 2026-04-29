@@ -1,6 +1,6 @@
 import { Markup, Scenes } from "telegraf";
-import type { BotContext } from "../config/types.js";
-import ScheduleService from "../base/schedule.service.js";
+import type { BotContext } from "../config/types";
+import ScheduleService from "./schedule.service";
 
 
 export const scheduleScene = new Scenes.BaseScene<BotContext>('scheduleScene');

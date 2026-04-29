@@ -1,4 +1,4 @@
-import type { BotContext } from "../../config/types.js"
+import type { BotContext } from "../config/types"
 
 export function getMessageText(ctx: BotContext): string {
   if (!ctx.message || !("text" in ctx.message)) {

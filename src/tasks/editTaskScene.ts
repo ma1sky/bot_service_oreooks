@@ -1,7 +1,7 @@
 import { Scenes } from 'telegraf'
-import type { BotContext, Task } from '../config/types.js'
-import tasksService from './tasks.service.js'
-import { getMessageText } from '../utils/utils.js'
+import type { BotContext, Task } from '../config/types'
+import tasksService from './tasks.service'
+import { getMessageText } from '../utils/utils'
 
 type EditTaskState = {
   taskId?: number

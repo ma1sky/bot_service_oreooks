@@ -1,6 +1,6 @@
-import { API_SERVICE_LINK } from "../config/env.config.js";
-import type { Task } from "../config/types.js";
-import BaseService from "./base.service.js";
+import { API_SERVICE_LINK } from "../config/env.config";
+import type { Task } from "../config/types";
+import BaseService from "../base/base.service";
 
 class TaskService extends BaseService {
 

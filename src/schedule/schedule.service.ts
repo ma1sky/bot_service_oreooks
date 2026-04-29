@@ -1,5 +1,5 @@
-import { API_SERVICE_LINK } from "../config/env.config.js";
-import BaseService from "./base.service.js";
+import { API_SERVICE_LINK } from "../config/env.config";
+import BaseService from "../base/base.service";
 
 class ScheduleService extends BaseService {
 	async getSchedule(id: number, date: Date) {

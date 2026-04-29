@@ -1,5 +1,5 @@
-import type { BotContext } from "../config/types.js"
-import { getSession } from "../utils/utils.js"
+import type { BotContext } from "../config/types"
+import { getSession } from "../utils/utils"
 import { Markup } from "telegraf"
 
 export function formatTask(title: string, description: string, deadline: Date): string {

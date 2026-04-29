@@ -1,5 +1,5 @@
-import { API_SERVICE_LINK } from "../config/env.config.js";
-import BaseService from "./base.service.js";
+import { API_SERVICE_LINK } from "../config/env.config";
+import BaseService from "../base/base.service";
 
 class AuthService extends BaseService {
     async authUser(login: string, password: string, tg_id: number) {

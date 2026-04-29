@@ -1,8 +1,8 @@
 import { Scenes } from 'telegraf'
-import type { BotContext, Task } from '../config/types.js'
-import tasksService from './tasks.service.js'
-import { getSession } from "../utils/utils.js"
-import { renderCurrentTask } from './tasks.messages.js'
+import type { BotContext, Task } from '../config/types'
+import tasksService from './tasks.service'
+import { getSession } from "../utils/utils"
+import { renderCurrentTask } from './tasks.messages'
 
 export const tasksScene = new Scenes.BaseScene<BotContext>('tasksScene')
 

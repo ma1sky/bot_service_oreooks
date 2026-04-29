@@ -134,7 +134,8 @@ tasksScene.action('deleteTask', async (ctx) => {
 })
 
 tasksScene.action('markComplete', async (ctx) => {
-  await ctx.answerCbQuery('Пока не реализовано')
+  await ctx.answerCbQuery();
+  
 })
 
 tasksScene.action('editTask', async (ctx) => {

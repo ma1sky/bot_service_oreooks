@@ -7,10 +7,12 @@
     
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
+    "allowImportingTsExtensions": false,
 
     // Environment Settings
     // See also https://aka.ms/tsconfig/module
-    "module": "nodenext",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
     "target": "esnext",
     "types": ["node"],
     // For nodejs:

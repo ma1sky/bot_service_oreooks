@@ -1,7 +1,7 @@
 import { Scenes } from "telegraf";
 import type { BotContext } from "../config/types.js";
-import { formatGreeting } from "../messages/auth.message.js";
-import authService from "../services/auth.service.js";
+import { formatGreeting } from "./auth.message.js";
+import authService from "./auth.service.js";
 
 export const authScene = new Scenes.BaseScene<BotContext>("auth");
 

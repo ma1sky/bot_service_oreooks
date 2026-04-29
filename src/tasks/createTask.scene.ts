@@ -1,17 +1,16 @@
 import { Scenes } from 'telegraf'
-import type { BotContext, Task } from '../config/types.js'
+import type { BotContext } from '../config/types.js'
 import tasksService from '../services/tasks.service.js'
-import { getMessageText } from './utils/utils.js'
+import { getMessageText } from '../scenes/utils/utils.js'
 
-type EditTaskState = {
-  taskId?: number
+type CreateTaskState = {
   title?: string
   description?: string
   deadline?: Date
 }
 
-export const editTaskScene = new Scenes.WizardScene<BotContext>(
-  'editTaskScene',
+export const createTaskScene = new Scenes.WizardScene<BotContext>(
+  'createTaskScene',
 
   async (ctx) => {
     await ctx.reply('✏️ Введи заголовок задачи:')
@@ -19,7 +18,7 @@ export const editTaskScene = new Scenes.WizardScene<BotContext>(
   },
 
   async (ctx) => {
-    const state = ctx.wizard.state as EditTaskState
+    const state = ctx.wizard.state as CreateTaskState
 
     state.title = getMessageText(ctx)
 
@@ -28,7 +27,7 @@ export const editTaskScene = new Scenes.WizardScene<BotContext>(
   },
 
   async (ctx) => {
-    const state = ctx.wizard.state as EditTaskState
+    const state = ctx.wizard.state as CreateTaskState
 
     state.description = getMessageText(ctx)
 
@@ -37,14 +36,14 @@ export const editTaskScene = new Scenes.WizardScene<BotContext>(
   },
 
   async (ctx) => {
-    const state = ctx.wizard.state as EditTaskState
+    const state = ctx.wizard.state as CreateTaskState
 
     const dateString = getMessageText(ctx)
 
     const match = dateString.match(/^(\d{2})\.(\d{2})\.(\d{4})$/)
 
     if (!match) {
-      await ctx.reply('❌ Неверный формат даты')
+      await ctx.reply('❌ Неверный формат даты. Используй дд.мм.гггг')
       return
     }
 
@@ -58,29 +57,23 @@ export const editTaskScene = new Scenes.WizardScene<BotContext>(
 
     state.deadline = deadline
 
-    if (!state.taskId) {
-      await ctx.reply('❌ Задача не найдена')
-      return ctx.scene.enter('tasksScene')
-    }
-
     try {
-      const task: Task = {
-        id: state.taskId,
-        title: state.title!,
-        description: state.description!,
-        deadline: state.deadline!
-      }
-
-      const result = await tasksService.updateTask(task, ctx.from!.id)
+      const result = await tasksService.createTask(
+        state.title!,
+        state.description!,
+        state.deadline,
+        ctx.from!.id
+      )
 
       if (!result.success) {
-        await ctx.reply('❌ Не удалось отредактировать задачу: ' + result.reason)
+        await ctx.reply('❌ Не удалось создать задачу: ' + result.reason)
         return ctx.scene.enter('menuScene')
       }
 
-      await ctx.reply('✅ Задача успешно отредактирована!')
-    } catch {
-      await ctx.reply('❌ Не удалось отредактировать задачу')
+      await ctx.reply('✅ Задача успешно создана!')
+    } catch (err) {
+      console.error(err)
+      await ctx.reply('❌ Ошибка при создании задачи')
     }
 
     return ctx.scene.enter('menuScene')

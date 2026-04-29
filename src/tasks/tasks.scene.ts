@@ -1,8 +1,8 @@
-import { Markup, Scenes } from 'telegraf'
+import { Scenes } from 'telegraf'
 import type { BotContext, Task } from '../config/types.js'
-import { formatTask } from '../messages/tasks.messages.js'
-import tasksService from '../services/tasks.service.js'
-import { getSession } from './utils/utils.js'
+import tasksService from './tasks.service.js'
+import { getSession } from "../utils/utils.js"
+import { renderCurrentTask } from './tasks.messages.js'
 
 export const tasksScene = new Scenes.BaseScene<BotContext>('tasksScene')
 
@@ -39,40 +39,6 @@ tasksScene.enter(async (ctx) => {
     return ctx.scene.enter('menuScene')
   }
 })
-
-async function renderCurrentTask(ctx: BotContext) {
-  const state = getSession(ctx)
-  const task = state.tasks[state.currentIndex]
-
-  if (!task) {
-    await ctx.reply('Задача не найдена')
-    return ctx.scene.enter('menuScene')
-  }
-
-  const total = state.tasks.length
-  const index = state.currentIndex + 1
-
-  await ctx.reply(
-    `📚 Задача ${index}/${total}, ID:${task.id}\n\n` +
-      formatTask(
-        task.title ?? '',
-        task.description ?? '',
-        task.deadline ? new Date(task.deadline) : new Date()
-      ),
-    Markup.inlineKeyboard([
-      [
-        Markup.button.callback('◀️', 'prevTask'),
-        Markup.button.callback('📋 Меню', 'openMenu'),
-        Markup.button.callback('▶️', 'nextTask')
-      ],
-      [
-        Markup.button.callback('✅ Завершить', 'markComplete'),
-        Markup.button.callback('✏️ Редактировать', 'editTask'),
-        Markup.button.callback('🗑️ Удалить', 'deleteTask')
-      ]
-    ])
-  )
-}
 
 tasksScene.action('nextTask', async (ctx) => {
   await ctx.answerCbQuery()
@@ -121,7 +87,7 @@ tasksScene.action('deleteTask', async (ctx) => {
     return
   }
 
-  state.tasks = state.tasks.filter(t => t.id !== task.id)
+  state.tasks = state.tasks.filter((t: Task) => t.id !== task.id)
 
   if (state.tasks.length === 0) {
     await ctx.reply('Все задачи удалены')

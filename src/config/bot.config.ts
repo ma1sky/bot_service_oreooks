@@ -1,12 +1,12 @@
 import { Telegraf, session, Scenes } from 'telegraf'
 import type { BotContext } from './types.js';
 import { BOT_TOKEN } from './env.config.js';
-import { authScene } from '../scenes/auth.scene.js';
-import { menuScene } from '../scenes/menu.scene.js';
-import { createTaskScene } from '../scenes/createTask.scene.js';
-import { scheduleScene } from '../scenes/schedule.scene.js';
-import { tasksScene } from '../scenes/tasks.scene.js';
-import { editTaskScene } from '../scenes/editTaskScene.js';
+import { authScene } from '../auth/auth.scene.js';
+import { menuScene } from '../menu/menu.scene.js';
+import { createTaskScene } from '../tasks/createTask.scene.js';
+import { scheduleScene } from '../schedule/schedule.scene.js';
+import { tasksScene } from '../tasks/tasks.scene.js';
+import { editTaskScene } from '../tasks/editTaskScene.js';
 
 export default function startBot(): Telegraf<BotContext> {
 	

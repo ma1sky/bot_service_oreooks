@@ -1,11 +1,15 @@
 import redis from '../config/redis.config'
 
-class Session<Type> {
-	private prefix = "";
+export default class Session<Type> {
+	private prefix: string;
+	constructor(prefix: string) {
+		this.prefix = prefix;
+	}
 
 	async get(userId: number): Promise<Type> {
 		const data = await redis.get(this.key(userId));
-		return data ? JSON.parse(data) : {};
+
+		return data? JSON.parse(data) : {} as Type;
 	}
 
 	async set(userId: number, data: Type) {
@@ -36,6 +40,4 @@ class Session<Type> {
 	private key(userId: number) {
 		return `${this.prefix}${userId}`;
 	}
-}
-
-export default new Session();
+};

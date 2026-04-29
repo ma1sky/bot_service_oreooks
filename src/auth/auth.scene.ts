@@ -6,13 +6,27 @@ import authService from "./auth.service";
 export const authScene = new Scenes.BaseScene<BotContext>("auth");
 
 authScene.enter(async (ctx) => {
+    const auth = ctx.scene.session.authScene;
+
 	ctx.scene.session.authScene = {
         login: "",
         password: "",
         isAuth: false
     };
 
-	ctx.reply(formatGreeting(ctx.from?.first_name as string));
+    const result = await authService.authUser(
+        auth.login,
+        auth.password,
+        ctx.from?.id as number
+    );
+
+    auth.isAuth = result.success;
+
+    if (auth.isAuth) {
+        ctx.scene.enter('menuScene')
+    } else {
+        ctx.reply(formatGreeting(ctx.from?.first_name as string));
+    }
 });
 
 authScene.on("text", async (ctx) => {

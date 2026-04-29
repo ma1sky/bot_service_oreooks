@@ -6,13 +6,14 @@ import authService from "./auth.service";
 export const authScene = new Scenes.BaseScene<BotContext>("auth");
 
 authScene.enter(async (ctx) => {
-    const auth = ctx.scene.session.authScene;
-
-	ctx.scene.session.authScene = {
+    
+    ctx.scene.session.authScene = {
         login: "",
         password: "",
         isAuth: false
     };
+    
+    const auth = ctx.scene.session.authScene;
 
     const result = await authService.authUser(
         auth.login,

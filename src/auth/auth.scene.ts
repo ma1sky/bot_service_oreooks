@@ -8,8 +8,8 @@ export const authScene = new Scenes.BaseScene<BotContext>("auth");
 authScene.enter(async (ctx) => {
     
     ctx.scene.session.authScene = {
-        login: "",
-        password: "",
+        login: "-",
+        password: "-",
         isAuth: false
     };
     
@@ -43,11 +43,7 @@ authScene.on("text", async (ctx) => {
         auth.password = ctx.message.text;
 
         try {
-			console.log({
-				login: auth.login,
-				password: auth.password,
-				tg_id: ctx.from.id
-			});
+
             const result = await authService.authUser(
                 auth.login,
                 auth.password,

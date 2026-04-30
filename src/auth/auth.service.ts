@@ -9,6 +9,8 @@ class AuthService extends BaseService {
                 headers: this.headers,
                 body: JSON.stringify({ login, password, tg_id })
             });
+            
+            console.log(`${this.base}/auth`);
 
             const data = await this.parseResponse(res);
 

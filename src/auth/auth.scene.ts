@@ -53,7 +53,7 @@ authScene.on("text", async (ctx) => {
             auth.isAuth = result.success;
 
             if (!result.success) {
-                return ctx.reply("Ошибка авторизации: " + result.reason);
+                return ctx.reply("Ошибка авторизации: " + result);
             }
 
             await ctx.reply("Авторизация успешна!");

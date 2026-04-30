@@ -31,7 +31,7 @@ export default class BaseService {
                 return { success: false, reason: "invalid" };
 
             case 404:
-                return { success: false, reason: "not_found" };
+                return { success: false, reason: data.message };
 
             case 500:
                 return { success: false, reason: "server_error" };

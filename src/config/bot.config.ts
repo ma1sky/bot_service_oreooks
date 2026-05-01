@@ -3,10 +3,10 @@ import type { BotContext } from './types';
 import { BOT_TOKEN } from './env.config';
 import { authScene } from '../auth/auth.scene';
 import { menuScene } from '../menu/menu.scene';
-import { createTaskScene } from '../tasks/tasks.create.scene';
+import { createTaskScene } from '../tasks/scenes/tasks.create.scene';
 import { scheduleScene } from '../schedule/schedule.scene';
-import { tasksScene } from '../tasks/tasks.show.scene';
-import { editTaskScene } from '../tasks/tasks.edit.scene';
+import { tasksScene } from '../tasks/scenes/tasks.show.scene';
+import { editTaskScene } from '../tasks/scenes/tasks.edit.scene';
 
 export default function startBot(): Telegraf<BotContext> {
 	

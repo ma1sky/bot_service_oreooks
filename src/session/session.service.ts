@@ -1,28 +1,33 @@
 import redis from '../config/redis.config'
 
-export default class Session<Type> {
+type BaseSession = {
+  updatedAt?: number
+}
+
+export default class Session<Type extends BaseSession> {
 	private prefix: string;
+
 	constructor(prefix: string) {
 		this.prefix = prefix;
 	}
 
-	async get(userId: number): Promise<Type> {
-		const data = await redis.get(this.key(userId));
+	async get(key: number): Promise<Type> {
+		const data = await redis.get(this.key(key));
 
 		return data? JSON.parse(data) : {} as Type;
 	}
 
-	async set(userId: number, data: Type) {
+	async set(key: number, data: Type) {
 		await redis.set(
-			this.key(userId),
+			this.key(key),
 			JSON.stringify(data),
 			"EX",
 			60 * 60 * 24
 		);
 	}
 
-	async update(userId: number, partial: Partial<Type>) {
-		const current = await this.get(userId);
+	async update(key: number, partial: Partial<Type>) {
+		const current = await this.get(key);
 
 		const updated = {
 			...current,
@@ -30,14 +35,14 @@ export default class Session<Type> {
 			updatedAt: Date.now(),
 		};
 
-		await this.set(userId, updated);
+		await this.set(key, updated);
 	}
 
-	async clear(userId: number) {
-		await redis.del(this.key(userId));
+	async clear(key: number) {
+		await redis.del(this.key(key));
 	}
 
-	private key(userId: number) {
-		return `${this.prefix}${userId}`;
+	private key(key: number) {
+		return `${this.prefix}:${key}`;
 	}
 };

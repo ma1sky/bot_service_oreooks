@@ -8,8 +8,8 @@ export const authScene = new Scenes.BaseScene<BotContext>("auth");
 authScene.enter(async (ctx) => {
     
     ctx.scene.session.authScene = {
-        login: "-",
-        password: "-",
+        login: "",
+        password: "",
         isAuth: false
     };
     

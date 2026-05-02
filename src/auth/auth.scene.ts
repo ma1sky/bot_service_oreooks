@@ -2,65 +2,69 @@ import { Scenes } from "telegraf";
 import type { BotContext } from "../config/types";
 import { formatGreeting } from "./auth.message";
 import authService from "./auth.service";
+import { SessionDraft } from "../session/session.types";
+import { AuthSession, SessionData } from "../session/session";
 
 export const authScene = new Scenes.BaseScene<BotContext>("auth");
 
 authScene.enter(async (ctx) => {
-    
-    ctx.scene.session.authScene = {
-        login: "",
-        password: "",
-        isAuth: false
-    };
-    
-    const auth = ctx.scene.session.authScene;
+    const tgId = ctx.from!.id;
 
-    const result = await authService.authUser(
-        auth.login,
-        auth.password,
-        ctx.from?.id as number
-    );
+    await SessionData.set(tgId, {
+        scene: "auth",
+        step: "login"
+    });
 
-    auth.isAuth = result.success;
-
-    if (auth.isAuth) {
-        ctx.scene.enter('menuScene')
-    } else {
-        ctx.reply(formatGreeting(ctx.from?.first_name as string));
-    }
+    await ctx.reply(formatGreeting(ctx.from!.first_name));
 });
 
 authScene.on("text", async (ctx) => {
-    const auth = ctx.scene.session.authScene;
+    const tgId: number = ctx.from.id;
+    const session: SessionDraft = await SessionData.get(tgId);
 
-    if (!auth.login) {
-        auth.login = ctx.message.text;
+    switch (session.step) {
+        case "login": {
+            await AuthSession.update(tgId, {
+                login: ctx.message.text
+            });
 
-        return ctx.reply("Введите пароль:");
-    }
+            await SessionData.set(tgId, {
+                scene: "auth",
+                step: "password"
+            });
 
-    if (!auth.password) {
-        auth.password = ctx.message.text;
+            return ctx.reply("Теперь введите пароль:");
+        }
 
-        try {
+        case "password": {
+            await AuthSession.update(tgId, {
+                password: ctx.message.text
+            });
 
-            const result = await authService.authUser(
+            const auth = await AuthSession.get(tgId);
+            const res = await authService.authUser(
                 auth.login,
                 auth.password,
-                ctx.from?.id as number
+                tgId
             );
 
-            auth.isAuth = result.success;
+            if (!res.success) {
+                await SessionData.set(tgId, {
+                    scene: "auth",
+                    step: "login"
+                });
 
-            if (!result.success) {
-                return ctx.reply("Ошибка авторизации: " + result);
+                return ctx.reply("Ошибка авторизации: " + res.reason);
             }
 
             await ctx.reply("Авторизация успешна!");
-            return ctx.scene.enter("menuScene");
+            await AuthSession.clear(tgId);
+            await SessionData.set(tgId, {
+                scene: "menu",
+                step: "menu"
+            });
 
-        } catch (err) {
-            return ctx.reply("Ошибка сервера. Попробуйте позже.");
+            return ctx.scene.enter("menuScene");
         }
     }
 });

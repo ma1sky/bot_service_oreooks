@@ -5,13 +5,13 @@ import authService from "./auth.service";
 import { SessionDraft } from "../session/session.types";
 import { AuthSession, SessionData } from "../session/session";
 
-export const authScene = new Scenes.BaseScene<BotContext>("auth");
+export const authScene = new Scenes.BaseScene<BotContext>("authScene");
 
 authScene.enter(async (ctx) => {
     const tgId = ctx.from!.id;
 
     await SessionData.set(tgId, {
-        scene: "auth",
+        scene: "authScene",
         step: "login"
     });
 
@@ -29,7 +29,7 @@ authScene.on("text", async (ctx) => {
             });
 
             await SessionData.set(tgId, {
-                scene: "auth",
+                scene: "authScene",
                 step: "password"
             });
 
@@ -50,7 +50,7 @@ authScene.on("text", async (ctx) => {
 
             if (!res.success) {
                 await SessionData.set(tgId, {
-                    scene: "auth",
+                    scene: "authScene",
                     step: "login"
                 });
 
@@ -60,7 +60,7 @@ authScene.on("text", async (ctx) => {
             await ctx.reply("Авторизация успешна!");
             await AuthSession.clear(tgId);
             await SessionData.set(tgId, {
-                scene: "menu",
+                scene: "menuScene",
                 step: "menu"
             });
 

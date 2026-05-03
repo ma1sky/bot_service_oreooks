@@ -1,5 +1,4 @@
 import { Telegraf, session, Scenes } from 'telegraf'
-import type { BotContext } from './types';
 import { BOT_TOKEN } from './env.config';
 import { authScene } from '../auth/auth.scene';
 import { menuScene } from '../menu/menu.scene';
@@ -7,16 +6,20 @@ import { createTaskScene } from '../tasks/scenes/tasks.create.scene';
 import { scheduleScene } from '../schedule/schedule.scene';
 import { tasksScene } from '../tasks/scenes/tasks.show.scene';
 import { editTaskScene } from '../tasks/scenes/tasks.edit.scene';
+import { SessionData } from '../session/session';
 
-export default function startBot(): Telegraf<BotContext> {
+export default function startBot(): Telegraf {
+	const bot = new Telegraf(BOT_TOKEN as string);
 	
-	const stage = new Scenes.Stage<BotContext>([authScene, menuScene, createTaskScene, scheduleScene, tasksScene, editTaskScene]);
-	
-	const bot = new Telegraf<BotContext>(BOT_TOKEN as string);
-	
-	bot.use(session());
-	bot.use(stage.middleware());
-	bot.on('text', async ctx => ctx.scene.enter('auth'));
+	bot.on('message', async ctx => {
+		const tgId = ctx.from.id;
+		const session = await SessionData.get(tgId);
+		if (!session.scene) {
+
+		} else {
+
+		}
+	});
 	
 	bot.catch((err, ctx) => {
 		console.error('Ошибка:', err)

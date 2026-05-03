@@ -3,12 +3,12 @@ export type AuthStep =
     | "password"
 
 export type TaskStep =
-    | "task_title"
-    | "task_description"
-    | "task_deadline"
+    | "taskTitle"
+    | "taskDescription"
+    | "taskDeadline"
 
 export type SessionDraft =
-  | { scene: "auth"; step: AuthStep }
-  | { scene: "taskCreate"; step: TaskStep }
-  | { scene: "taskEdit"; step: TaskStep }
-  | { scene: "menu"; step: 'menu' }
+  | { scene: "authScene"; step: AuthStep }
+  | { scene: "taskCreateScene"; step: TaskStep }
+  | { scene: "taskEditScene"; step: TaskStep }
+  | { scene: "menuScene"; step: 'menu' }

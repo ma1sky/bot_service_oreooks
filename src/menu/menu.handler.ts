@@ -1,49 +1,50 @@
 import { Markup } from "telegraf";
 import type { BotContext } from "../config/types";
 import { SessionData } from "../session/session";
+import router from '../router/router'
 
 export async function menuHandler(ctx: BotContext) {
     const tgId = ctx.from!.id;
 
     if ("callback_query" in ctx.update) {
-        const data = ctx.callbackQuery.data;
+        if (!ctx.callbackQuery || !('data' in ctx.callbackQuery)) {
+	        return;
+        }
 
+        const data = ctx.callbackQuery.data;
         await ctx.answerCbQuery();
 
         switch (data) {
-            case "createTask":
+            case "createTask": {
                 await SessionData.update(tgId, {
-                    scene: "createTaskScene",
-                    step: "start"
+                    scene: "taskCreateScene",
+                    step: "taskTitle"
                 });
-                return ctx.reply("Переход к созданию задачи");
-
-            case "openSchedule":
+                break;
+            }
+            case "openSchedule": {
                 await SessionData.update(tgId, {
                     scene: "scheduleScene",
-                    step: "start"
+                    step: "schedule"
                 });
-                return ctx.reply("Открываю расписание");
+                break;
+            }
 
             case "openTasks":
                 await SessionData.update(tgId, {
                     scene: "tasksScene",
-                    step: "start"
+                    step: "tasks"
                 });
-                return ctx.reply("Открываю задачи");
 
             case "openEvents":
                 await SessionData.update(tgId, {
                     scene: "eventsScene",
-                    step: "start"
+                    step: ""
                 });
-                return ctx.reply("Открываю мероприятия");
-        }
-
-        return;
+            }
+        return router.route(ctx);
     }
 
-    // 👉 если это обычное сообщение — показать меню
     return ctx.reply(
         "📋 Меню:",
         Markup.inlineKeyboard([

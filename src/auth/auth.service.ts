@@ -2,12 +2,12 @@ import { API_SERVICE_LINK } from "../config/env.config";
 import BaseService from "../base/base.service";
 
 class AuthService extends BaseService {
-    async authUser(login: string, password: string, tg_id: number) {
+    async authUser(login: string, password: string, tgId: number) {
         try {
             const res = await fetch(`${this.base}/auth`, {
                 method: "POST",
                 headers: this.headers,
-                body: JSON.stringify({ login, password, tg_id })
+                body: JSON.stringify({ login, password, tgId })
             });
 
             const data = await this.parseResponse(res);

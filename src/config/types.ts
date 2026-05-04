@@ -58,6 +58,7 @@ export type AuthStep =
     | "login"
     | "password"
 
+
 export type TaskStep =
     | "taskTitle"
     | "taskDescription"
@@ -68,9 +69,14 @@ export type SessionScenes =
     | "taskCreateScene"
     | "taskEditScene"
     | "menuScene"
+    | "scheduleScene"
+    | "tasksScene"
+    | "eventsScene"
 
 export type SessionDraft =
     | { scene: SessionScenes; step: AuthStep }
     | { scene: SessionScenes; step: TaskStep }
-    | { scene: SessionScenes; step: TaskStep }
     | { scene: SessionScenes; step: 'menu' }
+    | { scene: SessionScenes; step: 'schedule' }
+    | { scene: SessionScenes; step: 'tasks' }
+    | { scene: SessionScenes; step: ''}

@@ -3,6 +3,7 @@ import authService from "./auth.service";
 import { AuthSession } from "../session/session";
 import { SessionData } from "../session/session";
 import { SessionDraft } from "../config/types";
+import router from '../router/router';
 
 export async function authHandler(ctx: BotContext) {
     const tgId = ctx.from!.id;
@@ -65,6 +66,7 @@ export async function authHandler(ctx: BotContext) {
                 step: "menu"
             });
 
+            return router.route(ctx)
         }
     }
 }

@@ -3,20 +3,7 @@ import { BOT_TOKEN } from './env.config'
 import { SessionData } from '../session/session'
 import { BotContext } from './types'
 import { formatGreeting } from '../auth/auth.message'
-import { authHandler } from '../auth/auth.handler'
-import { menuHandler } from '../menu/menu.handler'
-import { tasksHandler, taskCreateHandler, taskEditHandler } from '../tasks/tasks.handler'
-import { scheduleHandler } from '../schedule/schedule.handler'
-import type { SessionScenes, SceneHandler } from './types'
-
-const handlers: Record<SessionScenes, SceneHandler> = {
-	authScene: authHandler,
-	menuScene: menuHandler,
-	tasksScene: tasksHandler,
-	scheduleScene: scheduleHandler,
-	taskCreateScene: taskCreateHandler,
-	taskEditScene: taskEditHandler
-}
+import router from '../router/router'
 
 export default function startBot(): Telegraf<BotContext> {
 	const bot = new Telegraf<BotContext>(BOT_TOKEN as string)
@@ -36,15 +23,7 @@ export default function startBot(): Telegraf<BotContext> {
 	})
 
 	bot.on(["message", "callback_query"], async (ctx) => {
-		const session = ctx.session
-
-		const handler = handlers[session.scene]
-
-		if (!handler) {
-			return ctx.reply('Неопределенная ошибка')
-		}
-
-		return handler(ctx)
+		router.route(ctx);
 	})
 
 	bot.start(async (ctx) => {

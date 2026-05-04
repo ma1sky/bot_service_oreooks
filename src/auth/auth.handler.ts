@@ -1,21 +1,21 @@
-import type { BotContext } from "../config/types";
+import type { BotContext, MenuStep } from "../config/types";
 import authService from "./auth.service";
 import { AuthSession } from "../session/session";
 import { SessionData } from "../session/session";
 import { SessionDraft } from "../config/types";
 import router from '../router/router';
+import { BaseHandler } from "../base/base.handler";
 
-export async function authHandler(ctx: BotContext) {
-    const tgId = ctx.from!.id;
-    
-    if (!ctx.message || !("text" in ctx.message)) {
-        return ctx.reply("Отправьте текст");
-    }
+export class AuthHandler extends BaseHandler {
+    private actions = {
+        login: async (ctx: BotContext) => {
+            const tgId: number = ctx.from!.id
+            if (!ctx.message || !("text" in ctx.message)) {
+                return ctx.reply("Отправьте текст");
+            }
 
-    const text = ctx.message.text;
-    
-    switch (ctx.session.step) {
-        case "login": {
+            const text = ctx.message.text;
+
             await AuthSession.update(tgId, {
                 login: text
             });
@@ -26,47 +26,61 @@ export async function authHandler(ctx: BotContext) {
             });
 
             return ctx.reply("Теперь введите пароль:");
-        }
-
-        case "password": {
-            await AuthSession.update(tgId, {
-                password: text
-            });
-
-            const auth = await AuthSession.get(tgId);
-            
-            if (!auth?.login || !auth?.password) {
-                await AuthSession.clear(ctx.from!.id);
-                await SessionData.set(ctx.from!.id, {
-                    scene: "authScene",
-                    step: "login"
-                } as SessionDraft)
-                return ctx.reply('Введите данные заново.')
+        }, 
+        
+        password: async (ctx: BotContext) => {
+            const tgId: number = ctx.from!.id
+            if (!ctx.message || !("text" in ctx.message)) {
+                return ctx.reply("Отправьте текст");
             }
-            
-            const res = await authService.authUser(
-                auth.login,
-                auth.password,
-                tgId
-            );
 
-            if (!res.success) {
-                await SessionData.set(tgId, {
-                    scene: "authScene",
-                    step: "login"
+            const text = ctx.message.text;
+
+            await AuthSession.update(tgId, {
+                    password: text
                 });
 
-                return ctx.reply("Ошибка авторизации: " + res.reason);
-            }
+                const auth = await AuthSession.get(tgId);
+                
+                if (!auth?.login || !auth?.password) {
+                    await AuthSession.clear(ctx.from!.id);
+                    await SessionData.set(ctx.from!.id, {
+                        scene: "authScene",
+                        step: "login"
+                    } as SessionDraft)
+                    return ctx.reply('Введите данные заново.')
+                }
+                
+                const res = await authService.authUser(
+                    auth.login,
+                    auth.password,
+                    tgId
+                );
 
-            await ctx.reply("Авторизация успешна!");
-            await AuthSession.clear(tgId);
-            await SessionData.set(tgId, {
-                scene: "menuScene",
-                step: "menu"
-            });
+                if (!res.success) {
+                    await SessionData.set(tgId, {
+                        scene: "authScene",
+                        step: "login"
+                    });
 
-            return router.route(ctx)
+                    return ctx.reply("Ошибка авторизации: " + res.reason);
+                }
+
+                await ctx.reply("Авторизация успешна!");
+                await AuthSession.clear(tgId);
+                await SessionData.set(tgId, {
+                    scene: "menuScene",
+                    step: "menu" as MenuStep
+                });
+
+                return router.route(ctx)
         }
+    }
+
+    override async handle(ctx: BotContext) {
+        if (!ctx.message || !("text" in ctx.message)) {
+                return ctx.reply("Отправьте текст");
+        }
+        const text = ctx.message.text;
     }
 }

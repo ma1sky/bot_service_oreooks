@@ -1,57 +1,65 @@
 import { Markup } from "telegraf";
-import type { BotContext } from "../config/types";
+import type { BotContext, MenuStep } from "../config/types";
 import { SessionData } from "../session/session";
 import router from '../router/router'
+import { BaseHandler } from "../base/base.handler";
 
-export async function menuHandler(ctx: BotContext) {
-    const tgId = ctx.from!.id;
+export class MenuHandler extends BaseHandler {
+    private actions = {
+        createTask: async (tgId: number) => {
+            await SessionData.update(tgId, {
+                scene: "taskCreateScene",
+                step: "taskTitle"
+            });
+        },
+        openSchedule: async (tgId: number) => {
+            await SessionData.update(tgId, {
+                scene: "scheduleScene",
+                step: "schedule"
+            });
+        },
+        openTasks: async (tgId: number) => {
+            await SessionData.update(tgId, {
+                scene: "tasksScene",
+                step: "tasks"
+            });
+        },
+        openEvents: async (tgId: number) => {
+            await SessionData.update(tgId, {
+                scene: "eventsScene",
+                step: ""
+            });
+        }
+    };
 
-    if ("callback_query" in ctx.update) {
-        if (!ctx.callbackQuery || !('data' in ctx.callbackQuery)) {
-	        return;
+    override async handle(ctx: BotContext) {
+        const tgId = ctx.from!.id;
+
+        if (ctx.session.step === "menu" as MenuStep) {
+            await ctx.reply(
+                "📋 Меню:",
+                Markup.inlineKeyboard([
+                    [Markup.button.callback("➕ Создать задачу", "createTask")],
+                    [Markup.button.callback("📆 Показать расписание", "openSchedule")],
+                    [Markup.button.callback("📚 Показать задачи", "openTasks")],
+                    [Markup.button.callback("📍 Контрольные мероприятия", "openEvents")]
+                ])
+            );
+
+            ctx.session.step = "idle";
+            return;
         }
 
-        const data = ctx.callbackQuery.data;
-        await ctx.answerCbQuery();
+        if (ctx.callbackQuery && "data" in ctx.callbackQuery) {
+            const data = ctx.callbackQuery.data;
 
-        switch (data) {
-            case "createTask": {
-                await SessionData.update(tgId, {
-                    scene: "taskCreateScene",
-                    step: "taskTitle"
-                });
-                break;
-            }
-            case "openSchedule": {
-                await SessionData.update(tgId, {
-                    scene: "scheduleScene",
-                    step: "schedule"
-                });
-                break;
-            }
+            await ctx.answerCbQuery();
 
-            case "openTasks":
-                await SessionData.update(tgId, {
-                    scene: "tasksScene",
-                    step: "tasks"
-                });
+            if (data in this.actions) {
+                await this.actions[data as keyof typeof this.actions](tgId);
 
-            case "openEvents":
-                await SessionData.update(tgId, {
-                    scene: "eventsScene",
-                    step: ""
-                });
+                return router.route(ctx);
             }
-        return router.route(ctx);
+        }
     }
-
-    return ctx.reply(
-        "📋 Меню:",
-        Markup.inlineKeyboard([
-            [Markup.button.callback("➕ Создать задачу", "createTask")],
-            [Markup.button.callback("📆 Показать расписание", "openSchedule")],
-            [Markup.button.callback("📚 Показать задачи", "openTasks")],
-            [Markup.button.callback("📍 Контрольные мероприятия", "openEvents")]
-        ])
-    );
 }

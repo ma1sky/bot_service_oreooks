@@ -73,10 +73,14 @@ export type SessionScenes =
     | "tasksScene"
     | "eventsScene"
 
+export type MenuStep = 
+    | "enter"
+    | "idle"
+
 export type SessionDraft =
     | { scene: SessionScenes; step: AuthStep }
     | { scene: SessionScenes; step: TaskStep }
-    | { scene: SessionScenes; step: 'menu' }
+    | { scene: SessionScenes; step: MenuStep }
     | { scene: SessionScenes; step: 'schedule' }
     | { scene: SessionScenes; step: 'tasks' }
     | { scene: SessionScenes; step: ''}

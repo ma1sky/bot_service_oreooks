@@ -3,10 +3,10 @@ import { BOT_TOKEN } from './env.config'
 import { SessionData } from '../session/session'
 import { BotContext } from './types'
 import { formatGreeting } from '../auth/auth.message'
-import router from '../router/router'
+import { Router } from '../router/router'
 
 export default function startBot(): Telegraf<BotContext> {
-	const bot = new Telegraf<BotContext>(BOT_TOKEN as string)
+	const bot = new Telegraf<BotContext>(BOT_TOKEN as string);
 
 	bot.use(async (ctx, next) => {
 		const id = ctx.from?.id

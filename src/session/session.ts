@@ -1,7 +1,7 @@
 import { AuthDraft } from '../auth/auth.types';
 import { TaskDraft } from '../tasks/tasks.types';
 import redis from '../config/redis.config';
-import { SessionDraft } from './session.types';
+import { SessionDraft } from '../config/types'
 
 export default class RedisClient<Type> {
 	constructor(prefix: string, ttl: number = 86400) {
@@ -11,16 +11,17 @@ export default class RedisClient<Type> {
 	private ttl: number;
 	private prefix: string;
 
-	async get(key: number): Promise<Type> {
+	async get(key: number): Promise<Type | null> {
 		const data = await redis.get(this.getKey(key));
 
+		if (!data) return null;
+
 		try {
-			return data ? JSON.parse(data) : {} as Type
+			return JSON.parse(data);
 		} catch {
-			return {} as Type
+			return null;
 		}
 	}
-
 	async set(key: number, data: Type) {
 		await redis.set(
 			this.getKey(key),
@@ -33,8 +34,10 @@ export default class RedisClient<Type> {
 	async update(key: number, partial: Partial<Type>) {
 		const current = await this.get(key);
 
-		const updated = {
-			...current,
+		const base = current ?? ({} as Type);
+
+		const updated: Type = {
+			...base,
 			...partial,
 		};
 

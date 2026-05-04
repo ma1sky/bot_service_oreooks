@@ -1,39 +1,69 @@
-import { Telegraf, session, Scenes } from 'telegraf'
-import { BOT_TOKEN } from './env.config';
-import { authScene } from '../auth/auth.scene';
-import { menuScene } from '../menu/menu.scene';
-import { createTaskScene } from '../tasks/scenes/tasks.create.scene';
-import { scheduleScene } from '../schedule/schedule.scene';
-import { tasksScene } from '../tasks/scenes/tasks.show.scene';
-import { editTaskScene } from '../tasks/scenes/tasks.edit.scene';
-import { SessionData } from '../session/session';
+import { Telegraf } from 'telegraf'
+import { BOT_TOKEN } from './env.config'
+import { SessionData } from '../session/session'
+import { BotContext } from './types'
+import { formatGreeting } from '../auth/auth.message'
+import { authHandler } from '../auth/auth.handler'
+import { menuHandler } from '../menu/menu.handler'
+import { tasksHandler, taskCreateHandler, taskEditHandler } from '../tasks/tasks.handler'
+import { scheduleHandler } from '../schedule/schedule.handler'
+import type { SessionScenes, SceneHandler } from './types'
 
-export default function startBot(): Telegraf {
-	const bot = new Telegraf(BOT_TOKEN as string);
-	
-	bot.on('message', async ctx => {
-		const tgId = ctx.from.id;
-		const session = await SessionData.get(tgId);
-		if (!session.scene) {
+const handlers: Record<SessionScenes, SceneHandler> = {
+	authScene: authHandler,
+	menuScene: menuHandler,
+	tasksScene: tasksHandler,
+	scheduleScene: scheduleHandler,
+	taskCreateScene: taskCreateHandler,
+	taskEditScene: taskEditHandler
+}
 
-		} else {
+export default function startBot(): Telegraf<BotContext> {
+	const bot = new Telegraf<BotContext>(BOT_TOKEN as string)
 
+	bot.use(async (ctx, next) => {
+		const id = ctx.from?.id
+		if (!id) return
+
+		ctx.session = await SessionData.get(id) ?? {
+			scene: 'authScene',
+			step: 'login'
 		}
-	});
-	
-	bot.catch((err, ctx) => {
-		console.error('Ошибка:', err)
-		ctx.reply('Что-то пошло не так!')
+
+		await next()
+
+		await SessionData.set(id, ctx.session)
 	})
-	
-	try {
-		bot.launch({
-			dropPendingUpdates: true  
-		})
-		console.log('Bot started')
-	} catch (err) {
-		console.error('Bot launch failed:', err)
-		process.exitCode = 1;
-	}
-	return bot;
+
+	bot.on(["message", "callback_query"], async (ctx) => {
+		const session = ctx.session
+
+		const handler = handlers[session.scene]
+
+		if (!handler) {
+			return ctx.reply('Неопределенная ошибка')
+		}
+
+		return handler(ctx)
+	})
+
+	bot.start(async (ctx) => {
+		ctx.session = {
+			scene: 'authScene',
+			step: 'login'
+		}
+
+		await SessionData.set(ctx.from.id, ctx.session)
+
+		return await ctx.reply(formatGreeting(ctx.from!.first_name));
+		
+	})
+
+	bot.catch((err, ctx) => {
+		console.error(`Error for ${ctx.from?.id}:`, err)
+	})
+
+	bot.launch()
+
+	return bot
 }

@@ -3,7 +3,7 @@ import { BOT_TOKEN } from './env.config'
 import { SessionData } from '../session/session'
 import { BotContext } from './types'
 import { formatGreeting } from '../auth/auth.message'
-import { Router } from '../router/router'
+import router from '../router/router'
 
 export default function startBot(): Telegraf<BotContext> {
 	const bot = new Telegraf<BotContext>(BOT_TOKEN as string);

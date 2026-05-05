@@ -13,22 +13,6 @@
 //     token?: string
 // }
 
-export type Schedule = {
-    week: number,
-    weekType: string,
-    dayOfWeek: string,
-    date: Date,
-    lessons: {
-        lesson_name: string
-        lesson_type: string,
-        lesson_number: number,
-        start: Date,
-        end: Date
-        teacher: string,
-        classroom: string
-    }[]
-}
-
 // export interface SessionData extends Scenes.WizardSessionData {
 //   authScene: {
 //     login: string
@@ -84,3 +68,19 @@ export type SessionDraft =
     | { scene: SessionScenes; step: 'schedule' }
     | { scene: SessionScenes; step: 'tasks' }
     | { scene: SessionScenes; step: ''}
+
+export type Schedule = {
+    week: number,
+    weekType: string,
+    dayOfWeek: string,
+    date: Date,
+    lessons: {
+        lesson_name: string
+        lesson_type: string,
+        lesson_number: number,
+        start: Date,
+        end: Date
+        teacher: string,
+        classroom: string
+    }[]
+}

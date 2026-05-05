@@ -20,9 +20,9 @@ export default class BaseService {
 
     protected checkResponse(status: number, data?: any) {
         switch (status) {
-            case 200:
+            case 200: return { success: true, data }
             case 201: return { success: true, data };
-            case 204: return { success: true };
+            case 204: return { success: true, data };
             case 401: return { success: false, reason: "invalid" };
             case 404: return { success: false, reason: "not_found" };
             case 500: return { success: false, reason: "server_error" };

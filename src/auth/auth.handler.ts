@@ -1,10 +1,10 @@
 import type { BotContext, MenuStep } from "../config/types";
 import authService from "./auth.service";
-import { AuthSession } from "../session/session";
-import { SessionData } from "../session/session";
+import { AuthSession, SessionData } from "../session/session";
 import { SessionDraft } from "../config/types";
 import router from '../router/router';
 import { BaseHandler } from "../base/base.handler";
+import { AuthStep } from "../config/types";
 
 export class AuthHandler extends BaseHandler {
     private actions = {
@@ -37,50 +37,59 @@ export class AuthHandler extends BaseHandler {
             const text = ctx.message.text;
 
             await AuthSession.update(tgId, {
-                    password: text
-                });
+                password: text
+            });
 
-                const auth = await AuthSession.get(tgId);
-                
-                if (!auth?.login || !auth?.password) {
-                    await AuthSession.clear(ctx.from!.id);
-                    await SessionData.set(ctx.from!.id, {
-                        scene: "authScene",
-                        step: "login"
-                    } as SessionDraft)
-                    return ctx.reply('Введите данные заново.')
-                }
-                
-                const res = await authService.authUser(
-                    auth.login,
-                    auth.password,
-                    tgId
-                );
+            const auth = await AuthSession.get(tgId);
+            
+            if (!auth?.login || !auth?.password) {
+                await AuthSession.clear(ctx.from!.id);
+                await SessionData.set(ctx.from!.id, {
+                    scene: "authScene",
+                    step: "login"
+                } as SessionDraft)
+                return ctx.reply('Введите данные заново.')
+            }
+            
+            const res = await authService.authUser(
+                auth.login,
+                auth.password,
+                tgId
+            );
 
-                if (!res.success) {
-                    await SessionData.set(tgId, {
-                        scene: "authScene",
-                        step: "login"
-                    });
-
-                    return ctx.reply("Ошибка авторизации: " + res.reason);
-                }
-
-                await ctx.reply("Авторизация успешна!");
-                await AuthSession.clear(tgId);
+            if (!res.success) {
                 await SessionData.set(tgId, {
-                    scene: "menuScene",
-                    step: "menu" as MenuStep
+                    scene: "authScene",
+                    step: "login"
                 });
 
-                return router.route(ctx)
+                return ctx.reply("Ошибка авторизации: " + res.reason);
+            }
+
+            await ctx.reply("Авторизация успешна!");
+            await AuthSession.clear(tgId);
+            await SessionData.set(tgId, {
+                scene: "menuScene",
+                step: "menu" as MenuStep
+            });
+
+            return router.route(ctx)
         }
     }
 
+    private isAuthStep(step: string): step is AuthStep {
+        return step === "login" || step === "password";
+    }
+
     override async handle(ctx: BotContext) {
-        if (!ctx.message || !("text" in ctx.message)) {
-                return ctx.reply("Отправьте текст");
+        const tgId = ctx.from!.id
+        const session = await SessionData.get(tgId)
+        const step = session?.step
+
+        if(step && this.isAuthStep(step)) {
+            await this.actions[step](ctx);
         }
-        const text = ctx.message.text;
+
+        return router.route(ctx);
     }
 }

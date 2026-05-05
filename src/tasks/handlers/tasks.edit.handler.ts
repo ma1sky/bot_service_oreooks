@@ -1,3 +1,5 @@
-export async function tasksEditHandler() {
-    
+import { BaseHandler } from "../../base/base.handler";
+
+export class TasksEditHandler extends BaseHandler {
+
 }

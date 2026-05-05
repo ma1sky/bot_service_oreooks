@@ -1,3 +1,5 @@
-export async function scheduleHandler() {
-    
+import { BaseHandler } from "../base/base.handler";
+
+export class ScheduleHandler extends BaseHandler {
+
 }

@@ -1,3 +1,5 @@
-export async function tasksViewHandler() {
-    
+import { BaseHandler } from "../../base/base.handler";
+
+export class TasksViewHandler extends BaseHandler {
+
 }

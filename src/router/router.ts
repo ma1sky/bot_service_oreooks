@@ -9,7 +9,7 @@ import { BaseHandler } from '../base/base.handler';
 import { SessionData } from '../session/session';
 
 
-export class Router {
+class Router {
     private handlers: Record<SessionScenes, BaseHandler>;
 
     constructor() {
@@ -19,14 +19,27 @@ export class Router {
             scheduleScene: new ScheduleHandler(),
             tasksScene: new TasksHandler(),
             eventsScene: new EventsHandler()
-        }
+        };
     }
 
     async route(ctx: BotContext) {
-        const tgId = ctx.from!.id
-        const session = await SessionData.get(tgId)
-    	const handler = this.handlers[session?.scene!];
-	    return handler.handle(ctx);
+        const tgId = ctx.from?.id;
+        if (!tgId) return;
+
+        const session = await SessionData.get(tgId);
+
+        const scene = session?.scene;
+
+        if (!scene || !(scene in this.handlers)) {
+            await SessionData.set(tgId, {
+                scene: "authScene",
+                step: "login"
+            });
+
+            return this.handlers.authScene.handle(ctx);
+        }
+
+        return this.handlers[scene].handle(ctx);
     }
 }
 

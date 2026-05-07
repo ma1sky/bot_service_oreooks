@@ -72,7 +72,7 @@ export class AuthHandler extends BaseHandler {
 
 				await ctx.reply("✅ Авторизация успешна!");
 
-				return router.route(ctx);
+				return;
 			} catch (e) {
 				await AuthSession.clear(tgId);
 

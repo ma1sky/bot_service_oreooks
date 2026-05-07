@@ -44,14 +44,14 @@ export type AuthStep =
 
 
 export type TaskStep =
-    | "taskTitle"
-    | "taskDescription"
-    | "taskDeadline"
+    | "title"
+    | "description"
+    | "deadline"
+    | "enter"
 
 export type SessionScenes = 
     | "authScene"
-    | "taskCreateScene"
-    | "taskEditScene"
+    | "taskScene"
     | "menuScene"
     | "scheduleScene"
     | "tasksScene"

@@ -34,8 +34,8 @@ export default function startBot(): Telegraf<BotContext> {
 
 		await SessionData.set(ctx.from.id, ctx.session)
 
-		return await ctx.reply(formatGreeting(ctx.from!.first_name));
-		
+		await ctx.reply(formatGreeting(ctx.from!.first_name));
+		return router.route(ctx); 
 	})
 
 	bot.catch((err, ctx) => {

@@ -9,7 +9,7 @@ export class MenuHandler extends BaseHandler {
         createTask: async (tgId: number) => {
             await SessionData.update(tgId, {
                 scene: "taskCreateScene",
-                step: "taskTitle"
+                step: "title"
             });
         },
         openSchedule: async (tgId: number) => {

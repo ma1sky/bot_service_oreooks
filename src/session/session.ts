@@ -55,5 +55,4 @@ export default class RedisClient<Type> {
 
 export const AuthSession = new RedisClient<AuthDraft>('auth');
 export const SessionData = new RedisClient<SessionDraft>('session');
-export const TaskCreateSession = new RedisClient<TaskDraft>("draft:task:create")
-export const TaskEditSession = new RedisClient<TaskDraft>("draft:task:edit")
+export const TaskSession = new RedisClient<TaskDraft>("draft:task")

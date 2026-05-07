@@ -3,5 +3,6 @@ export type TaskDraft = {
     title?: string,
     description?: string,
     deadline?: Date,
-    state?: "draft" | "completed"
+    state?: "draft" | "completed",
+    id?: number,
 }

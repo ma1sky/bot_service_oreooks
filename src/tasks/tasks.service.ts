@@ -1,15 +1,20 @@
 import { API_SERVICE_LINK } from "../config/env.config";
-import type { Task } from "../config/types";
+import type { TaskDraft } from "./tasks.types";
 import BaseService from "../base/base.service";
 
 class TaskService extends BaseService {
 
-    async createTask(title: string, description: string, deadline: Date, tgId: number) {
+    async createTask(task: TaskDraft, tgId: number) {
         try {
             const res = await fetch(`${this.base}/users/${tgId}/tasks`, {
                 method: "POST",
                 headers: this.headers,
-                body: JSON.stringify({ authorId: tgId, title, description, deadline: deadline.toISOString()}),
+                body: JSON.stringify({
+                    authorId: tgId,
+                    title: task.title,
+                    description: task.description,
+                    deadline: task.deadline?.toISOString()
+                }),
             });
 
             const data = await this.parseResponse(res);
@@ -20,7 +25,7 @@ class TaskService extends BaseService {
         }
     }
 
-    async updateTask(task: Task, tgId: number) {
+    async updateTask(task: TaskDraft, tgId: number) {
         try {
             const res = await fetch(`${this.base}/users/${tgId}/tasks/${task.id}`, {
                 method: "PUT",

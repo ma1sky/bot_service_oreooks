@@ -33,7 +33,7 @@ export default function startBot(): Telegraf<BotContext> {
 	})
 
 	bot.on(["message", "callback_query"], async (ctx) => {
-		await router.route(ctx);
+		return await router.route(ctx);
 	})
 
 	bot.catch((err, ctx) => {

@@ -47,11 +47,11 @@ export type TaskStep =
     | "title"
     | "description"
     | "deadline"
-    | "enter"
+    | "create"
+    | "view"
 
 export type SessionScenes = 
     | "authScene"
-    | "taskScene"
     | "menuScene"
     | "scheduleScene"
     | "tasksScene"

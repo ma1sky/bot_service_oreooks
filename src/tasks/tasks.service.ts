@@ -1,75 +1,68 @@
 import { API_SERVICE_LINK } from "../config/env.config";
 import type { TaskDraft } from "./tasks.types";
 import BaseService from "../base/base.service";
+import {
+	taskResponseSchema,
+	tasksListResponseSchema
+} from "./tasks.schema";
 
 class TaskService extends BaseService {
+	constructor() {
+		super(API_SERVICE_LINK);
+	}
 
-    async createTask(task: TaskDraft, tgId: number) {
-        try {
-            const res = await fetch(`${this.base}/users/${tgId}/tasks`, {
-                method: "POST",
-                headers: this.headers,
-                body: JSON.stringify({
-                    authorId: tgId,
-                    title: task.title,
-                    description: task.description,
-                    deadline: task.deadline?.toISOString()
-                }),
-            });
+	async createTask(task: TaskDraft, tgId: number) {
+		const res = await fetch(`${this.base}/users/${tgId}/tasks`, {
+			method: "POST",
+			headers: this.headers,
+			body: JSON.stringify({
+				authorId: tgId,
+				title: task.title,
+				description: task.description,
+				deadline: task.deadline?.toISOString(),
+                state: 'draft'
+			}),
+		});
 
-            const data = await this.parseResponse(res);
-            return this.checkResponse(res.status, data);
-        } catch (error) {
-            console.error(error);
-            return { success: false, reason: error };
-        }
-    }
+		return this.request(res, taskResponseSchema);
+	}
 
-    async updateTask(task: TaskDraft, tgId: number) {
-        try {
-            const res = await fetch(`${this.base}/users/${tgId}/tasks/${task.id}`, {
-                method: "PUT",
-                headers: this.headers,
-                body: JSON.stringify(task),
-            });
+	async updateTask(task: TaskDraft, tgId: number) {
+		if (!task.id) {
+			throw new Error("Task id is required for update");
+		}
 
-            const data = await this.parseResponse(res);
-            return this.checkResponse(res.status, data);
-        } catch (error) {
-            console.error(error);
-            return { success: false, reason: "error" };
-        }
-    }
+		const res = await fetch(`${this.base}/users/${tgId}/tasks/${task.id}`, {
+			method: "PUT",
+			headers: this.headers,
+			body: JSON.stringify({
+				title: task.title,
+				description: task.description,
+				deadline: task.deadline?.toISOString(),
+                state: task.state,
+			}),
+		});
 
-    async getTasks(tgId: number) {
-        try {
-            const res = await fetch(`${this.base}/users/${tgId}/tasks`, {
-                method: "GET",
-                headers: this.headers,
-            });
+		return this.request(res, taskResponseSchema);
+	}
 
-            const data = await this.parseResponse(res);
-            return this.checkResponse(res.status, data);
-        } catch (error) {
-            console.error(error);
-            return { success: false, reason: "error" };
-        }
-    }
+	async getTasks(tgId: number) {
+		const res = await fetch(`${this.base}/users/${tgId}/tasks`, {
+			method: "GET",
+			headers: this.headers,
+		});
 
-    async deleteTask(tgId: number, taskId: number) {
-        try {
-            const res = await fetch(`${this.base}/users/${tgId}/tasks/${taskId}`, {
-                method: "DELETE",
-                headers: this.headers,
-            });
+		return this.request(res, tasksListResponseSchema);
+	}
 
-            const data = await this.parseResponse(res);
-            return this.checkResponse(res.status, data);
-        } catch (error) {
-            console.error(error);
-            return { success: false, reason: "error" };
-        }
-    }
+	async deleteTask(tgId: number, taskId: number) {
+		const res = await fetch(`${this.base}/users/${tgId}/tasks/${taskId}`, {
+			method: "DELETE",
+			headers: this.headers,
+		});
+
+		return this.request(res, taskResponseSchema);
+	}
 }
 
-export default new TaskService(API_SERVICE_LINK);
+export default new TaskService();

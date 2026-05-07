@@ -1,95 +1,108 @@
 import type { BotContext, MenuStep } from "../config/types";
 import authService from "./auth.service";
 import { AuthSession, SessionData } from "../session/session";
-import { SessionDraft } from "../config/types";
-import router from '../router/router';
+import router from "../router/router";
 import { BaseHandler } from "../base/base.handler";
 import { AuthStep } from "../config/types";
+import authValidator from "./auth.validator";
+import { getMessageText } from "../utils/utils";
 
 export class AuthHandler extends BaseHandler {
-    private actions = {
-        login: async (ctx: BotContext) => {
-            const tgId: number = ctx.from!.id
-            if (!ctx.message || !("text" in ctx.message)) {
-                return ctx.reply("Отправьте текст");
-            }
+	private actions = {
+		login: async (ctx: BotContext) => {
+			const tgId = ctx.from!.id;
+			const text = getMessageText(ctx);
 
-            const text = ctx.message.text;
+			const result = authValidator.validateLogin(text);
 
-            await AuthSession.update(tgId, {
-                login: text
-            });
+			if (!result.success) {
+				return ctx.reply(
+					result.error.issues[0]?.message ?? "Неверные данные"
+				);
+			}
 
-            await SessionData.set(tgId, {
-                scene: "authScene",
-                step: "password"
-            });
+			await AuthSession.update(tgId, {
+				login: result.data
+			});
 
-            return ctx.reply("Теперь введите пароль:");
-        }, 
-        
-        password: async (ctx: BotContext) => {
-            const tgId: number = ctx.from!.id
-            if (!ctx.message || !("text" in ctx.message)) {
-                return ctx.reply("Отправьте текст");
-            }
+			await SessionData.update(tgId, {
+				step: "password"
+			});
 
-            const text = ctx.message.text;
+			return ctx.reply("🔑 Теперь введите пароль:");
+		},
 
-            await AuthSession.update(tgId, {
-                password: text
-            });
+		password: async (ctx: BotContext) => {
+			const tgId = ctx.from!.id;
+			const password = getMessageText(ctx);
 
-            const auth = await AuthSession.get(tgId);
-            
-            if (!auth?.login || !auth?.password) {
-                await AuthSession.clear(ctx.from!.id);
-                await SessionData.set(ctx.from!.id, {
-                    scene: "authScene",
-                    step: "login"
-                } as SessionDraft)
-                return ctx.reply('Введите данные заново.')
-            }
-            
-            const res = await authService.authUser(
-                auth.login,
-                auth.password,
-                tgId
-            );
+			const parsedPassword =
+				authValidator.validatePassword(password);
 
-            if (!res.success) {
-                await SessionData.set(tgId, {
-                    scene: "authScene",
-                    step: "login"
-                });
+			if (!parsedPassword.success) {
+				return ctx.reply(
+					parsedPassword.error.issues[0]?.message ?? "Неверные данные"
+				);
+			}
 
-                return ctx.reply("Ошибка авторизации: " + res.reason);
-            }
+			const auth = await AuthSession.get(tgId);
 
-            await ctx.reply("Авторизация успешна!");
-            await AuthSession.clear(tgId);
-            await SessionData.set(tgId, {
-                scene: "menuScene",
-                step: "menu" as MenuStep
-            });
+			if (!auth?.login) {
+				await SessionData.update(tgId, {
+					scene: "authScene",
+					step: "login"
+				});
 
-            return router.route(ctx)
-        }
-    }
+				return ctx.reply("Введите логин заново");
+			}
 
-    private isAuthStep(step: string): step is AuthStep {
-        return step === "login" || step === "password";
-    }
+			try {
+				await authService.authUser(
+					auth.login,
+					parsedPassword.data,
+					tgId
+				);
 
-    override async handle(ctx: BotContext) {
-        const tgId = ctx.from!.id
-        const session = await SessionData.get(tgId)
-        const step = session?.step
+				await AuthSession.clear(tgId);
 
-        if(step && this.isAuthStep(step)) {
-            await this.actions[step](ctx);
-        }
+				await SessionData.update(tgId, {
+					scene: "menuScene",
+					step: "menu" as MenuStep
+				});
 
-        return router.route(ctx);
-    }
+				await ctx.reply("✅ Авторизация успешна!");
+
+				return router.route(ctx);
+			} catch (e) {
+				await AuthSession.clear(tgId);
+
+				await SessionData.update(tgId, {
+					scene: "authScene",
+					step: "login"
+				});
+
+				return ctx.reply(
+					e instanceof Error
+						? e.message
+						: "Ошибка авторизации"
+				);
+			}
+		}
+	};
+
+	private isAuthStep(step: string): step is AuthStep {
+		return step === "login" || step === "password";
+	}
+
+	override async handle(ctx: BotContext) {
+		const tgId = ctx.from!.id;
+		const session = await SessionData.get(tgId);
+		const step = session?.step;
+
+		if (step && this.isAuthStep(step)) {
+			await this.actions[step](ctx);
+		}
+
+		return router.route(ctx);
+	}
 }

@@ -1,27 +1,25 @@
 import { API_SERVICE_LINK } from "../config/env.config";
 import BaseService from "../base/base.service";
+import { authResponseSchema, AuthResponse } from "./auth.schema";
 
 class AuthService extends BaseService {
-    async authUser(login: string, password: string, tgId: number) {
-        try {
-            const res = await fetch(`${this.base}/auth`, {
-                method: "POST",
-                headers: this.headers,
-                body: JSON.stringify({ login, password, tgId })
-            });
+	constructor() {
+		super(API_SERVICE_LINK);
+	}
 
-            const data = await this.parseResponse(res);
+	async authUser(
+		login: string,
+		password: string,
+		tgId: number
+	): Promise<AuthResponse> {
+		const res = await fetch(`${this.base}/auth`, {
+			method: "POST",
+			headers: this.headers,
+			body: JSON.stringify({ login, password, tgId })
+		});
 
-            return this.checkResponse(res.status, data);
-
-        } catch(error) {
-            if (error instanceof Error) {
-                return { success: false, reason: error.message };
-            } else {
-                return { success: false, reason: "Unknown error"}
-            }
-        }
-    }
+		return this.request<AuthResponse>(res, authResponseSchema);
+	}
 }
 
-export default new AuthService(API_SERVICE_LINK);
+export default new AuthService();

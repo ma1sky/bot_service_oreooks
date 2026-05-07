@@ -1,32 +1,30 @@
-export default class BaseService {
-    constructor(base: string) {
-        this.base = `http://${base}`;
+import { ZodType } from "zod";
 
-    }
-    protected base: string;
+export default abstract class BaseService {
+	protected base: string;
+	protected headers: HeadersInit;
 
-    protected headers = {
-        "Content-Type": "application/json",
-        Accept: "application/json"
-    };
+	constructor(base: string) {
+		this.base = `http://${base}`;
+		this.headers = {
+			"Content-Type": "application/json"
+		};
+	}
 
-    protected async parseResponse(res: Response) {
-        try {
-            return await res.json();
-        } catch {
-            return null
-        }
-    }
+	protected async request<T>(
+		res: Response,
+		schema: ZodType<T>
+	): Promise<T> {
+		try {
+			const json = await res.json();
 
-    protected checkResponse(status: number, data?: any) {
-        switch (status) {
-            case 200: return { success: true, data }
-            case 201: return { success: true, data };
-            case 204: return { success: true, data };
-            case 401: return { success: false, reason: "invalid" };
-            case 404: return { success: false, reason: "not_found" };
-            case 500: return { success: false, reason: "server_error" };
-            default: return { success: false, reason: "error" };
-        }
-    }
+			const parsed = schema.parse(json);
+
+			return parsed;
+		} catch (e) {
+			throw new Error(
+				e instanceof Error ? e.message : "Unknown API error"
+			);
+		}
+	}
 }

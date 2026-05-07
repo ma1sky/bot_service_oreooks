@@ -8,14 +8,3 @@ export function getMessageText(ctx: BotContext): string {
 
   return ctx.message.text
 }
-
-export function getSession(ctx: BotContext) {
-  if (!ctx.scene.session.tasksScene) {
-    ctx.scene.session.tasksScene = {
-      tasks: [],
-      currentIndex: 0
-    }
-  }
-
-  return ctx.scene.session.tasksScene
-}

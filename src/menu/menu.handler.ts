@@ -6,12 +6,6 @@ import { BaseHandler } from "../base/base.handler";
 
 export class MenuHandler extends BaseHandler {
     private actions = {
-        createTask: async (tgId: number) => {
-            await SessionData.update(tgId, {
-                scene: "taskCreateScene",
-                step: "title"
-            });
-        },
         openSchedule: async (tgId: number) => {
             await SessionData.update(tgId, {
                 scene: "scheduleScene",
@@ -39,7 +33,6 @@ export class MenuHandler extends BaseHandler {
             await ctx.reply(
                 "📋 Меню:",
                 Markup.inlineKeyboard([
-                    [Markup.button.callback("➕ Создать задачу", "createTask")],
                     [Markup.button.callback("📆 Показать расписание", "openSchedule")],
                     [Markup.button.callback("📚 Показать задачи", "openTasks")],
                     [Markup.button.callback("📍 Контрольные мероприятия", "openEvents")]

@@ -2,7 +2,7 @@ import { BotContext } from '../config/types'
 import { SessionScenes } from '../config/types';
 import { AuthHandler } from '../auth/auth.handler';
 import { MenuHandler } from '../menu/menu.handler';
-import { TasksCreateHandler } from '../tasks/tasks.create.handler';
+import { TasksHandler } from '../tasks/tasks.handler';
 import { ScheduleHandler } from '../schedule/schedule.handler'; 
 import { EventsHandler } from '../events/events.handler'
 import { BaseHandler } from '../base/base.handler';
@@ -16,7 +16,7 @@ export class Router {
             authScene: new AuthHandler(),
             menuScene: new MenuHandler(),
             scheduleScene: new ScheduleHandler(),
-            taskCreateScene: new TasksCreateHandler(),
+            tasksScene: new TasksHandler(),
             eventsScene: new EventsHandler()
         }
     }

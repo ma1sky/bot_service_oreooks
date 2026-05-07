@@ -94,15 +94,13 @@ export class AuthHandler extends BaseHandler {
 		return step === "login" || step === "password";
 	}
 
-	override async handle(ctx: BotContext) {
-		const tgId = ctx.from!.id;
-		const session = await SessionData.get(tgId);
-		const step = session?.step;
+	override async handle(ctx: BotContext): Promise<void> {
+        const tgId = ctx.from!.id;
+        const session = await SessionData.get(tgId);
+        const step = session?.step;
 
-		if (step && this.isAuthStep(step)) {
-			await this.actions[step](ctx);
-		}
-
-		return router.route(ctx);
-	}
+        if (step && this.isAuthStep(step)) {
+            await this.actions[step](ctx);
+        }
+    }
 }

@@ -29,11 +29,11 @@ export default function startBot(): Telegraf<BotContext> {
 		})
 
 		await ctx.reply(formatGreeting(ctx.from!.first_name));
-		return router.route(ctx); 
+		return await router.route(ctx); 
 	})
 
 	bot.on(["message", "callback_query"], async (ctx) => {
-		router.route(ctx);
+		await router.route(ctx);
 	})
 
 	bot.catch((err, ctx) => {

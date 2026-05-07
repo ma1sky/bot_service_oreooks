@@ -67,7 +67,7 @@ export type SessionDraft =
     | { scene: SessionScenes; step: MenuStep }
     | { scene: SessionScenes; step: 'schedule' }
     | { scene: SessionScenes; step: 'tasks' }
-    | { scene: SessionScenes; step: ''}
+    | { scene: SessionScenes; step: 'events'}
 
 export type Schedule = {
     week: number,

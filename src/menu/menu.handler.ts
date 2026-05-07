@@ -12,16 +12,18 @@ export class MenuHandler extends BaseHandler {
                 step: "schedule"
             });
         },
+        
         openTasks: async (tgId: number) => {
             await SessionData.update(tgId, {
                 scene: "tasksScene",
-                step: "tasks"
+                step: "view"
             });
         },
+
         openEvents: async (tgId: number) => {
             await SessionData.update(tgId, {
                 scene: "eventsScene",
-                step: ""
+                step: "events"
             });
         }
     };

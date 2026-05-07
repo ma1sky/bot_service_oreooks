@@ -28,8 +28,9 @@ export class MenuHandler extends BaseHandler {
 
     override async handle(ctx: BotContext) {
         const tgId = ctx.from!.id;
+        const session = await SessionData.get(tgId);
 
-        if (ctx.session.step === "menu" as MenuStep) {
+        if (session?.scene! === "menuScene") {
             await ctx.reply(
                 "📋 Меню:",
                 Markup.inlineKeyboard([

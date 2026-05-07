@@ -36,10 +36,10 @@ class Router {
                 step: "login"
             });
 
-            return this.handlers.authScene.handle(ctx);
+            return await this.handlers.authScene.handle(ctx);
         }
 
-        return this.handlers[scene].handle(ctx);
+        return await this.handlers[scene].handle(ctx);
     }
 }
 

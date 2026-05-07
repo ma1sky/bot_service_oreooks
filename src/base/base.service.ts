@@ -5,7 +5,7 @@ export default abstract class BaseService {
 	protected headers: HeadersInit;
 
 	constructor(base: string) {
-		this.base = base;
+		this.base = `https://${base}`;
 		this.headers = {
 			"Content-Type": "application/json"
 		};

@@ -6,6 +6,7 @@ import { TasksHandler } from '../tasks/tasks.handler';
 import { ScheduleHandler } from '../schedule/schedule.handler'; 
 import { EventsHandler } from '../events/events.handler'
 import { BaseHandler } from '../base/base.handler';
+import { SessionData } from '../session/session';
 
 
 export class Router {
@@ -21,8 +22,10 @@ export class Router {
         }
     }
 
-    route(ctx: BotContext) {
-    	const handler = this.handlers[ctx.session.scene];
+    async route(ctx: BotContext) {
+        const tgId = ctx.from!.id
+        const session = await SessionData.get(tgId)
+    	const handler = this.handlers[session?.scene!];
 	    return handler.handle(ctx);
     }
 }

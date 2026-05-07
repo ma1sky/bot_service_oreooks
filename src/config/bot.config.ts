@@ -22,20 +22,18 @@ export default function startBot(): Telegraf<BotContext> {
 		await SessionData.set(id, ctx.session)
 	})
 
-	bot.on(["message", "callback_query"], async (ctx) => {
-		router.route(ctx);
-	})
-
 	bot.start(async (ctx) => {
-		ctx.session = {
+		await SessionData.set(ctx.from.id, {
 			scene: 'authScene',
 			step: 'login'
-		}
-
-		await SessionData.set(ctx.from.id, ctx.session)
+		})
 
 		await ctx.reply(formatGreeting(ctx.from!.first_name));
 		return router.route(ctx); 
+	})
+
+	bot.on(["message", "callback_query"], async (ctx) => {
+		router.route(ctx);
 	})
 
 	bot.catch((err, ctx) => {

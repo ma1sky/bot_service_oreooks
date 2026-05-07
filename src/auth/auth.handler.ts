@@ -5,6 +5,7 @@ import { BaseHandler } from "../base/base.handler";
 import { AuthStep } from "../config/types";
 import authValidator from "./auth.validator";
 import { getMessageText } from "../utils/utils";
+import { Markup } from "telegraf";
 
 export class AuthHandler extends BaseHandler {
 	private actions = {
@@ -68,6 +69,14 @@ export class AuthHandler extends BaseHandler {
 				});
 
 				await ctx.reply("✅ Авторизация успешна!");
+                await ctx.reply(
+                    "📋 Меню:",
+                    Markup.inlineKeyboard([
+                        [Markup.button.callback("📆 Показать расписание", "openSchedule")],
+                        [Markup.button.callback("📚 Показать задачи", "openTasks")],
+                        [Markup.button.callback("📍 Контрольные мероприятия", "openEvents")]
+                    ])
+                );
 				return;
 
 			} catch (e) {

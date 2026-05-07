@@ -1,7 +1,6 @@
 import type { BotContext, MenuStep } from "../config/types";
 import authService from "./auth.service";
 import { AuthSession, SessionData } from "../session/session";
-import router from "../router/router";
 import { BaseHandler } from "../base/base.handler";
 import { AuthStep } from "../config/types";
 import authValidator from "./auth.validator";
@@ -16,9 +15,8 @@ export class AuthHandler extends BaseHandler {
 			const result = authValidator.validateLogin(text);
 
 			if (!result.success) {
-				return ctx.reply(
-					result.error.issues[0]?.message ?? "Неверные данные"
-				);
+				await ctx.reply(result.error.issues[0]?.message ?? "Неверные данные");
+				return;
 			}
 
 			await AuthSession.update(tgId, {
@@ -29,20 +27,18 @@ export class AuthHandler extends BaseHandler {
 				step: "password"
 			});
 
-			return ctx.reply("🔑 Теперь введите пароль:");
+			await ctx.reply("🔑 Теперь введите пароль:");
 		},
 
 		password: async (ctx: BotContext) => {
 			const tgId = ctx.from!.id;
 			const password = getMessageText(ctx);
 
-			const parsedPassword =
-				authValidator.validatePassword(password);
+			const parsed = authValidator.validatePassword(password);
 
-			if (!parsedPassword.success) {
-				return ctx.reply(
-					parsedPassword.error.issues[0]?.message ?? "Неверные данные"
-				);
+			if (!parsed.success) {
+				await ctx.reply(parsed.error.issues[0]?.message ?? "Неверные данные");
+				return;
 			}
 
 			const auth = await AuthSession.get(tgId);
@@ -53,13 +49,14 @@ export class AuthHandler extends BaseHandler {
 					step: "login"
 				});
 
-				return ctx.reply("Введите логин заново");
+				await ctx.reply("Введите логин заново");
+				return;
 			}
 
 			try {
 				await authService.authUser(
 					auth.login,
-					parsedPassword.data,
+					parsed.data,
 					tgId
 				);
 
@@ -71,8 +68,8 @@ export class AuthHandler extends BaseHandler {
 				});
 
 				await ctx.reply("✅ Авторизация успешна!");
-
 				return;
+
 			} catch (e) {
 				await AuthSession.clear(tgId);
 
@@ -81,11 +78,11 @@ export class AuthHandler extends BaseHandler {
 					step: "login"
 				});
 
-				return ctx.reply(
-					e instanceof Error
-						? e.message
-						: "Ошибка авторизации"
+				await ctx.reply(
+					e instanceof Error ? e.message : "Ошибка авторизации"
 				);
+
+				return;
 			}
 		}
 	};
@@ -95,12 +92,11 @@ export class AuthHandler extends BaseHandler {
 	}
 
 	override async handle(ctx: BotContext): Promise<void> {
-        const tgId = ctx.from!.id;
-        const session = await SessionData.get(tgId);
-        const step = session?.step;
+		const session = await SessionData.get(ctx.from!.id);
+		const step = session?.step;
 
-        if (step && this.isAuthStep(step)) {
-            await this.actions[step](ctx);
-        }
-    }
+		if (step && this.isAuthStep(step)) {
+			await this.actions[step](ctx);
+		}
+	}
 }

@@ -23,6 +23,8 @@ export default function startBot(): Telegraf<BotContext> {
 	})
 
 	bot.start(async (ctx) => {
+		if (!(await SessionData.get(ctx.from.id)))
+
 		await SessionData.set(ctx.from.id, {
 			scene: 'authScene',
 			step: 'login'

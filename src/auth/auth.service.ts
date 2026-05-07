@@ -17,7 +17,9 @@ class AuthService extends BaseService {
 			headers: this.headers,
 			body: JSON.stringify({ login, password, tgId })
 		});
-
+        console.log(res.url);
+        console.log(res.status);
+        console.log(await res.text());
 		return this.request<AuthResponse>(res, authResponseSchema);
 	}
 }

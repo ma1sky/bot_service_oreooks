@@ -33,13 +33,6 @@ export class MenuHandler extends BaseHandler {
         const tgId = ctx.from!.id;
         const session = await SessionData.get(tgId);
 
-        if (session?.scene! === "menuScene") {
-            showMenu(ctx);
-
-            ctx.session.step = "idle";
-            return;
-        }
-
         if (ctx.callbackQuery && "data" in ctx.callbackQuery) {
             const data = ctx.callbackQuery.data;
 
@@ -50,6 +43,13 @@ export class MenuHandler extends BaseHandler {
 
                 return router.route(ctx);
             }
+        }
+
+        if (session?.scene! === "menuScene") {
+            await showMenu(ctx);
+
+            ctx.session.step = "idle";
+            return;
         }
     }
 }

@@ -15,7 +15,10 @@ export class MenuHandler extends BaseHandler {
                 step: "view"
             });
 
-            return;
+            await ctx.answerCbQuery();
+
+            // 🔥 ВАЖНО: вручную запускаем router
+            return router.route(ctx);
         },
 
         openSchedule: async (ctx: BotContext) => {
@@ -53,7 +56,7 @@ export class MenuHandler extends BaseHandler {
             if (data in this.actions) {
                 await this.actions[data as keyof typeof this.actions](ctx);
 
-                return router.route(ctx);
+                return;
             }
         }
 

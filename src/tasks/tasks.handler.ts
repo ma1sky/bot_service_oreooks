@@ -2,10 +2,10 @@ import { BotContext, MenuStep } from "../config/types";
 import { BaseHandler } from "../base/base.handler";
 import { getMessageText } from "../utils/utils";
 import tasksValidator from "./tasks.validator";
-import { TaskSession } from "../session/session";
-import { SessionData } from "../session/session";
+import { SessionData, TasksCacheSession, TaskSession } from "../session/session";
 import tasksService from "./tasks.service";
 import type { TaskAction, NavAction, TaskFlowStep } from './tasks.types'
+import { renderCurrentTask } from "./tasks.messages";
 
 export class TasksHandler extends BaseHandler {
 
@@ -76,7 +76,7 @@ export class TasksHandler extends BaseHandler {
 				step: "menu" as MenuStep
 			});
 
-			return ctx.reply("✅ Задача создана");
+			return await ctx.reply("✅ Задача создана");
 		},
 
         toggleState: async (ctx: BotContext) => {
@@ -96,10 +96,43 @@ export class TasksHandler extends BaseHandler {
             return ctx.reply("✏️ Введи заголовок задачи:");
         },
 
-        viewTasks: async (ctx: BotContext) => {
+        view: async (ctx: BotContext) => {
             const tgId = ctx.from!.id;
-            const tasks = await TaskSession.get(tgId);
+            const result = await tasksService.getTasks(tgId)
+            
+            if(!result.success) {
+                await ctx.reply(result.reason ?? 'Неизвестная ошибка');
+                return;
+            }
 
+            const tasks = result.data
+
+            if (!tasks) {
+                return;
+            }
+
+            await TasksCacheSession.set(tgId, {
+                tasksIds: tasks.map(task => task.id!),
+                currentId: tasks[0]?.id!,
+                currentIndex: 0
+            })
+
+            if (!tasks[0]) {
+                return;
+            }
+
+            const { id, title, description, deadline, state } = tasks[0]
+            
+            await TaskSession.set(tgId, {
+                id: id!,
+                title: title,
+                description: description,
+                deadline: deadline,
+                state: state as "draft" | "completed"
+            })
+
+            await renderCurrentTask(ctx);
+            return;
         },
 
         editTask: async (ctx: BotContext) => {

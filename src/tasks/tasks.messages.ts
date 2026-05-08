@@ -1,45 +1,40 @@
-// import type { BotContext } from "../config/types"
-// import { Markup } from "telegraf"
+import type { BotContext } from "../config/types"
+import { Markup } from "telegraf"
+import { TasksCacheSession, TaskSession } from "../session/session"
 
-// export function formatTask(title: string, description: string, deadline: Date): string {
-// 	return (
-// 		`✏️ Название: ${title}\n` +
-// 		`📃 Описание: ${description}\n` +
-// 		`📆 Дедлайн: ${Intl.DateTimeFormat('ru-RU').format(deadline)}`
-// 	)
-// }
+export async function renderCurrentTask(ctx: BotContext) {
+	const tgId = ctx.from!.id;
+	const task = await TaskSession.get(tgId);
+	const cache = await TasksCacheSession.get(tgId);
+	if (!cache) {
+		return ctx.reply('Не найдено задач в кэше')
+	}
 
-// export async function renderCurrentTask(ctx: BotContext) {
-// 	const state = getSession(ctx)
-// 	const task = state.tasks[state.currentIndex]
+	if(!task) {
+		return ctx.reply('Нет задачи')
+	}
+	const total = cache.tasksIds.length
+	const index = cache.currentIndex + 1
 
-// 	if (!task) {
-// 		await ctx.reply('Задача не найдена')
-// 		return ctx.scene.enter('menuScene')
-// 	}
-
-// 	const total = state.tasks.length
-// 	const index = state.currentIndex + 1
-
-// 	await ctx.reply(
-// 		`📚 Задача ${index}/${total}, ID:${task.id}\n\n` +
-// 		formatTask(
-// 			task.title ?? '',
-// 			task.description ?? '',
-// 			task.deadline ? new Date(task.deadline) : new Date()
-// 		),
-// 		Markup.inlineKeyboard([
-// 			[ Markup.button.callback('✏️ Создать задачу','create') ],
-// 			[
-// 				Markup.button.callback('◀️', 'prevTask'),
-// 				Markup.button.callback('📋 Меню', 'openMenu'),
-// 				Markup.button.callback('▶️', 'nextTask')
-// 			],
-// 			[
-// 				Markup.button.callback('✅ Завершить', 'markComplete'),
-// 				Markup.button.callback('✏️ Редактировать', 'editTask'),
-// 				Markup.button.callback('🗑️ Удалить', 'deleteTask')
-// 			]
-// 		])
-// 	)
-// }
+	await ctx.reply(
+		`📚 Задача ${index}/${total}, ID:${task.id}\n\n` +
+		`${task.state == 'draft'? '⚒️ В процессе': '✅ Выполнена'}` +
+		`✏️ Название: ${task.title}\n` +
+		`📃 Описание: ${task.description}\n` +
+		`📆 Дедлайн: ${Intl.DateTimeFormat('ru-RU').format(task.deadline)}`,
+		
+		Markup.inlineKeyboard([
+			[ Markup.button.callback('✏️ Создать задачу','create') ],
+			[
+				Markup.button.callback('◀️', 'prevTask'),
+				Markup.button.callback('📋 Меню', 'openMenu'),
+				Markup.button.callback('▶️', 'nextTask')
+			],
+			[
+				Markup.button.callback('✅ Завершить', 'markComplete'),
+				Markup.button.callback('✏️ Редактировать', 'editTask'),
+				Markup.button.callback('🗑️ Удалить', 'deleteTask')
+			]
+		])
+	)
+}

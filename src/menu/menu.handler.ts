@@ -3,6 +3,7 @@ import type { BotContext, MenuStep } from "../config/types";
 import { SessionData } from "../session/session";
 import router from '../router/router'
 import { BaseHandler } from "../base/base.handler";
+import { showMenu } from "./menu.messages";
 
 export class MenuHandler extends BaseHandler {
     private actions = {
@@ -12,7 +13,7 @@ export class MenuHandler extends BaseHandler {
                 step: "schedule"
             });
         },
-        
+
         openTasks: async (tgId: number) => {
             await SessionData.update(tgId, {
                 scene: "tasksScene",
@@ -33,14 +34,7 @@ export class MenuHandler extends BaseHandler {
         const session = await SessionData.get(tgId);
 
         if (session?.scene! === "menuScene") {
-            await ctx.reply(
-                "📋 Меню:",
-                Markup.inlineKeyboard([
-                    [Markup.button.callback("📆 Показать расписание", "openSchedule")],
-                    [Markup.button.callback("📚 Показать задачи", "openTasks")],
-                    [Markup.button.callback("📍 Контрольные мероприятия", "openEvents")]
-                ])
-            );
+            showMenu(ctx);
 
             ctx.session.step = "idle";
             return;

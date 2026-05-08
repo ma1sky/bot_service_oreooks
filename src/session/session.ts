@@ -1,5 +1,5 @@
 import { AuthDraft } from '../auth/auth.types';
-import { TaskDraft } from '../tasks/tasks.types';
+import { TaskDraft, TasksCache } from '../tasks/tasks.types';
 import redis from '../config/redis.config';
 import { SessionDraft } from '../config/types'
 
@@ -56,3 +56,4 @@ export default class RedisClient<Type> {
 export const AuthSession = new RedisClient<AuthDraft>('auth');
 export const SessionData = new RedisClient<SessionDraft>('session');
 export const TaskSession = new RedisClient<TaskDraft>("draft:task")
+export const TasksCacheSession = new RedisClient<TasksCache>('tasks')

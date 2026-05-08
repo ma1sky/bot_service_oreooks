@@ -8,9 +8,15 @@ export type TaskDraft = {
     currentIndex?: number
 }
 
+export type TasksCache = {
+    tasksIds: number[],
+    currentId: number,
+    currentIndex: number
+}
+
 export type TaskAction =
     | "createTask"
-    | "viewTasks"
+    | "view"
     | "editTask"
     | "deleteTask";
 

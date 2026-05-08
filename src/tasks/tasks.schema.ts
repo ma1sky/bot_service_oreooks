@@ -19,9 +19,11 @@ export const deadlineSchema = z
     })
 
 export const taskSchema = z.object({
+    id: z.number().optional(),
     title: titleSchema,
     description: descriptionSchema,
-    deadline: deadlineSchema
+    deadline: deadlineSchema,
+    state: z.enum(["draft", "completed"])
 });
 
 export const taskResponseSchema = z.object({

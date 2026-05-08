@@ -16,10 +16,9 @@ export type TasksCache = {
 
 export type TaskAction =
     | "createTask"
-    | "view"
     | "editTask"
     | "deleteTask";
 
 export type NavAction = "openMenu" | "prevTask" | "nextTask";
 
-export type TaskFlowStep = "title" | "description" | "deadline" | "toggleState";
+export type TaskFlowStep = "view" | "title" | "description" | "deadline" | "toggleState";

@@ -1,27 +1,34 @@
-import { Markup } from "telegraf";
 import type { BotContext, MenuStep } from "../config/types";
 import { SessionData } from "../session/session";
 import router from '../router/router'
 import { BaseHandler } from "../base/base.handler";
 import { showMenu } from "./menu.messages";
+import { TasksHandler } from "../tasks/tasks.handler";
 
 export class MenuHandler extends BaseHandler {
     private actions = {
-        openSchedule: async (tgId: number) => {
+        openSchedule: async (ctx: BotContext) => {
+            const tgId = ctx.from!.id
             await SessionData.update(tgId, {
                 scene: "scheduleScene",
                 step: "schedule"
             });
         },
 
-        openTasks: async (tgId: number) => {
-            await SessionData.update(tgId, {
+        openTasks: async (ctx: BotContext) => {
+            const tgId = ctx.from!.id
+            await SessionData.update(ctx.from!.id, {
                 scene: "tasksScene",
-                step: "view"
+                step: "idle"
             });
+
+            const tasksHandler = new TasksHandler();
+
+            await tasksHandler.actions.view(ctx);
         },
 
-        openEvents: async (tgId: number) => {
+        openEvents: async (ctx: BotContext) => {
+            const tgId = ctx.from!.id
             await SessionData.update(tgId, {
                 scene: "eventsScene",
                 step: "events"
@@ -39,7 +46,7 @@ export class MenuHandler extends BaseHandler {
             await ctx.answerCbQuery();
 
             if (data in this.actions) {
-                await this.actions[data as keyof typeof this.actions](tgId);
+                await this.actions[data as keyof typeof this.actions](ctx);
 
                 return router.route(ctx);
             }

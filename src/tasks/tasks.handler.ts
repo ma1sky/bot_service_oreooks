@@ -10,44 +10,7 @@ import { renderCurrentTask } from "./tasks.messages";
 export class TasksHandler extends BaseHandler {
 
 	private flow = {
-        view: async (ctx: BotContext) => {
-            const tgId = ctx.from!.id;
-            const result = await tasksService.getTasks(tgId)
-            
-            if(!result.success) {
-                await ctx.reply(result.reason ?? 'Неизвестная ошибка');
-                return;
-            }
-
-            const tasks = result.data
-
-            if (!tasks) {
-                return;
-            }
-
-            await TasksCacheSession.set(tgId, {
-                tasksIds: tasks.map(task => task.id!),
-                currentId: tasks[0]?.id!,
-                currentIndex: 0
-            })
-
-            if (!tasks[0]) {
-                return;
-            }
-
-            const { id, title, description, deadline, state } = tasks[0]
-            
-            await TaskSession.set(tgId, {
-                id: id!,
-                title: title,
-                description: description,
-                deadline: deadline,
-                state: state as "draft" | "completed"
-            })
-
-            await renderCurrentTask(ctx);
-            return;
-        },
+        
 		title: async (ctx: BotContext) => {
 			const tgId = ctx.from!.id;
 			const text = getMessageText(ctx);
@@ -123,7 +86,46 @@ export class TasksHandler extends BaseHandler {
         }
 	};
     
-    private actions: Record<TaskAction, (ctx: BotContext) => Promise<any> > = {
+    public actions: Record<TaskAction, (ctx: BotContext) => Promise<any> > = {
+        view: async (ctx: BotContext) => {
+            const tgId = ctx.from!.id;
+            const result = await tasksService.getTasks(tgId)
+            
+            if(!result.success) {
+                await ctx.reply(result.reason ?? 'Неизвестная ошибка');
+                return;
+            }
+
+            const tasks = result.data
+
+            if (!tasks) {
+                return;
+            }
+
+            await TasksCacheSession.set(tgId, {
+                tasksIds: tasks.map(task => task.id!),
+                currentId: tasks[0]?.id!,
+                currentIndex: 0
+            })
+
+            if (!tasks[0]) {
+                return;
+            }
+
+            const { id, title, description, deadline, state } = tasks[0]
+            
+            await TaskSession.set(tgId, {
+                id: id!,
+                title: title,
+                description: description,
+                deadline: deadline,
+                state: state as "draft" | "completed"
+            })
+
+            await renderCurrentTask(ctx);
+            return;
+        },
+
         createTask: async (ctx: BotContext) => {
             const tgId = ctx.from!.id;
 

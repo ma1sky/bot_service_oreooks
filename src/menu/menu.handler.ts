@@ -7,32 +7,37 @@ import { TasksHandler } from "../tasks/tasks.handler";
 
 export class MenuHandler extends BaseHandler {
     private actions = {
+        openTasks: async (ctx: BotContext) => {
+            const tgId = ctx.from!.id;
+
+            await SessionData.update(tgId, {
+                scene: "tasksScene",
+                step: "view"
+            });
+
+            return;
+        },
+
         openSchedule: async (ctx: BotContext) => {
-            const tgId = ctx.from!.id
+            const tgId = ctx.from!.id;
+
             await SessionData.update(tgId, {
                 scene: "scheduleScene",
                 step: "schedule"
             });
-        },
 
-        openTasks: async (ctx: BotContext) => {
-            const tgId = ctx.from!.id
-            await SessionData.update(ctx.from!.id, {
-                scene: "tasksScene",
-                step: "idle"
-            });
-
-            const tasksHandler = new TasksHandler();
-
-            await tasksHandler.actions.view(ctx);
+            return;
         },
 
         openEvents: async (ctx: BotContext) => {
-            const tgId = ctx.from!.id
+            const tgId = ctx.from!.id;
+
             await SessionData.update(tgId, {
                 scene: "eventsScene",
                 step: "events"
             });
+
+            return;
         }
     };
 
@@ -52,11 +57,9 @@ export class MenuHandler extends BaseHandler {
             }
         }
 
-        if (session?.scene! === "menuScene") {
+        if (session?.scene === "menuScene" && !ctx.callbackQuery) {
             await showMenu(ctx);
-
-            ctx.session.step = "idle";
-            return;
         }
+        return;
     }
 }

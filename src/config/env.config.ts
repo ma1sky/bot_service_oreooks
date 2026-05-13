@@ -14,5 +14,5 @@ if (!API_SERVICE_LINK) {
 }
 
 if (!REDIS_LINK) {
-  	throw new Error('API_SERVICE_LINK is missing in env');
+  	throw new Error('REDIS_LINK is missing in env');
 }

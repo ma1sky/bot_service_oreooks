@@ -22,4 +22,4 @@ export type TaskAction =
 
 export type NavAction = "openMenu" | "prevTask" | "nextTask";
 
-export type TaskFlowStep = "title" | "description" | "deadline" | "toggleState";
+export type TaskFlowStep = "title" | "description" | "deadline" | "toggleState" | "view";

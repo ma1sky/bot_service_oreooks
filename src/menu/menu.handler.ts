@@ -17,8 +17,8 @@ export class MenuHandler extends BaseHandler {
 
             await ctx.answerCbQuery();
 
-            // 🔥 ВАЖНО: вручную запускаем router
-            return router.route(ctx);
+            const tasksHandler = new TasksHandler();
+            return tasksHandler.actions.view(ctx);
         },
 
         openSchedule: async (ctx: BotContext) => {

@@ -81,10 +81,14 @@ export class TasksHandler extends BaseHandler {
 		},
 
         toggleState: async (ctx: BotContext) => {
-			const tgId = ctx.from!.id;
+   const tgId = ctx.from!.id;
             
+        },
+
+        view: async (ctx: BotContext) => {
+            return this.actions.view(ctx);
         }
-	};
+ };
     
     public actions: Record<TaskAction, (ctx: BotContext) => Promise<any> > = {
         view: async (ctx: BotContext) => {
@@ -98,8 +102,8 @@ export class TasksHandler extends BaseHandler {
 
             const tasks = result.data
 
-            if (!tasks) {
-                return;
+            if (!tasks || !tasks.length) {
+                return ctx.reply("📭 Задач нет");
             }
 
             await TasksCacheSession.set(tgId, {

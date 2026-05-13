@@ -81,8 +81,7 @@ export class TasksHandler extends BaseHandler {
 		},
 
         toggleState: async (ctx: BotContext) => {
-   const tgId = ctx.from!.id;
-            
+            const tgId = ctx.from!.id;
         },
 
         view: async (ctx: BotContext) => {
@@ -103,7 +102,8 @@ export class TasksHandler extends BaseHandler {
             const tasks = result.data
 
             if (!tasks || !tasks.length) {
-                return ctx.reply("📭 Задач нет");
+                await renderCurrentTask(ctx);
+                return; 
             }
 
             await TasksCacheSession.set(tgId, {

@@ -7,11 +7,11 @@ export async function renderCurrentTask(ctx: BotContext) {
 	const task = await TaskSession.get(tgId);
 	const cache = await TasksCacheSession.get(tgId);
 	if (!cache) {
-		return ctx.reply('Не найдено задач в кэше')
+		return ctx.reply('📭 Не найдено задач в кэше')
 	}
 
 	if(!task) {
-		return ctx.reply('Нет задачи')
+		return ctx.reply('📭 Задач нет')
 	}
 	const total = cache.tasksIds.length
 	const index = cache.currentIndex + 1

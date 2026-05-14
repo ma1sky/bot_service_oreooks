@@ -6,6 +6,7 @@ import { SessionData, TasksCacheSession, TaskSession } from "../session/session"
 import tasksService from "./tasks.service";
 import type { TaskAction, NavAction, TaskFlowStep } from './tasks.types'
 import { renderCurrentTask } from "./tasks.messages";
+import router from "../router/router";
 
 export class TasksHandler extends BaseHandler {
 
@@ -81,7 +82,8 @@ export class TasksHandler extends BaseHandler {
 				step: "menu" as MenuStep
 			});
 
-			return await ctx.reply("✅ Задача создана");
+			await ctx.reply("✅ Задача создана");
+			return router.route(ctx);
 		},
 
         toggleState: async (ctx: BotContext) => {

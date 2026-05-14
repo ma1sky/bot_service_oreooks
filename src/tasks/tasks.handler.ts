@@ -103,7 +103,21 @@ export class TasksHandler extends BaseHandler {
 				return ctx.reply("Нет текущей задачи");
 			}
 
-			await tasksService.toggleTaskState(tgId, cache.currentId);
+			const newState = task.state === "draft" ? "completed" : "draft";
+			const updatedTask = {
+				...task,
+				state: newState as "draft" | "completed"
+			};
+
+			const result = await tasksService.updateTask(updatedTask, tgId);
+			if (result.success && result.task) {
+				await TaskSession.update(tgId, {
+					state: newState
+				});
+			} else {
+				await ctx.reply(result.reason ?? "Не удалось обновить задачу");
+				return;
+			}
 
 			return renderCurrentTask(ctx);
 		},

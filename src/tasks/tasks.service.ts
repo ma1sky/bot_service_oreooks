@@ -74,7 +74,7 @@ class TaskService extends BaseService {
 	}
 
 	async toggleTaskState(tgId: number, taskId: number) {
-		const res = await fetch(`${this.base}/users/${tgId}/tasks/${taskId}/toggle-state`, {
+		const res = await fetch(`${this.base}/users/${tgId}/tasks/${taskId}`, {
 			method: "PUT",
 			headers: this.headers,
 		});

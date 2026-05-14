@@ -29,8 +29,11 @@ class Router {
         const session = await SessionData.get(tgId);
 
         const scene = session?.scene;
+        
+        console.log(`[Router] tgId: ${tgId}, scene: ${scene}, update type: ${ctx.updateType}`);
 
         if (!scene || !(scene in this.handlers)) {
+            console.log(`[Router] No scene or invalid scene, defaulting to authScene`);
             await SessionData.set(tgId, {
                 scene: "authScene",
                 step: "login"
@@ -39,6 +42,7 @@ class Router {
             return await this.handlers.authScene.handle(ctx);
         }
 
+        console.log(`[Router] Routing to handler for scene: ${scene}`);
         return await this.handlers[scene].handle(ctx);
     }
 }

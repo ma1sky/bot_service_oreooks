@@ -173,25 +173,39 @@ export class TasksHandler extends BaseHandler {
 	};
 
 	override async handle(ctx: BotContext) {
-        const tgId = ctx.from!.id;
-        const session = await SessionData.get(tgId);
+	       const tgId = ctx.from!.id;
+	       
+	       if ("callback_query" in ctx.update && ctx.callbackQuery && 'data' in ctx.callbackQuery) {
+	           const data = ctx.callbackQuery.data;
+	           
+	           console.log(`[TasksHandler] Callback query received: ${data}, tgId: ${tgId}`);
+	           
+	           await ctx.answerCbQuery().catch(() => {});
 
-        const step = session?.step as TaskFlowStep | undefined;
+	           if (data in this.actions) {
+	               console.log(`[TasksHandler] Action found: ${data}`);
+	               return this.actions[data as TaskAction](ctx);
+	           }
 
-        if (step && step in this.flow) {
-            return this.flow[step](ctx);
-        }
+	           if (data in this.navigation) {
+	               console.log(`[TasksHandler] Navigation found: ${data}`);
+	               return this.navigation[data as NavAction](ctx);
+	           }
+	           
+	           console.log(`[TasksHandler] Unknown callback data: ${data}`);
+	       }
 
-        if ("callback_query" in ctx.update && ctx.callbackQuery && 'data' in ctx.callbackQuery) {
-            const data = ctx.callbackQuery.data;
+	       const session = await SessionData.get(tgId);
+	       const step = session?.step as TaskFlowStep | undefined;
+	       const scene = session?.scene;
+	       
+	       console.log(`[TasksHandler] No callback query, scene: ${scene}, step: ${step}`);
 
-            if (data in this.actions) {
-                return this.actions[data as TaskAction](ctx);
-            }
-
-            if (data in this.navigation) {
-                return this.navigation[data as NavAction](ctx);
-            }
-        }
-    }
+	       if (step && step in this.flow) {
+	           console.log(`[TasksHandler] Executing flow step: ${step}`);
+	           return this.flow[step](ctx);
+	       }
+	       
+	       console.log(`[TasksHandler] No action taken`);
+	   }
 }

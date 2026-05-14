@@ -7,6 +7,7 @@ import tasksService from "./tasks.service";
 import type { TaskAction, NavAction, TaskFlowStep } from './tasks.types'
 import { renderCurrentTask } from "./tasks.messages";
 import router from "../router/router";
+import { channel } from "node:diagnostics_channel";
 
 export class TasksHandler extends BaseHandler {
 
@@ -75,14 +76,19 @@ export class TasksHandler extends BaseHandler {
 				task.deadline = new Date(task.deadline);
 			}
 
-			await tasksService.createTask(task, tgId);
+			if (task.id) {
+				await tasksService.updateTask(task, tgId);
+				await ctx.reply("✅ Задача обновлена");
+			} else {
+				await tasksService.createTask(task, tgId);
+				await ctx.reply("✅ Задача создана");
+			}
 
 			await SessionData.update(tgId, {
-				scene: "menuScene",
-				step: "menu" as MenuStep
+				scene: "tasksScene",
+				step: "view" as MenuStep
 			});
 
-			await ctx.reply("✅ Задача создана");
 			return router.route(ctx);
 		},
 
@@ -144,6 +150,8 @@ export class TasksHandler extends BaseHandler {
         createTask: async (ctx: BotContext) => {
             const tgId = ctx.from!.id;
 
+            await TaskSession.set(tgId, {});
+
             await SessionData.update(tgId, {
                 step: "title"
             });
@@ -162,8 +170,32 @@ export class TasksHandler extends BaseHandler {
         },
 
         deleteTask: async (ctx: BotContext) => {
+			const tgId = ctx.from!.id;
+			const cache = await TasksCacheSession.get(tgId);
+			const result = await tasksService.deleteTask(tgId, cache?.currentId!);
+			if(result.success) {
+				await SessionData.update(tgId, {
+					scene: "menuScene",
+					step: "menu" as MenuStep
+				});
+				
+				if (!cache) {
+					return;
+				}
 
-        }
+				const newTasksIds = cache.tasksIds.filter(id => id !== cache.currentId);
+				const newIndex = cache.currentIndex - 1 === -1 ? 0 : cache.currentIndex - 1;
+				const newCurrentId = newTasksIds[newIndex] ?? -1;
+
+				await TasksCacheSession.update(tgId, {
+					tasksIds: newTasksIds,
+					currentIndex: newIndex,
+					currentId: newCurrentId
+				});
+				
+				return router.route(ctx);
+			}
+		}
     };
 
 	private navigation = {
@@ -172,10 +204,24 @@ export class TasksHandler extends BaseHandler {
 				scene: "menuScene",
 				step: "menu" as MenuStep
 			});
+
+			return router.route(ctx);
 		},
 
         prevTask: async (ctx: BotContext) => {
+			const tgId = ctx.from!.id;
+			const cache = await TasksCacheSession.get(tgId);
+			const tasks = await tasksService.getTasks(tgId);
 
+			if (!cache) {
+				return;
+			}
+
+			if (cache?.currentIndex <= 0) {
+				return;
+			}
+
+			cache.currentIndex--;
         },
 
         nextTask: async (ctx: BotContext) => {

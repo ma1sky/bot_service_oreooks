@@ -70,6 +70,10 @@ export class TasksHandler extends BaseHandler {
 				return ctx.reply("❌ Ошибка");
 			}
 
+			if (task.deadline && typeof task.deadline === 'string') {
+				task.deadline = new Date(task.deadline);
+			}
+
 			await tasksService.createTask(task, tgId);
 
 			await SessionData.update(tgId, {

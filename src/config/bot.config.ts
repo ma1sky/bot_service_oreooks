@@ -9,10 +9,16 @@ export default function startBot(): Telegraf<BotContext> {
 	const bot = new Telegraf<BotContext>(BOT_TOKEN as string);
 
 	bot.use(async (ctx, next) => {
+		// Handle /start command
 		if (ctx.message && "text" in ctx.message && ctx.message.text === "/start") {
 			return next();
 		}
-		
+
+		if (ctx.message && !("text" in ctx.message)) {
+			await ctx.reply("Пожалуйста, отправьте текстовое сообщение.").catch(() => {});
+			return;
+		}
+
 		return router.route(ctx);
 	});
 

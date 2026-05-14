@@ -314,6 +314,7 @@ export class TasksHandler extends BaseHandler {
 	private navigation = {
 		openMenu: async (ctx: BotContext) => {
 			const tgId = ctx.from!.id;
+			console.log(`[TasksHandler] openMenu called for tgId: ${tgId}`);
 			
 			await TaskSession.clear(tgId);
 			await TasksCacheSession.clear(tgId);
@@ -322,6 +323,7 @@ export class TasksHandler extends BaseHandler {
 				scene: "menuScene",
 				step: "menu" as MenuStep
 			});
+			console.log(`[TasksHandler] Session updated to menuScene, calling router.route`);
 
 			return router.route(ctx);
 		},

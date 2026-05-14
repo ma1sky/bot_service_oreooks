@@ -60,7 +60,7 @@ export class MenuHandler extends BaseHandler {
             }
         }
 
-        if (session?.scene === "menuScene" && !ctx.callbackQuery) {
+        if (session?.scene === "menuScene") {
             await showMenu(ctx);
         }
         return;

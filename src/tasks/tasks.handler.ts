@@ -103,6 +103,10 @@ export class TasksHandler extends BaseHandler {
 				return ctx.reply("Нет текущей задачи");
 			}
 
+			if (task.deadline && typeof task.deadline === 'string') {
+				task.deadline = new Date(task.deadline);
+			}
+
 			const newState = task.state === "draft" ? "completed" : "draft";
 			const updatedTask = {
 				...task,

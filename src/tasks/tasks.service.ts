@@ -12,6 +12,18 @@ class TaskService extends BaseService {
 	}
 
 	async createTask(task: TaskDraft, tgId: number) {
+		let deadlineISO: string | undefined;
+		if (task.deadline) {
+			if (task.deadline instanceof Date) {
+				deadlineISO = task.deadline.toISOString();
+			} else if (typeof task.deadline === 'string') {
+				const date = new Date(task.deadline);
+				if (!isNaN(date.getTime())) {
+					deadlineISO = date.toISOString();
+				}
+			}
+		}
+
 		const res = await fetch(`${this.base}/users/${tgId}/tasks`, {
 			method: "POST",
 			headers: this.headers,
@@ -19,8 +31,8 @@ class TaskService extends BaseService {
 				authorId: tgId,
 				title: task.title,
 				description: task.description,
-				deadline: task.deadline?.toISOString(),
-                state: 'draft'
+				deadline: deadlineISO,
+	               state: 'draft'
 			}),
 		});
 
@@ -32,14 +44,26 @@ class TaskService extends BaseService {
 			throw new Error("Task id is required for update");
 		}
 
+		let deadlineISO: string | undefined;
+		if (task.deadline) {
+			if (task.deadline instanceof Date) {
+				deadlineISO = task.deadline.toISOString();
+			} else if (typeof task.deadline === 'string') {
+				const date = new Date(task.deadline);
+				if (!isNaN(date.getTime())) {
+					deadlineISO = date.toISOString();
+				}
+			}
+		}
+
 		const res = await fetch(`${this.base}/users/${tgId}/tasks/${task.id}`, {
 			method: "PUT",
 			headers: this.headers,
 			body: JSON.stringify({
 				title: task.title,
 				description: task.description,
-				deadline: task.deadline?.toISOString(),
-                state: task.state,
+				deadline: deadlineISO,
+	               state: task.state,
 			}),
 		});
 

@@ -23,7 +23,7 @@ export const taskSchema = z.object({
     title: titleSchema,
     description: descriptionSchema,
     deadline: deadlineSchema,
-    state: z.enum(["draft", "completed"])
+    state: z.enum(["draft", "completed"]).optional().default("draft")
 });
 
 export const taskResponseSchema = z.object({

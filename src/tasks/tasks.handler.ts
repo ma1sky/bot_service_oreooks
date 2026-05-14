@@ -98,41 +98,46 @@ export class TasksHandler extends BaseHandler {
     public actions: Record<TaskAction, (ctx: BotContext) => Promise<any> > = {
         view: async (ctx: BotContext) => {
             const tgId = ctx.from!.id;
-            const result = await tasksService.getTasks(tgId)
-            
-            if(!result.success) {
-                await ctx.reply(result.reason ?? 'Неизвестная ошибка');
-                return;
-            }
+            try {
+                const result = await tasksService.getTasks(tgId)
+                
+                if(!result.success) {
+                    await ctx.reply(result.reason ?? 'Неизвестная ошибка');
+                    return;
+                }
 
-            const tasks = result.tasks
+                const tasks = result.tasks
 
-            if (!tasks || !tasks.length) {
+                if (!tasks || !tasks.length) {
+                    await renderCurrentTask(ctx);
+                    return;
+                }
+
+                await TasksCacheSession.set(tgId, {
+                    tasksIds: tasks.map(task => task.id!),
+                    currentId: tasks[0]?.id!,
+                    currentIndex: 0
+                })
+
+                if (!tasks[0]) {
+                    return;
+                }
+
+                const { id, title, description, deadline, state } = tasks[0]
+                
+                await TaskSession.set(tgId, {
+                    id: id!,
+                    title: title,
+                    description: description,
+                    deadline: deadline,
+                    state: (state || "draft") as "draft" | "completed"
+                })
+
                 await renderCurrentTask(ctx);
-                return;
+            } catch (error) {
+                console.error(`Error in view action:`, error);
+                await ctx.reply('Произошла непредвиденная ошибка');
             }
-
-            await TasksCacheSession.set(tgId, {
-                tasksIds: tasks.map(task => task.id!),
-                currentId: tasks[0]?.id!,
-                currentIndex: 0
-            })
-
-            if (!tasks[0]) {
-                return;
-            }
-
-            const { id, title, description, deadline, state } = tasks[0]
-            
-            await TaskSession.set(tgId, {
-                id: id!,
-                title: title,
-                description: description,
-                deadline: deadline,
-                state: state as "draft" | "completed"
-            })
-
-            await renderCurrentTask(ctx);
             return;
         },
 

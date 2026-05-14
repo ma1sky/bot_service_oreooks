@@ -101,17 +101,17 @@ export class AuthHandler extends BaseHandler {
 	}
 
 	override async handle(ctx: BotContext): Promise<void> {
-		// Ignore callback queries - they should be handled by menu or other scenes
 		if (ctx.callbackQuery) {
-			// Optionally answer the callback query to prevent loading indicator
 			if ('data' in ctx.callbackQuery) {
 				await ctx.answerCbQuery().catch(() => {});
 			}
 			return;
 		}
 
-		// If it's not a text message, let getMessageText handle it (will reply with "Отправь текст")
-		// but we catch the error to prevent it from being logged as an error
+		if (!ctx.message || !("text" in ctx.message)) {
+			return;
+		}
+
 		const session = await SessionData.get(ctx.from!.id);
 		const step = session?.step;
 

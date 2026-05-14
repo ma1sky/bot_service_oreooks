@@ -105,11 +105,11 @@ export class TasksHandler extends BaseHandler {
                 return;
             }
 
-            const tasks = result.data
+            const tasks = result.tasks
 
             if (!tasks || !tasks.length) {
                 await renderCurrentTask(ctx);
-                return; 
+                return;
             }
 
             await TasksCacheSession.set(tgId, {

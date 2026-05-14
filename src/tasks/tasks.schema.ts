@@ -29,13 +29,13 @@ export const taskSchema = z.object({
 export const taskResponseSchema = z.object({
     success: z.boolean(),
     reason: z.string().optional(),
-    data: z.any().optional()
+    task: taskSchema.optional()
 });
 
 export type TaskResponse = z.infer<typeof taskResponseSchema>;
 
 export const tasksListResponseSchema = z.object({
 	success: z.boolean(),
-	data: z.array(taskSchema).optional(),
+	tasks: z.array(taskSchema).optional(),
 	reason: z.string().optional(),
 });

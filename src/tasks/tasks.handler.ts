@@ -83,6 +83,9 @@ export class TasksHandler extends BaseHandler {
 				await ctx.reply("✅ Задача создана");
 			}
 
+			// Clear task draft from session after successful save
+			await TaskSession.clear(tgId);
+
 			await SessionData.update(tgId, {
 				scene: "tasksScene",
 				step: "view" as MenuStep
@@ -208,16 +211,32 @@ export class TasksHandler extends BaseHandler {
 			const cache = await TasksCacheSession.get(tgId);
 			const result = await tasksService.deleteTask(tgId, cache?.currentId!);
 			if (result.success) {
-				await SessionData.update(tgId, {
-					scene: "menuScene",
-					step: "menu" as MenuStep
-				});
+				// Clear TaskSession since the current task is deleted
+				await TaskSession.clear(tgId);
 
 				if (!cache) {
-					return;
+					// No cache, go to menu
+					await SessionData.update(tgId, {
+						scene: "menuScene",
+						step: "menu" as MenuStep
+					});
+					return router.route(ctx);
 				}
 
 				const newTasksIds = cache.tasksIds.filter(id => id !== cache.currentId);
+				
+				if (newTasksIds.length === 0) {
+					// No tasks left, clear sessions and go to menu
+					await TasksCacheSession.clear(tgId);
+					await SessionData.update(tgId, {
+						scene: "menuScene",
+						step: "menu" as MenuStep
+					});
+					await ctx.reply("✅ Задача удалена. Задач больше нет.");
+					return router.route(ctx);
+				}
+
+				// Update cache with remaining tasks
 				const newIndex = cache.currentIndex - 1 === -1 ? 0 : cache.currentIndex - 1;
 				const newCurrentId = newTasksIds[newIndex] ?? -1;
 
@@ -225,6 +244,12 @@ export class TasksHandler extends BaseHandler {
 					tasksIds: newTasksIds,
 					currentIndex: newIndex,
 					currentId: newCurrentId
+				});
+
+				// Stay in tasks scene and show next task
+				await SessionData.update(tgId, {
+					scene: "tasksScene",
+					step: "view"
 				});
 
 				return await renderCurrentTask(ctx);
@@ -238,7 +263,13 @@ export class TasksHandler extends BaseHandler {
 
 	private navigation = {
 		openMenu: async (ctx: BotContext) => {
-			await SessionData.update(ctx.from!.id, {
+			const tgId = ctx.from!.id;
+			
+			// Clear task-related sessions when leaving tasks scene
+			await TaskSession.clear(tgId);
+			await TasksCacheSession.clear(tgId);
+			
+			await SessionData.update(tgId, {
 				scene: "menuScene",
 				step: "menu" as MenuStep
 			});

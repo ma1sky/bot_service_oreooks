@@ -2,35 +2,49 @@ import type { BotContext } from "../config/types"
 import { Markup } from "telegraf"
 import { TasksCacheSession, TaskSession } from "../session/session"
 
-const keyboard = Markup.inlineKeyboard([
-			[ Markup.button.callback('✏️ Создать задачу','createTask') ],
-			[
-				Markup.button.callback('◀️', 'prevTask'),
-				Markup.button.callback('📋 Меню', 'openMenu'),
-				Markup.button.callback('▶️', 'nextTask')
-			],
-			[
-				Markup.button.callback('✅ Завершить', 'toggleState'),
-				Markup.button.callback('✏️ Редактировать', 'editTask'),
-				Markup.button.callback('🗑️ Удалить', 'deleteTask')
-			]
-		])
+
 
 export async function renderCurrentTask(ctx: BotContext) {
 	const tgId = ctx.from!.id;
 	const task = await TaskSession.get(tgId);
 	const cache = await TasksCacheSession.get(tgId);
+
+	const noTaskkeyboard = Markup.inlineKeyboard([
+		[ Markup.button.callback('✏️ Создать задачу','createTask') ],
+		[
+			Markup.button.callback('◀️', 'prevTask'),
+			Markup.button.callback('📋 Меню', 'openMenu'),
+			Markup.button.callback('▶️', 'nextTask')
+		]
+	])
+
 	if (!cache) {
-		return ctx.reply('📭 Не найдено задач в кэше', keyboard)
+		return ctx.reply('📭 Не найдено задач в кэше', noTaskkeyboard)
 	}
 
 	if(!task) {
-		return ctx.reply('📭 Задач нет', keyboard)
+		return ctx.reply('📭 Задач нет', noTaskkeyboard)
 	}
+
+	const keyboard = Markup.inlineKeyboard([
+		[ Markup.button.callback('✏️ Создать задачу','createTask') ],
+		[
+			Markup.button.callback('◀️', 'prevTask'),
+			Markup.button.callback('📋 Меню', 'openMenu'),
+			Markup.button.callback('▶️', 'nextTask')
+		],
+		[
+			Markup.button.callback(`${task.state == 'draft'? '⚒️ В работу': '✅ Завершить'}`, 'toggleState'),
+			Markup.button.callback('✏️ Редактировать', 'editTask'),
+			Markup.button.callback('🗑️ Удалить', 'deleteTask')
+		]
+	])
+
+	
 	const total = cache.tasksIds.length
 	const index = cache.currentIndex + 1
 
-	await ctx.reply(
+	await ctx.editMessageText(
 		`📚 Задача ${index}/${total}, ID:${task.id}\n\n` +
 		`${task.state == 'draft'? '⚒️ В процессе': '✅ Выполнена'}` +
 		`✏️ Название: ${task.title}\n` +

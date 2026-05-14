@@ -109,11 +109,15 @@ export class TasksHandler extends BaseHandler {
         view: async (ctx: BotContext) => {
             return this.actions.view(ctx);
         }
- };
+ 	};
     
     public actions: Record<TaskAction, (ctx: BotContext) => Promise<any> > = {
         view: async (ctx: BotContext) => {
             const tgId = ctx.from!.id;
+            await SessionData.update(tgId, {
+                scene: "tasksScene",
+                step: "view"
+            });
             try {
                 const result = await tasksService.getTasks(tgId)
                 
@@ -180,32 +184,36 @@ export class TasksHandler extends BaseHandler {
         },
 
         deleteTask: async (ctx: BotContext) => {
-			const tgId = ctx.from!.id;
-			const cache = await TasksCacheSession.get(tgId);
-			const result = await tasksService.deleteTask(tgId, cache?.currentId!);
-			if(result.success) {
-				await SessionData.update(tgId, {
-					scene: "menuScene",
-					step: "menu" as MenuStep
-				});
-				
-				if (!cache) {
-					return;
-				}
+   const tgId = ctx.from!.id;
+   const cache = await TasksCacheSession.get(tgId);
+   const result = await tasksService.deleteTask(tgId, cache?.currentId!);
+   if(result.success) {
+    await SessionData.update(tgId, {
+     scene: "menuScene",
+     step: "menu" as MenuStep
+    });
+    
+    if (!cache) {
+     return;
+    }
 
-				const newTasksIds = cache.tasksIds.filter(id => id !== cache.currentId);
-				const newIndex = cache.currentIndex - 1 === -1 ? 0 : cache.currentIndex - 1;
-				const newCurrentId = newTasksIds[newIndex] ?? -1;
+    const newTasksIds = cache.tasksIds.filter(id => id !== cache.currentId);
+    const newIndex = cache.currentIndex - 1 === -1 ? 0 : cache.currentIndex - 1;
+    const newCurrentId = newTasksIds[newIndex] ?? -1;
 
-				await TasksCacheSession.update(tgId, {
-					tasksIds: newTasksIds,
-					currentIndex: newIndex,
-					currentId: newCurrentId
-				});
-				
-				return router.route(ctx);
-			}
-		}
+    await TasksCacheSession.update(tgId, {
+     tasksIds: newTasksIds,
+     currentIndex: newIndex,
+     currentId: newCurrentId
+    });
+    
+    return router.route(ctx);
+   }
+  },
+
+        toggleState: async (ctx: BotContext) => {
+            return this.flow.toggleState(ctx);
+        }
     };
 
 	private navigation = {

@@ -10,7 +10,7 @@ const keyboard = Markup.inlineKeyboard([
 				Markup.button.callback('▶️', 'nextTask')
 			],
 			[
-				Markup.button.callback('✅ Завершить', 'markComplete'),
+				Markup.button.callback('✅ Завершить', 'toggleState'),
 				Markup.button.callback('✏️ Редактировать', 'editTask'),
 				Markup.button.callback('🗑️ Удалить', 'deleteTask')
 			]

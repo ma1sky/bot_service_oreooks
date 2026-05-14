@@ -19,6 +19,7 @@ export type TaskAction =
     | "editTask"
     | "deleteTask"
     | "view"
+    | "toggleState"
 
 export type NavAction = "openMenu" | "prevTask" | "nextTask";
 

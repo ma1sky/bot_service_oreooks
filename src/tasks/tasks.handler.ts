@@ -11,7 +11,7 @@ import router from "../router/router";
 export class TasksHandler extends BaseHandler {
 
 	private flow = {
-        
+
 		title: async (ctx: BotContext) => {
 			const tgId = ctx.from!.id;
 			const text = getMessageText(ctx);
@@ -91,8 +91,8 @@ export class TasksHandler extends BaseHandler {
 			return router.route(ctx);
 		},
 
-        toggleState: async (ctx: BotContext) => {
-            const tgId = ctx.from!.id;
+		toggleState: async (ctx: BotContext) => {
+			const tgId = ctx.from!.id;
 			const cache = await TasksCacheSession.get(tgId);
 			if (!cache) {
 				return ctx.reply("Нет задач");
@@ -104,117 +104,119 @@ export class TasksHandler extends BaseHandler {
 			}
 
 			await tasksService.toggleTaskState(tgId, cache.currentId);
-        },
 
-        view: async (ctx: BotContext) => {
-            return this.actions.view(ctx);
-        }
- 	};
-    
-    public actions: Record<TaskAction, (ctx: BotContext) => Promise<any> > = {
-        view: async (ctx: BotContext) => {
-            const tgId = ctx.from!.id;
-            await SessionData.update(tgId, {
-                scene: "tasksScene",
-                step: "view"
-            });
-            try {
-                const result = await tasksService.getTasks(tgId)
-                
-                if(!result.success) {
-                    await ctx.reply(result.reason ?? 'Неизвестная ошибка');
-                    return;
-                }
+			return renderCurrentTask(ctx);
+		},
 
-                const tasks = result.tasks
+		view: async (ctx: BotContext) => {
+			return this.actions.view(ctx);
+		}
+	};
 
-                if (!tasks || !tasks.length) {
-                    await renderCurrentTask(ctx);
-                    return;
-                }
+	public actions: Record<TaskAction, (ctx: BotContext) => Promise<any>> = {
+		view: async (ctx: BotContext) => {
+			const tgId = ctx.from!.id;
+			await SessionData.update(tgId, {
+				scene: "tasksScene",
+				step: "view"
+			});
+			try {
+				const result = await tasksService.getTasks(tgId)
 
-                await TasksCacheSession.set(tgId, {
-                    tasksIds: tasks.map(task => task.id!),
-                    currentId: tasks[0]?.id!,
-                    currentIndex: 0
-                })
+				if (!result.success) {
+					await ctx.reply(result.reason ?? 'Неизвестная ошибка');
+					return;
+				}
 
-                if (!tasks[0]) {
-                    return;
-                }
+				const tasks = result.tasks
 
-                const { id, title, description, deadline, state } = tasks[0]
-                
-                await TaskSession.set(tgId, {
-                    id: id!,
-                    title: title,
-                    description: description,
-                    deadline: deadline,
-                    state: (state || "draft") as "draft" | "completed"
-                })
+				if (!tasks || !tasks.length) {
+					await renderCurrentTask(ctx);
+					return;
+				}
 
-                await renderCurrentTask(ctx);
-            } catch (error) {
-                console.error(`Error in view action:`, error);
-                await ctx.reply('Произошла непредвиденная ошибка');
-            }
-            return;
-        },
+				await TasksCacheSession.set(tgId, {
+					tasksIds: tasks.map(task => task.id!),
+					currentId: tasks[0]?.id!,
+					currentIndex: 0
+				})
 
-        createTask: async (ctx: BotContext) => {
-            const tgId = ctx.from!.id;
+				if (!tasks[0]) {
+					return;
+				}
 
-            await TaskSession.set(tgId, {});
+				const { id, title, description, deadline, state } = tasks[0]
 
-            await SessionData.update(tgId, {
-                step: "title"
-            });
+				await TaskSession.set(tgId, {
+					id: id!,
+					title: title,
+					description: description,
+					deadline: deadline,
+					state: (state || "draft") as "draft" | "completed"
+				})
 
-            return ctx.reply("✏️ Введи заголовок задачи:");
-        },
+				await renderCurrentTask(ctx);
+			} catch (error) {
+				console.error(`Error in view action:`, error);
+				await ctx.reply('Произошла непредвиденная ошибка');
+			}
+			return;
+		},
 
-        editTask: async (ctx: BotContext) => {
-            const tgId = ctx.from!.id;
+		createTask: async (ctx: BotContext) => {
+			const tgId = ctx.from!.id;
 
-            await SessionData.update(tgId, {
-                step: "title"
-            });
+			await TaskSession.set(tgId, {});
 
-            return ctx.reply("✏️ Введи заголовок задачи:");
-        },
+			await SessionData.update(tgId, {
+				step: "title"
+			});
 
-        deleteTask: async (ctx: BotContext) => {
-   const tgId = ctx.from!.id;
-   const cache = await TasksCacheSession.get(tgId);
-   const result = await tasksService.deleteTask(tgId, cache?.currentId!);
-   if(result.success) {
-    await SessionData.update(tgId, {
-     scene: "menuScene",
-     step: "menu" as MenuStep
-    });
-    
-    if (!cache) {
-     return;
-    }
+			return ctx.reply("✏️ Введи заголовок задачи:");
+		},
 
-    const newTasksIds = cache.tasksIds.filter(id => id !== cache.currentId);
-    const newIndex = cache.currentIndex - 1 === -1 ? 0 : cache.currentIndex - 1;
-    const newCurrentId = newTasksIds[newIndex] ?? -1;
+		editTask: async (ctx: BotContext) => {
+			const tgId = ctx.from!.id;
 
-    await TasksCacheSession.update(tgId, {
-     tasksIds: newTasksIds,
-     currentIndex: newIndex,
-     currentId: newCurrentId
-    });
-    
-    return router.route(ctx);
-   }
-  },
+			await SessionData.update(tgId, {
+				step: "title"
+			});
 
-        toggleState: async (ctx: BotContext) => {
-            return this.flow.toggleState(ctx);
-        }
-    };
+			return ctx.reply("✏️ Введи заголовок задачи:");
+		},
+
+		deleteTask: async (ctx: BotContext) => {
+			const tgId = ctx.from!.id;
+			const cache = await TasksCacheSession.get(tgId);
+			const result = await tasksService.deleteTask(tgId, cache?.currentId!);
+			if (result.success) {
+				await SessionData.update(tgId, {
+					scene: "menuScene",
+					step: "menu" as MenuStep
+				});
+
+				if (!cache) {
+					return;
+				}
+
+				const newTasksIds = cache.tasksIds.filter(id => id !== cache.currentId);
+				const newIndex = cache.currentIndex - 1 === -1 ? 0 : cache.currentIndex - 1;
+				const newCurrentId = newTasksIds[newIndex] ?? -1;
+
+				await TasksCacheSession.update(tgId, {
+					tasksIds: newTasksIds,
+					currentIndex: newIndex,
+					currentId: newCurrentId
+				});
+
+				return await renderCurrentTask(ctx);
+			}
+		},
+
+		toggleState: async (ctx: BotContext) => {
+			return this.flow.toggleState(ctx);
+		}
+	};
 
 	private navigation = {
 		openMenu: async (ctx: BotContext) => {
@@ -226,7 +228,7 @@ export class TasksHandler extends BaseHandler {
 			return router.route(ctx);
 		},
 
-        prevTask: async (ctx: BotContext) => {
+		prevTask: async (ctx: BotContext) => {
 			const tgId = ctx.from!.id;
 			const cache = await TasksCacheSession.get(tgId);
 
@@ -246,10 +248,10 @@ export class TasksHandler extends BaseHandler {
 				currentId: newCurrentId
 			});
 
-			await renderCurrentTask(ctx);			
-        },
+			await renderCurrentTask(ctx);
+		},
 
-        nextTask: async (ctx: BotContext) => {
+		nextTask: async (ctx: BotContext) => {
 			const tgId = ctx.from!.id;
 			const cache = await TasksCacheSession.get(tgId);
 
@@ -269,44 +271,44 @@ export class TasksHandler extends BaseHandler {
 				currentId: newCurrentId
 			});
 
-			await renderCurrentTask(ctx);	
-        }
+			await renderCurrentTask(ctx);
+		}
 	};
 
 	override async handle(ctx: BotContext) {
-	       const tgId = ctx.from!.id;
-	       
-	       if ("callback_query" in ctx.update && ctx.callbackQuery && 'data' in ctx.callbackQuery) {
-	           const data = ctx.callbackQuery.data;
-	           
-	           console.log(`[TasksHandler] Callback query received: ${data}, tgId: ${tgId}`);
-	           
-	           await ctx.answerCbQuery().catch(() => {});
+		const tgId = ctx.from!.id;
 
-	           if (data in this.actions) {
-	               console.log(`[TasksHandler] Action found: ${data}`);
-	               return this.actions[data as TaskAction](ctx);
-	           }
+		if ("callback_query" in ctx.update && ctx.callbackQuery && 'data' in ctx.callbackQuery) {
+			const data = ctx.callbackQuery.data;
 
-	           if (data in this.navigation) {
-	               console.log(`[TasksHandler] Navigation found: ${data}`);
-	               return this.navigation[data as NavAction](ctx);
-	           }
-	           
-	           console.log(`[TasksHandler] Unknown callback data: ${data}`);
-	       }
+			console.log(`[TasksHandler] Callback query received: ${data}, tgId: ${tgId}`);
 
-	       const session = await SessionData.get(tgId);
-	       const step = session?.step as TaskFlowStep | undefined;
-	       const scene = session?.scene;
-	       
-	       console.log(`[TasksHandler] No callback query, scene: ${scene}, step: ${step}`);
+			await ctx.answerCbQuery().catch(() => { });
 
-	       if (step && step in this.flow) {
-	           console.log(`[TasksHandler] Executing flow step: ${step}`);
-	           return this.flow[step](ctx);
-	       }
-	       
-	       console.log(`[TasksHandler] No action taken`);
-	   }
+			if (data in this.actions) {
+				console.log(`[TasksHandler] Action found: ${data}`);
+				return this.actions[data as TaskAction](ctx);
+			}
+
+			if (data in this.navigation) {
+				console.log(`[TasksHandler] Navigation found: ${data}`);
+				return this.navigation[data as NavAction](ctx);
+			}
+
+			console.log(`[TasksHandler] Unknown callback data: ${data}`);
+		}
+
+		const session = await SessionData.get(tgId);
+		const step = session?.step as TaskFlowStep | undefined;
+		const scene = session?.scene;
+
+		console.log(`[TasksHandler] No callback query, scene: ${scene}, step: ${step}`);
+
+		if (step && step in this.flow) {
+			console.log(`[TasksHandler] Executing flow step: ${step}`);
+			return this.flow[step](ctx);
+		}
+
+		console.log(`[TasksHandler] No action taken`);
+	}
 }

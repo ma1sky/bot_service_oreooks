@@ -35,7 +35,7 @@ export async function renderCurrentTask(ctx: BotContext) {
 		`${task.state == 'draft'? '⚒️ В процессе': '✅ Выполнена'}` +
 		`✏️ Название: ${task.title}\n` +
 		`📃 Описание: ${task.description}\n` +
-		`📆 Дедлайн: ${Intl.DateTimeFormat('ru-RU').format(task.deadline)}`,
+		`📆 Дедлайн: ${task.deadline && !isNaN(new Date(task.deadline).getTime()) ? Intl.DateTimeFormat('ru-RU').format(new Date(task.deadline)) : 'Не указан'}`,
 		
 		keyboard
 	)

@@ -11,11 +11,20 @@ export const descriptionSchema = z
     .max(256, "❌ Слишком длинное описание");
 
 export const deadlineSchema = z
-    .string()
-    .regex(/^\d{2}\.\d{2}\.\d{4}$/, "Неверный формат даты")
+    .union([
+        z.string().regex(/^\d{2}\.\d{2}\.\d{4}$/, "Неверный формат даты"),
+        z.string().datetime(),
+        z.date()
+    ])
     .transform((val) => {
-        const [dd, mm, yyyy] = val.split('.');
-        return new Date(+yyyy!, +mm! - 1, +dd!);
+        if (typeof val === 'string') {
+            if (val.match(/^\d{2}\.\d{2}\.\d{4}$/)) {
+                const [dd, mm, yyyy] = val.split('.');
+                return new Date(+yyyy!, +mm! - 1, +dd!);
+            }
+            return new Date(val);
+        }
+        return val;
     })
 
 export const taskSchema = z.object({

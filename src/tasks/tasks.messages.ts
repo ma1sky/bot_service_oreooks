@@ -11,11 +11,7 @@ export async function renderCurrentTask(ctx: BotContext) {
 
 	const noTaskkeyboard = Markup.inlineKeyboard([
 		[ Markup.button.callback('✏️ Создать задачу','createTask') ],
-		[
-			Markup.button.callback('◀️', 'prevTask'),
-			Markup.button.callback('📋 Меню', 'openMenu'),
-			Markup.button.callback('▶️', 'nextTask')
-		]
+		[ Markup.button.callback('📋 Меню', 'openMenu') ]
 	])
 
 	if (!cache) {

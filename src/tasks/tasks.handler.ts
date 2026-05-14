@@ -7,7 +7,6 @@ import tasksService from "./tasks.service";
 import type { TaskAction, NavAction, TaskFlowStep } from './tasks.types'
 import { renderCurrentTask } from "./tasks.messages";
 import router from "../router/router";
-import { channel } from "node:diagnostics_channel";
 
 export class TasksHandler extends BaseHandler {
 

@@ -55,6 +55,15 @@ class TaskService extends BaseService {
 		return this.request(res, tasksListResponseSchema);
 	}
 
+	async getTask(tgId: number, taskId: number) {
+		const res = await fetch(`${this.base}/users/${tgId}/tasks/${taskId}`, {
+			method: "GET",
+			headers: this.headers,
+		});
+
+		return this.request(res, taskResponseSchema);
+	}
+
 	async deleteTask(tgId: number, taskId: number) {
 		const res = await fetch(`${this.base}/users/${tgId}/tasks/${taskId}`, {
 			method: "DELETE",

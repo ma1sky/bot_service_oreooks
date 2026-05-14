@@ -34,7 +34,7 @@ export async function renderCurrentTask(ctx: BotContext) {
 			Markup.button.callback('▶️', 'nextTask')
 		],
 		[
-			Markup.button.callback(`${task.state == 'draft'? '⚒️ В работу': '✅ Завершить'}`, 'toggleState'),
+			Markup.button.callback(`${task.state == 'draft'? '✅ Завершить': '⚒️ В работу'}`, 'toggleState'),
 			Markup.button.callback('✏️ Редактировать', 'editTask'),
 			Markup.button.callback('🗑️ Удалить', 'deleteTask')
 		]
@@ -44,13 +44,16 @@ export async function renderCurrentTask(ctx: BotContext) {
 	const total = cache.tasksIds.length
 	const index = cache.currentIndex + 1
 
-	await ctx.editMessageText(
+	const messageText =
 		`📚 Задача ${index}/${total}, ID:${task.id}\n\n` +
-		`${task.state == 'draft'? '⚒️ В процессе': '✅ Выполнена'}` +
+		`${task.state == 'draft'? '⚒️ В процессе': '✅ Выполнена'}\n` +
 		`✏️ Название: ${task.title}\n` +
 		`📃 Описание: ${task.description}\n` +
-		`📆 Дедлайн: ${task.deadline && !isNaN(new Date(task.deadline).getTime()) ? Intl.DateTimeFormat('ru-RU').format(new Date(task.deadline)) : 'Не указан'}`,
-		
-		keyboard
-	)
+		`📆 Дедлайн: ${task.deadline && !isNaN(new Date(task.deadline).getTime()) ? Intl.DateTimeFormat('ru-RU').format(new Date(task.deadline)) : 'Не указан'}`;
+
+	try {
+		await ctx.editMessageText(messageText, keyboard);
+	} catch (error) {
+		await ctx.reply(messageText, keyboard);
+	}
 }

@@ -292,12 +292,30 @@ export class TasksHandler extends BaseHandler {
 			const newIndex = cache.currentIndex - 1;
 			const newCurrentId = cache.tasksIds[newIndex] ?? 0;
 
-			await TasksCacheSession.update(tgId, {
-				currentIndex: newIndex,
-				currentId: newCurrentId
-			});
+			const result = await tasksService.getTask(tgId, newCurrentId);
+			if (result.success && result.task) {
+				const taskData: any = {
+					id: result.task.id,
+					title: result.task.title,
+					description: result.task.description,
+					state: result.task.state
+				};
+				
+				if (result.task.deadline) {
+					taskData.deadline = new Date(result.task.deadline);
+				}
+				
+				await TaskSession.set(tgId, taskData);
+				
+				await TasksCacheSession.update(tgId, {
+					currentIndex: newIndex,
+					currentId: newCurrentId
+				});
 
-			await renderCurrentTask(ctx);
+				await renderCurrentTask(ctx);
+			} else {
+				console.error('Failed to fetch task data for navigation:', result.reason);
+			}
 		},
 
 		nextTask: async (ctx: BotContext) => {
@@ -315,12 +333,30 @@ export class TasksHandler extends BaseHandler {
 			const newIndex = cache.currentIndex + 1;
 			const newCurrentId = cache.tasksIds[newIndex] ?? 0;
 
-			await TasksCacheSession.update(tgId, {
-				currentIndex: newIndex,
-				currentId: newCurrentId
-			});
+			const result = await tasksService.getTask(tgId, newCurrentId);
+			if (result.success && result.task) {
+				const taskData: any = {
+					id: result.task.id,
+					title: result.task.title,
+					description: result.task.description,
+					state: result.task.state
+				};
+				
+				if (result.task.deadline) {
+					taskData.deadline = new Date(result.task.deadline);
+				}
+				
+				await TaskSession.set(tgId, taskData);
+				
+				await TasksCacheSession.update(tgId, {
+					currentIndex: newIndex,
+					currentId: newCurrentId
+				});
 
-			await renderCurrentTask(ctx);
+				await renderCurrentTask(ctx);
+			} else {
+				console.error('Failed to fetch task data for navigation:', result.reason);
+			}
 		}
 	};
 

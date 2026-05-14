@@ -94,6 +94,17 @@ export class TasksHandler extends BaseHandler {
 
         toggleState: async (ctx: BotContext) => {
             const tgId = ctx.from!.id;
+			const cache = await TasksCacheSession.get(tgId);
+			if (!cache) {
+				return ctx.reply("Нет задач");
+			}
+
+			const task = await TaskSession.get(tgId);
+			if (!task) {
+				return ctx.reply("Нет текущей задачи");
+			}
+
+			await tasksService.toggleTaskState(tgId, cache.currentId);
         },
 
         view: async (ctx: BotContext) => {
@@ -211,7 +222,6 @@ export class TasksHandler extends BaseHandler {
         prevTask: async (ctx: BotContext) => {
 			const tgId = ctx.from!.id;
 			const cache = await TasksCacheSession.get(tgId);
-			const tasks = await tasksService.getTasks(tgId);
 
 			if (!cache) {
 				return;
@@ -221,11 +231,38 @@ export class TasksHandler extends BaseHandler {
 				return;
 			}
 
-			cache.currentIndex--;
+			const newIndex = cache.currentIndex - 1;
+			const newCurrentId = cache.tasksIds[newIndex] ?? 0;
+
+			await TasksCacheSession.update(tgId, {
+				currentIndex: newIndex,
+				currentId: newCurrentId
+			});
+
+			await renderCurrentTask(ctx);			
         },
 
         nextTask: async (ctx: BotContext) => {
+			const tgId = ctx.from!.id;
+			const cache = await TasksCacheSession.get(tgId);
 
+			if (!cache) {
+				return;
+			}
+
+			if (cache?.currentIndex >= cache.tasksIds.length - 1) {
+				return;
+			}
+
+			const newIndex = cache.currentIndex + 1;
+			const newCurrentId = cache.tasksIds[newIndex] ?? 0;
+
+			await TasksCacheSession.update(tgId, {
+				currentIndex: newIndex,
+				currentId: newCurrentId
+			});
+
+			await renderCurrentTask(ctx);	
         }
 	};
 

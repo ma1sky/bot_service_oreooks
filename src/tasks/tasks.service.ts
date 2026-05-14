@@ -63,6 +63,15 @@ class TaskService extends BaseService {
 
 		return this.request(res, taskResponseSchema);
 	}
+
+	async toggleTaskState(tgId: number, taskId: number) {
+		const res = await fetch(`${this.base}/users/${tgId}/tasks/${taskId}/toggle-state`, {
+			method: "PUT",
+			headers: this.headers,
+		});
+
+		return this.request(res, taskResponseSchema);
+	}
 }
 
 export default new TaskService();

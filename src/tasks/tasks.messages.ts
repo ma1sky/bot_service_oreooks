@@ -3,7 +3,7 @@ import { Markup } from "telegraf"
 import { TasksCacheSession, TaskSession } from "../session/session"
 
 const keyboard = Markup.inlineKeyboard([
-			[ Markup.button.callback('✏️ Создать задачу','create') ],
+			[ Markup.button.callback('✏️ Создать задачу','createTask') ],
 			[
 				Markup.button.callback('◀️', 'prevTask'),
 				Markup.button.callback('📋 Меню', 'openMenu'),

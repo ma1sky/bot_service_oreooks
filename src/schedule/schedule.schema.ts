@@ -1,9 +1,9 @@
 import { z } from 'zod'
 
 export const lessonSchema = z.object({
-    lessonName: z.string(),
-    lessonType: z.string(),
-    lessonNumber: z.number(),
+    lesson_name: z.string(),
+    lesson_type: z.string(),
+    lesson_number: z.number(),
     start: z.date(),
     end: z.date(),
     teacher: z.string(),

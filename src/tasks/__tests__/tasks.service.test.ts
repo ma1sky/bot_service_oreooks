@@ -3,7 +3,6 @@ import taskService from '../tasks.service';
 import { mockFetchResponse } from '../../__tests__/test-utils';
 import type { TaskDraft } from '../tasks.types';
 
-// Mock the global fetch
 (global.fetch as jest.Mock) = jest.fn();
 
 describe('TaskService', () => {

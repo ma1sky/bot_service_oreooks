@@ -100,8 +100,8 @@ describe('AuthService', () => {
 
     it('should handle invalid response schema', async () => {
       const invalidResponse = {
-        success: 'yes', // should be boolean
-        token: 123, // should be string
+        success: 'yes',
+        token: 123,
       };
 
       (global.fetch as jest.Mock).mockImplementation(

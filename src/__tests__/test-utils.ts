@@ -1,8 +1,5 @@
 import { jest, describe, it, expect } from '@jest/globals';
 
-/**
- * Mock fetch responses for testing
- */
 export function mockFetchResponse<T>(data: T, ok = true, status = 200) {
   return jest.fn().mockImplementation(() =>
     Promise.resolve({
@@ -17,9 +14,6 @@ export function mockFetchResponse<T>(data: T, ok = true, status = 200) {
   );
 }
 
-/**
- * Mock fetch error
- */
 export function mockFetchError(errorMessage: string, status = 500) {
   return jest.fn().mockImplementation(() =>
     Promise.resolve({
@@ -34,9 +28,6 @@ export function mockFetchError(errorMessage: string, status = 500) {
   );
 }
 
-/**
- * Create mock context for bot handlers
- */
 export function createMockContext(additionalProps = {}) {
   return {
     message: { text: 'test' },
@@ -54,14 +45,10 @@ export function createMockContext(additionalProps = {}) {
   };
 }
 
-/**
- * Reset all mocks
- */
 export function resetMocks() {
   jest.clearAllMocks();
 }
 
-// Add a dummy test to satisfy Jest's requirement for test files
 describe('test-utils', () => {
   it('should export utility functions', () => {
     expect(typeof mockFetchResponse).toBe('function');

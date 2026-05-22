@@ -1,38 +1,38 @@
 name: Tests
 
 on:
-  push:
-    branches: [main, develop]
-  pull_request:
-    branches: [main, develop]
-  workflow_dispatch:
+    push:
+        branches: [main, develop]
+    pull_request:
+        branches: [main, develop]
+    workflow_dispatch:
 
 jobs:
-  test:
-    name: Jest Tests
-    runs-on: ubuntu-latest
+    test:
+        name: Jest Tests
+        runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v5
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v5
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v5
-        with:
-          node-version: 22
-          cache: npm
+            - name: Setup Node.js
+              uses: actions/setup-node@v5
+              with:
+                  node-version: 22
+                  cache: npm
 
-      - name: Install dependencies
-        run: npm ci
+            - name: Install dependencies
+              run: npm ci
 
-      - name: Generate Prisma Client
-        run: npx prisma generate
+            - name: Generate Prisma Client
+              run: npx prisma generate
 
-      - name: Run tests with coverage
-        run: npm run test:coverage
+            - name: Run tests with coverage
+              run: npm run test:coverage
 
-      - name: Upload coverage reports
-        uses: codecov/codecov-action@v5
-        with:
-          files: ./coverage/lcov.info
-          fail_ci_if_error: false
+            - name: Upload coverage reports
+              uses: codecov/codecov-action@v5
+              with:
+                  files: ./coverage/lcov.info
+                  fail_ci_if_error: false

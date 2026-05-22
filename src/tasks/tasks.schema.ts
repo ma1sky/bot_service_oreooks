@@ -28,12 +28,12 @@ export const deadlineSchema = z
 	});
 
 export const taskSchema = z.object({
-  id: z.number().optional(),
-  title: titleSchema,
-  description: descriptionSchema,
-  deadline: deadlineSchema.optional().nullable(),
-  authorId: z.number().optional(),
-  state: z.enum(['draft', 'completed']).optional().default('draft'),
+	id: z.number().optional(),
+	title: titleSchema,
+	description: descriptionSchema,
+	deadline: deadlineSchema.optional().nullable(),
+	authorId: z.number().optional(),
+	state: z.enum(['draft', 'completed']).optional().default('draft'),
 });
 
 export const taskResponseSchema = z.object({

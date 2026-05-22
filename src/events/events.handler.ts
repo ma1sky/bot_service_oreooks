@@ -56,7 +56,7 @@ export class EventsHandler extends BaseHandler {
         }
       } catch (error) {
         console.error('Error fetching today events:', error);
-        await ctx.reply('❌ Не удалось загрузить события на сегодня. Попробуйте позже.');
+        await ctx.reply('❌ ' + this.getErrorMessage(error));
       }
     },
 
@@ -98,7 +98,7 @@ export class EventsHandler extends BaseHandler {
         }
       } catch (error) {
         console.error('Error fetching tomorrow events:', error);
-        await ctx.reply('❌ Не удалось загрузить события на завтра. Попробуйте позже.');
+        await ctx.reply('❌ ' + this.getErrorMessage(error));
       }
     },
 
@@ -140,7 +140,7 @@ export class EventsHandler extends BaseHandler {
         }
       } catch (error) {
         console.error('Error fetching yesterday events:', error);
-        await ctx.reply('❌ Не удалось загрузить события на вчера. Попробуйте позже.');
+        await ctx.reply('❌ ' + this.getErrorMessage(error));
       }
     },
 
@@ -166,6 +166,17 @@ export class EventsHandler extends BaseHandler {
       return this.actions.openTomorrow(ctx);
     },
   };
+
+  private getErrorMessage(error: unknown): string {
+    const msg = error instanceof Error ? error.message : String(error);
+    if (msg.includes('API error 503') || msg.includes('ConnectTimeoutError')) {
+      return 'Сервис событий временно недоступен. Попробуйте позже.';
+    }
+    if (msg.includes('API error 404')) {
+      return 'События не найдены.';
+    }
+    return 'Не удалось загрузить события. Попробуйте позже.';
+  }
 
   override async handle(ctx: BotContext) {
     const tgId = ctx.from!.id;

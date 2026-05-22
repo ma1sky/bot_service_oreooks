@@ -56,7 +56,7 @@ export class ScheduleHandler extends BaseHandler {
 				}
 			} catch (error) {
 				console.error('Error fetching today schedule:', error);
-				await ctx.reply('❌ Не удалось загрузить расписание на сегодня. Попробуйте позже.');
+				await ctx.reply('❌ ' + this.getErrorMessage(error));
 			}
 		},
 
@@ -98,7 +98,7 @@ export class ScheduleHandler extends BaseHandler {
 				}
 			} catch (error) {
 				console.error('Error fetching tomorrow schedule:', error);
-				await ctx.reply('❌ Не удалось загрузить расписание на завтра. Попробуйте позже.');
+				await ctx.reply('❌ ' + this.getErrorMessage(error));
 			}
 		},
 
@@ -140,7 +140,7 @@ export class ScheduleHandler extends BaseHandler {
 				}
 			} catch (error) {
 				console.error('Error fetching yesterday schedule:', error);
-				await ctx.reply('❌ Не удалось загрузить расписание на вчера. Попробуйте позже.');
+				await ctx.reply('❌ ' + this.getErrorMessage(error));
 			}
 		},
 
@@ -173,6 +173,17 @@ export class ScheduleHandler extends BaseHandler {
 			return this.actions.view(ctx);
 		},
 	};
+
+	private getErrorMessage(error: unknown): string {
+		const msg = error instanceof Error ? error.message : String(error);
+		if (msg.includes('API error 503') || msg.includes('ConnectTimeoutError')) {
+			return 'Сервис расписания временно недоступен. Попробуйте позже.';
+		}
+		if (msg.includes('API error 404')) {
+			return 'Расписание не найдено.';
+		}
+		return 'Не удалось загрузить расписание. Попробуйте позже.';
+	}
 
 	override async handle(ctx: BotContext) {
 		const tgId = ctx.from!.id;

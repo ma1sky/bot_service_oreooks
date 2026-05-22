@@ -155,6 +155,18 @@ export class ScheduleHandler extends BaseHandler {
 			const { showMenu } = await import('../menu/menu.messages');
 			await showMenu(ctx);
 		},
+
+		prevDay: async (ctx: BotContext) => {
+			// Navigate to previous day (relative to displayed date)
+			// For simplicity, just go to yesterday
+			return this.actions.openYesterday(ctx);
+		},
+
+		nextDay: async (ctx: BotContext) => {
+			// Navigate to next day (relative to displayed date)
+			// For simplicity, just go to tomorrow
+			return this.actions.openTomorrow(ctx);
+		},
 	};
 
 	override async handle(ctx: BotContext) {

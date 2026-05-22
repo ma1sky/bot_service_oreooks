@@ -1,1 +1,1 @@
-export type ScheduleAction = 'view' | 'openToday' | 'openTomorrow' | 'openYesterday' | 'openMenu';
+export type ScheduleAction = 'view' | 'openToday' | 'openTomorrow' | 'openYesterday' | 'openMenu' | 'prevDay' | 'nextDay';

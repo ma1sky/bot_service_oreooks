@@ -18,7 +18,13 @@ export default defineConfig([
     },
   },
 
-  ...tseslint.configs.recommended,
+  ...tseslint.configs.recommended.map(config => ({
+    ...config,
+    rules: {
+      ...config.rules,
+      "@typescript-eslint/no-explicit-any": "off",
+    },
+  })),
 
   eslintConfigPrettier,
 ]);

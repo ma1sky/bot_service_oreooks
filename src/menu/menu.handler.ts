@@ -3,6 +3,8 @@ import { SessionData } from '../session/session';
 import { BaseHandler } from '../base/base.handler';
 import { showMenu } from './menu.messages';
 import { TasksHandler } from '../tasks/tasks.handler';
+import { ScheduleHandler } from '../schedule/schedule.handler';
+import { EventsHandler } from '../events/events.handler';
 
 export class MenuHandler extends BaseHandler {
 	private actions = {
@@ -28,7 +30,10 @@ export class MenuHandler extends BaseHandler {
 				step: 'schedule',
 			});
 
-			return;
+			await ctx.answerCbQuery();
+
+			const scheduleHandler = new ScheduleHandler();
+			return scheduleHandler.actions.view(ctx);
 		},
 
 		openEvents: async (ctx: BotContext) => {
@@ -39,7 +44,10 @@ export class MenuHandler extends BaseHandler {
 				step: 'events',
 			});
 
-			return;
+			await ctx.answerCbQuery();
+
+			const eventsHandler = new EventsHandler();
+			return eventsHandler.actions.view(ctx);
 		},
 	};
 

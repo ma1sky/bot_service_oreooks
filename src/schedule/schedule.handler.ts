@@ -167,6 +167,11 @@ export class ScheduleHandler extends BaseHandler {
 			// For simplicity, just go to tomorrow
 			return this.actions.openTomorrow(ctx);
 		},
+
+		openSchedule: async (ctx: BotContext) => {
+			// Entry point from menu or other places
+			return this.actions.view(ctx);
+		},
 	};
 
 	override async handle(ctx: BotContext) {

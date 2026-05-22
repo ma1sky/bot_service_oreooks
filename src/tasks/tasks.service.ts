@@ -1,10 +1,7 @@
-import { API_SERVICE_LINK } from "../config/env.config";
-import type { TaskDraft } from "./tasks.types";
-import BaseService from "../base/base.service";
-import {
-	taskResponseSchema,
-	tasksListResponseSchema
-} from "./tasks.schema";
+import { API_SERVICE_LINK } from '../config/env.config';
+import type { TaskDraft } from './tasks.types';
+import BaseService from '../base/base.service';
+import { taskResponseSchema, tasksListResponseSchema } from './tasks.schema';
 
 class TaskService extends BaseService {
 	constructor() {
@@ -25,14 +22,14 @@ class TaskService extends BaseService {
 		}
 
 		const res = await fetch(`${this.base}/users/${tgId}/tasks`, {
-			method: "POST",
+			method: 'POST',
 			headers: this.headers,
 			body: JSON.stringify({
 				authorId: tgId,
 				title: task.title,
 				description: task.description,
 				deadline: deadlineISO,
-	               state: 'draft'
+				state: 'draft',
 			}),
 		});
 
@@ -41,7 +38,7 @@ class TaskService extends BaseService {
 
 	async updateTask(task: TaskDraft, tgId: number) {
 		if (!task.id) {
-			throw new Error("Task id is required for update");
+			throw new Error('Task id is required for update');
 		}
 
 		let deadlineISO: string | undefined;
@@ -57,13 +54,13 @@ class TaskService extends BaseService {
 		}
 
 		const res = await fetch(`${this.base}/users/${tgId}/tasks/${task.id}`, {
-			method: "PUT",
+			method: 'PUT',
 			headers: this.headers,
 			body: JSON.stringify({
 				title: task.title,
 				description: task.description,
 				deadline: deadlineISO,
-	               state: task.state,
+				state: task.state,
 			}),
 		});
 
@@ -72,7 +69,7 @@ class TaskService extends BaseService {
 
 	async getTasks(tgId: number) {
 		const res = await fetch(`${this.base}/users/${tgId}/tasks`, {
-			method: "GET",
+			method: 'GET',
 			headers: this.headers,
 		});
 
@@ -81,7 +78,7 @@ class TaskService extends BaseService {
 
 	async getTask(tgId: number, taskId: number) {
 		const res = await fetch(`${this.base}/users/${tgId}/tasks/${taskId}`, {
-			method: "GET",
+			method: 'GET',
 			headers: this.headers,
 		});
 
@@ -90,7 +87,7 @@ class TaskService extends BaseService {
 
 	async deleteTask(tgId: number, taskId: number) {
 		const res = await fetch(`${this.base}/users/${tgId}/tasks/${taskId}`, {
-			method: "DELETE",
+			method: 'DELETE',
 			headers: this.headers,
 		});
 
@@ -99,7 +96,7 @@ class TaskService extends BaseService {
 
 	async toggleTaskState(tgId: number, taskId: number) {
 		const res = await fetch(`${this.base}/users/${tgId}/tasks/${taskId}`, {
-			method: "PUT",
+			method: 'PUT',
 			headers: this.headers,
 		});
 

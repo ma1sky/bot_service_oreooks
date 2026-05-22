@@ -1,20 +1,22 @@
-import { ZodType } from "zod";
+import { ZodType } from 'zod';
 
 export default abstract class BaseService {
 	protected base: string;
 	protected headers: HeadersInit;
 
 	constructor(base: string) {
-		this.base = `https://${base}`;
+		// Ensure the base URL has a protocol
+		if (!base.startsWith('http://') && !base.startsWith('https://')) {
+			this.base = `https://${base}`;
+		} else {
+			this.base = base;
+		}
 		this.headers = {
-			"Content-Type": "application/json"
+			'Content-Type': 'application/json',
 		};
 	}
 
-	protected async request<T>(
-		res: Response,
-		schema: ZodType<T>
-	): Promise<T> {
+	protected async request<T>(res: Response, schema: ZodType<T>): Promise<T> {
 		if (!res.ok) {
 			const errorText = await this.getResponseText(res);
 			throw new Error(`API error ${res.status}: ${errorText}`);
@@ -34,7 +36,7 @@ export default abstract class BaseService {
 			if (e instanceof Error) {
 				throw new Error(`API response validation failed: ${e.message}`);
 			}
-			throw new Error("Unknown API error");
+			throw new Error('Unknown API error');
 		}
 	}
 

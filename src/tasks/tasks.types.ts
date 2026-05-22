@@ -1,26 +1,22 @@
 export type TaskDraft = {
-    step?: "title" | "description" | "deadline"
-    title?: string,
-    description?: string,
-    deadline?: Date,
-    state?: "draft" | "completed",
-    id?: number,
-    currentIndex?: number
-}
+	step?: 'title' | 'description' | 'deadline';
+	title?: string;
+	description?: string;
+	deadline?: Date | string | null | undefined;
+	state?: 'draft' | 'completed';
+	id?: number;
+	currentIndex?: number;
+	authorId?: number;
+};
 
 export type TasksCache = {
-    tasksIds: number[],
-    currentId: number,
-    currentIndex: number
-}
+	tasksIds: number[];
+	currentId: number;
+	currentIndex: number;
+};
 
-export type TaskAction =
-    | "createTask"
-    | "editTask"
-    | "deleteTask"
-    | "view"
-    | "toggleState"
+export type TaskAction = 'createTask' | 'editTask' | 'deleteTask' | 'view' | 'toggleState';
 
-export type NavAction = "openMenu" | "prevTask" | "nextTask";
+export type NavAction = 'openMenu' | 'prevTask' | 'nextTask';
 
-export type TaskFlowStep = "title" | "description" | "deadline" | "toggleState" | "view";
+export type TaskFlowStep = 'title' | 'description' | 'deadline' | 'toggleState' | 'view';

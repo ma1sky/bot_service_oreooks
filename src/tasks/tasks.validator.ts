@@ -1,9 +1,4 @@
-import {
-	titleSchema,
-	descriptionSchema,
-	deadlineSchema,
-	taskSchema
-} from "./tasks.schema";
+import { titleSchema, descriptionSchema, deadlineSchema, taskSchema } from './tasks.schema';
 
 class TaskValidator {
 	validateTitle(title: string) {

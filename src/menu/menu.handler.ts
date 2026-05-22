@@ -1,68 +1,67 @@
-import type { BotContext, MenuStep } from "../config/types";
-import { SessionData } from "../session/session";
-import router from '../router/router'
-import { BaseHandler } from "../base/base.handler";
-import { showMenu } from "./menu.messages";
-import { TasksHandler } from "../tasks/tasks.handler";
+import type { BotContext } from '../config/types';
+import { SessionData } from '../session/session';
+import { BaseHandler } from '../base/base.handler';
+import { showMenu } from './menu.messages';
+import { TasksHandler } from '../tasks/tasks.handler';
 
 export class MenuHandler extends BaseHandler {
-    private actions = {
-        openTasks: async (ctx: BotContext) => {
-            const tgId = ctx.from!.id;
+	private actions = {
+		openTasks: async (ctx: BotContext) => {
+			const tgId = ctx.from!.id;
 
-            await SessionData.update(tgId, {
-                scene: "tasksScene",
-                step: "view"
-            });
+			await SessionData.update(tgId, {
+				scene: 'tasksScene',
+				step: 'view',
+			});
 
-            await ctx.answerCbQuery();
+			await ctx.answerCbQuery();
 
-            const tasksHandler = new TasksHandler();
-            return tasksHandler.actions.view(ctx);
-        },
+			const tasksHandler = new TasksHandler();
+			return tasksHandler.actions.view(ctx);
+		},
 
-        openSchedule: async (ctx: BotContext) => {
-            const tgId = ctx.from!.id;
+		openSchedule: async (ctx: BotContext) => {
+			const tgId = ctx.from!.id;
 
-            await SessionData.update(tgId, {
-                scene: "scheduleScene",
-                step: "schedule"
-            });
+			await SessionData.update(tgId, {
+				scene: 'scheduleScene',
+				step: 'schedule',
+			});
 
-            return;
-        },
+			return;
+		},
 
-        openEvents: async (ctx: BotContext) => {
-            const tgId = ctx.from!.id;
+		openEvents: async (ctx: BotContext) => {
+			const tgId = ctx.from!.id;
 
-            await SessionData.update(tgId, {
-                scene: "eventsScene",
-                step: "events"
-            });
+			await SessionData.update(tgId, {
+				scene: 'eventsScene',
+				step: 'events',
+			});
 
-            return;
-        }
-    };
+			return;
+		},
+	};
 
-    override async handle(ctx: BotContext) {
-        const tgId = ctx.from!.id;
-        const session = await SessionData.get(tgId);
+	override async handle(ctx: BotContext) {
+		const tgId = ctx.from!.id;
+		const session = await SessionData.get(tgId);
 
-        if (ctx.callbackQuery && "data" in ctx.callbackQuery) {
-            const data = ctx.callbackQuery.data;
+		if (ctx.callbackQuery && 'data' in ctx.callbackQuery) {
+			const data = ctx.callbackQuery.data;
 
-            await ctx.answerCbQuery();
+			await ctx.answerCbQuery();
 
-            if (data in this.actions) {
-                await this.actions[data as keyof typeof this.actions](ctx);
+			if (data in this.actions) {
+				await this.actions[data as keyof typeof this.actions](ctx);
 
-                return;
-            }
-        }
+				return;
+			}
+		}
 
-        if (session?.scene === "menuScene") {
-            await showMenu(ctx);
-        }
-        return;
-    }
+		if (session?.scene === 'menuScene') {
+			await showMenu(ctx);
+		}
+		return;
+	}
 }

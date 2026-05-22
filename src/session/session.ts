@@ -1,7 +1,7 @@
 import { AuthDraft } from '../auth/auth.types';
 import { TaskDraft, TasksCache } from '../tasks/tasks.types';
 import redis from '../config/redis.config';
-import { SessionDraft } from '../config/types'
+import { SessionDraft } from '../config/types';
 
 export default class RedisClient<Type> {
 	constructor(prefix: string, ttl: number = 86400) {
@@ -23,12 +23,7 @@ export default class RedisClient<Type> {
 		}
 	}
 	async set(key: number, data: Type) {
-		await redis.set(
-			this.getKey(key),
-			JSON.stringify(data),
-			"EX",
-			this.ttl
-		);
+		await redis.set(this.getKey(key), JSON.stringify(data), 'EX', this.ttl);
 	}
 
 	async update(key: number, partial: Partial<Type>) {
@@ -51,9 +46,9 @@ export default class RedisClient<Type> {
 	getKey(key: number) {
 		return `${this.prefix}:${key}`;
 	}
-};
+}
 
 export const AuthSession = new RedisClient<AuthDraft>('auth');
 export const SessionData = new RedisClient<SessionDraft>('session');
-export const TaskSession = new RedisClient<TaskDraft>("draft:task")
-export const TasksCacheSession = new RedisClient<TasksCache>('tasks')
+export const TaskSession = new RedisClient<TaskDraft>('draft:task');
+export const TasksCacheSession = new RedisClient<TasksCache>('tasks');

@@ -1,3 +1,3 @@
 export type AuthDraft = {
-	login: string
-}
+	login: string;
+};

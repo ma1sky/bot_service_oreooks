@@ -1,5 +1,5 @@
 import type { Telegraf } from 'telegraf';
-import startBot from './config/bot.config.js'
+import startBot from './config/bot.config.js';
 import type { BotContext } from './config/types.js';
 
 const bot: Telegraf<BotContext> = startBot();

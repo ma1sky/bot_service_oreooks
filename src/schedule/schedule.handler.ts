@@ -5,36 +5,28 @@ import scheduleService from './schedule.service';
 import { formatSchedule } from './schedule.messages';
 import { Markup } from 'telegraf';
 import { ScheduleAction } from './schedule.types';
-
 export class ScheduleHandler extends BaseHandler {
 	public actions: Record<ScheduleAction, (ctx: BotContext) => Promise<void>> = {
 		view: async (ctx: BotContext) => {
 			const tgId = ctx.from!.id;
-
 			await SessionData.update(tgId, {
 				scene: 'scheduleScene',
 				step: 'schedule',
 			});
-
 			return this.actions.openToday(ctx);
 		},
-
 		openToday: async (ctx: BotContext) => {
 			const tgId = ctx.from!.id;
 			const today = new Date();
-
 			try {
 				const result = await scheduleService.getSchedule(tgId, today);
-
 				if (!result.success || !result.schedule) {
 					ctx.reply(`📭 Расписание на сегодня не найдено.\n${result.reason || ''}`, {
 						parse_mode: 'HTML',
-					});
+					} as any);
 					return;
 				}
-
 				const messageText = await formatSchedule(result.schedule);
-
 				const keyboard = Markup.inlineKeyboard([
 					[
 						Markup.button.callback('◀️', 'openYesterday'),
@@ -42,41 +34,35 @@ export class ScheduleHandler extends BaseHandler {
 						Markup.button.callback('▶️', 'openTomorrow'),
 					],
 				]);
-
 				try {
 					await ctx.editMessageText(messageText, {
 						parse_mode: 'HTML',
-						...keyboard,
-					});
+						reply_markup: keyboard.reply_markup,
+					} as any);
 				} catch {
 					await ctx.reply(messageText, {
 						parse_mode: 'HTML',
-						...keyboard,
-					});
+						reply_markup: keyboard.reply_markup,
+					} as any);
 				}
 			} catch (error) {
 				console.error('Error fetching today schedule:', error);
 				await ctx.reply('❌ ' + this.getErrorMessage(error));
 			}
 		},
-
 		openTomorrow: async (ctx: BotContext) => {
 			const tgId = ctx.from!.id;
 			const tomorrow = new Date();
 			tomorrow.setDate(tomorrow.getDate() + 1);
-
 			try {
 				const result = await scheduleService.getSchedule(tgId, tomorrow);
-
 				if (!result.success || !result.schedule) {
 					ctx.reply(`📭 Расписание на завтра не найдено.\n${result.reason || ''}`, {
 						parse_mode: 'HTML',
-					});
+					} as any);
 					return;
 				}
-
 				const messageText = await formatSchedule(result.schedule);
-
 				const keyboard = Markup.inlineKeyboard([
 					[
 						Markup.button.callback('◀️', 'openToday'),
@@ -84,41 +70,35 @@ export class ScheduleHandler extends BaseHandler {
 						Markup.button.callback('▶️', 'nextDay'),
 					],
 				]);
-
 				try {
 					await ctx.editMessageText(messageText, {
 						parse_mode: 'HTML',
-						...keyboard,
-					});
+						reply_markup: keyboard.reply_markup,
+					} as any);
 				} catch {
 					await ctx.reply(messageText, {
 						parse_mode: 'HTML',
-						...keyboard,
-					});
+						reply_markup: keyboard.reply_markup,
+					} as any);
 				}
 			} catch (error) {
 				console.error('Error fetching tomorrow schedule:', error);
 				await ctx.reply('❌ ' + this.getErrorMessage(error));
 			}
 		},
-
 		openYesterday: async (ctx: BotContext) => {
 			const tgId = ctx.from!.id;
 			const yesterday = new Date();
 			yesterday.setDate(yesterday.getDate() - 1);
-
 			try {
 				const result = await scheduleService.getSchedule(tgId, yesterday);
-
 				if (!result.success || !result.schedule) {
 					ctx.reply(`📭 Расписание на вчера не найдено.\n${result.reason || ''}`, {
 						parse_mode: 'HTML',
-					});
+					} as any);
 					return;
 				}
-
 				const messageText = await formatSchedule(result.schedule);
-
 				const keyboard = Markup.inlineKeyboard([
 					[
 						Markup.button.callback('◀️', 'prevDay'),
@@ -126,54 +106,41 @@ export class ScheduleHandler extends BaseHandler {
 						Markup.button.callback('Сегодня ▶️', 'openToday'),
 					],
 				]);
-
 				try {
 					await ctx.editMessageText(messageText, {
 						parse_mode: 'HTML',
-						...keyboard,
-					});
+						reply_markup: keyboard.reply_markup,
+					} as any);
 				} catch {
 					await ctx.reply(messageText, {
 						parse_mode: 'HTML',
-						...keyboard,
-					});
+						reply_markup: keyboard.reply_markup,
+					} as any);
 				}
 			} catch (error) {
 				console.error('Error fetching yesterday schedule:', error);
 				await ctx.reply('❌ ' + this.getErrorMessage(error));
 			}
 		},
-
 		openMenu: async (ctx: BotContext) => {
 			const tgId = ctx.from!.id;
-
 			await SessionData.update(tgId, {
 				scene: 'menuScene',
 				step: 'enter',
 			});
-
 			const { showMenu } = await import('../menu/menu.messages');
 			await showMenu(ctx);
 		},
-
 		prevDay: async (ctx: BotContext) => {
-			// Navigate to previous day (relative to displayed date)
-			// For simplicity, just go to yesterday
 			return this.actions.openYesterday(ctx);
 		},
-
 		nextDay: async (ctx: BotContext) => {
-			// Navigate to next day (relative to displayed date)
-			// For simplicity, just go to tomorrow
 			return this.actions.openTomorrow(ctx);
 		},
-
 		openSchedule: async (ctx: BotContext) => {
-			// Entry point from menu or other places
 			return this.actions.view(ctx);
 		},
 	};
-
 	private getErrorMessage(error: unknown): string {
 		const msg = error instanceof Error ? error.message : String(error);
 		if (msg.includes('API error 503') || msg.includes('ConnectTimeoutError')) {
@@ -184,25 +151,18 @@ export class ScheduleHandler extends BaseHandler {
 		}
 		return 'Не удалось загрузить расписание. Попробуйте позже.';
 	}
-
 	override async handle(ctx: BotContext) {
 		const tgId = ctx.from!.id;
-
 		if ('callback_query' in ctx.update && ctx.callbackQuery && 'data' in ctx.callbackQuery) {
 			const data = ctx.callbackQuery.data;
-
 			console.log(`[ScheduleHandler] Callback query: ${data}, tgId: ${tgId}`);
-
 			await ctx.answerCbQuery().catch(() => {});
-
 			if (data in this.actions) {
 				return this.actions[data as ScheduleAction](ctx);
 			}
-
 			console.log(`[ScheduleHandler] Unknown callback data: ${data}`);
 			return;
 		}
-
 		return this.actions.openToday(ctx);
 	}
 }

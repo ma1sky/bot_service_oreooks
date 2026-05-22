@@ -1,6 +1,5 @@
 import { BotContext } from '../config/types';
 import { Markup } from 'telegraf';
-
 export async function showMenu(ctx: BotContext) {
 	await ctx.reply(
 		'📋 Меню:',

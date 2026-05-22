@@ -1,56 +1,17 @@
-// import { Scenes } from "telegraf"
-
-// export type Task = {
-//     id?: number,
-//     title?: string,
-//     description?: string,
-//     deadline?: Date,
-// }
-
-// export type AuthResult = {
-//     success: boolean,
-//     reason?: string,
-//     token?: string
-// }
-
-// export interface SessionData extends Scenes.WizardSessionData {
-//   authScene: {
-//     login: string
-//   }
-
-//   scheduleScene: {
-//     currentScheduleID: number
-//     currentDate: Date
-//   }
-
-//   tasksScene: {
-//     current: number
-//   }
-// }
-
-//export type BotContext = Scenes.WizardContext<SessionData>
-
 import { Context } from 'telegraf';
-
 export type BotContext = Context & {
 	session: SessionDraft;
 };
-
 export type SceneHandler = (ctx: BotContext) => Promise<void>;
-
 export type AuthStep = 'login' | 'password';
-
 export type TaskStep = 'title' | 'description' | 'deadline' | 'create' | 'view';
-
 export type SessionScenes =
 	| 'authScene'
 	| 'menuScene'
 	| 'scheduleScene'
 	| 'tasksScene'
 	| 'eventsScene';
-
 export type MenuStep = 'enter' | 'idle';
-
 export type SessionDraft =
 	| { scene: SessionScenes; step: AuthStep }
 	| { scene: SessionScenes; step: TaskStep }
@@ -58,7 +19,6 @@ export type SessionDraft =
 	| { scene: SessionScenes; step: 'schedule' }
 	| { scene: SessionScenes; step: 'tasks' }
 	| { scene: SessionScenes; step: 'events' };
-
 export type Schedule = {
 	week: number;
 	weekType: string;

@@ -8,15 +8,11 @@ export type TaskDraft = {
 	currentIndex?: number;
 	authorId?: number;
 };
-
 export type TasksCache = {
 	tasksIds: number[];
 	currentId: number;
 	currentIndex: number;
 };
-
 export type TaskAction = 'createTask' | 'editTask' | 'deleteTask' | 'view' | 'toggleState';
-
 export type NavAction = 'openMenu' | 'prevTask' | 'nextTask';
-
 export type TaskFlowStep = 'title' | 'description' | 'deadline' | 'toggleState' | 'view';

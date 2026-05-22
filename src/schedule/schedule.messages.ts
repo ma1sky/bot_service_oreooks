@@ -1,5 +1,4 @@
 import type { Schedule } from '../config/types';
-
 export async function formatSchedule(schedule: Schedule): Promise<string> {
 	return (
 		`<b>📆 [${schedule.dayOfWeek}] ${Intl.DateTimeFormat('ru-RU').format(schedule.date)}</b>\n` +

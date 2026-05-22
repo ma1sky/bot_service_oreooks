@@ -1,11 +1,8 @@
 import { ZodType } from 'zod';
-
 export default abstract class BaseService {
 	protected base: string;
 	protected headers: HeadersInit;
-
 	constructor(base: string) {
-		// Ensure the base URL has a protocol
 		if (!base.startsWith('http://') && !base.startsWith('https://')) {
 			this.base = `https://${base}`;
 		} else {
@@ -15,19 +12,16 @@ export default abstract class BaseService {
 			'Content-Type': 'application/json',
 		};
 	}
-
 	protected async request<T>(res: Response, schema: ZodType<T>): Promise<T> {
 		if (!res.ok) {
 			const errorText = await this.getResponseText(res);
 			throw new Error(`API error ${res.status}: ${errorText}`);
 		}
-
 		const contentType = res.headers.get('content-type');
 		if (!contentType || !contentType.includes('application/json')) {
 			const text = await res.text();
 			throw new Error(`Expected JSON but got ${contentType}: ${text.substring(0, 200)}`);
 		}
-
 		try {
 			const json = await res.json();
 			const parsed = schema.parse(json);
@@ -39,7 +33,6 @@ export default abstract class BaseService {
 			throw new Error('Unknown API error');
 		}
 	}
-
 	private async getResponseText(res: Response): Promise<string> {
 		try {
 			return await res.text();
